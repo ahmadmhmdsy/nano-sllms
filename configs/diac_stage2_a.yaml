@@ -1,0 +1,26 @@
+# D-line Stage 2, arm A (G3 answered 2026-09-14: arm A only; reset2 = fallback if A stalls).
+# Warm-start: pretrained_init = full stage-1 char-LM state (embeddings + encoder stack
+# loaded strict=False; 15-class label head fresh - plan 2026-09-13 sec 2.2).
+# Arch = v2d28 (28L/272h) bidirectional ctx128, tokens = v3 (v2b corpus + Sadeed_Tashkeela
+# labeled windows, 990,544 train / 52,134 val) - plan sec 2.1.
+# Same matched hyper discipline as v2b/v2d28 controls; fine-tune class: 8000 steps,
+# patience 8 (plan sec 2.2). Considered a fresh, warm arm - BATCH 32 unchanged.
+phase: stage2a
+tokens_phase: v3
+pretrained_init: runs/diac/stage1lm/final/model.pt
+model:
+  hidden: 272
+  layers: 28
+  n_heads: 8
+  n_kv: 2
+  ffn: 1088
+  ctx: 128
+lr: 2.0e-4
+weight_decay: 0.1
+batch_size: 32
+accum: 1
+total_steps: 8000
+save_every: 500
+log_every: 100
+eval_every: 500
+early_stop_patience: 8

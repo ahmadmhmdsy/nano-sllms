@@ -1,0 +1,12 @@
+# target_r3 = target arm after the declared OOM shrink: context 1024 -> 512.
+extends: [../base/r1.yaml]
+run: {name: target_ctx512, namespace: core, stage: T, seed: 42}
+tokenizer:
+  context: 512
+model:
+  context: 512
+packing:
+  sequence_length: 512
+runtime:
+  vram_fraction: 0.85
+features: {retention: manual, promotion: null}

@@ -1,0 +1,89 @@
+# Row 41 (user GO 2026-09-10): instruct re-SFT on the YaRN base via LoRA.
+# Vehicle = Track F / row-34 recipe repurposed as the row-41 vehicle (user
+# 4-option menu). Rationale: full SFT drifts the CSN guard +9.8% (e1) to
+# +19.7% FAIL (e2, 2 epochs); in-repo LoRA drifted +0.13% (h2_copy_lora).
+# Literature: LoRA Learns Less and Forgets Less (arXiv 2405.09673) - rank
+# matters most on code data, hence r=32/alpha=64 over the r=16 default.
+# Base discipline: base_model runs/yarn_4096/final is loaded READ-ONLY via
+# from_pretrained (inherits the baked yarn rope_parameters + ctx 4096);
+# final/ = merged FULL model via save_final's merge_and_unload (row 10).
+# GATES (STRICT, user pick):
+#   ast greedy; instruct val @4096 < 2.1265-equiv (e1 NTK@4096 +3.9%);
+#   CSN guard @1024-yarn <= +5% vs yarn_4096's 1.8724;
+#   base surface @4096 <= +2% vs 1.7035 (protect the Track B win).
+name: yarn_lora_sft_v1
+
+base_model: runs/yarn_4096/final
+
+tokenizer:
+  name: codellama/CodeLlama-7b-hf
+  vocab_size: 32768
+
+model:
+  # Mirrors the yarn base dims for sanity_check only (sft.py loads dims from
+  # the checkpoint). ctx = the forgetting-guard eval ctx (yarn rope active).
+  layers: 16
+  hidden: 1024
+  heads: 16
+  kv_heads: 4
+  ffn: 3072
+  ctx: 1024
+  dropout: 0.0
+  tie_embeddings: true
+
+peft:
+  r: 32
+  lora_alpha: 64
+  lora_dropout: 0.05
+  target_modules: [q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj]
+  bias: none
+
+data:
+  # Same minimax3 corpus + prepared ds as e1 (recipe comparability); the ds
+  # dir already exists from e1 - no sft_data.py re-run needed.
+  dataset: data/distillation_data/minimax3/combined/all_train.jsonl
+  raw_dir: data/sft/minimax3
+  dataset_dir: data/sft/minimax3/ds
+  tokens_dir: data/target/tokens
+  rows: 25000
+  val_fraction: 0.02
+  min_chars: 30
+  min_instruction_chars: 10
+  dedupe: true
+  ast_filter: true
+  template: "### Instruction:\n{instruction}\n### Response:\n"
+
+sft:
+  ctx: 512
+  pilot_rows: 5000
+
+train:
+  output_dir: runs/yarn_lora_sft_v1
+  final_dir: runs/yarn_lora_sft_v1/final
+  epochs: 1                # 2-epoch full SFT was e2's +19.7% killer; LoRA stays 1 epoch
+  batch: 1
+  eval_batch: 4
+  accum: 16
+  lr: 1.0e-4               # LoRA-standard ~3x the full-FT lr (e1 used 3e-5)
+  scheduler: cosine
+  warmup_steps: 100
+  weight_decay: 0.1
+  max_grad_norm: 1.0
+  logging_steps: 50
+  eval_steps: 250
+  save_steps: 250
+  save_total_limit: 3
+  fp16: true
+  grad_ckpt: true
+  optim: adamw_torch       # e1 precedent; ~9.7M adapter params need no 8-bit
+  dataloader_num_workers: 0
+  seed: 42
+
+eval:
+  max_new_tokens: 256
+  instructions_file: data/sft/minimax3/val_instructions.jsonl
+  n_instructions: 50
+  sample_temperature: 0.8
+  prompts:
+    - "### Instruction:\nWrite a Python function that returns the nth Fibonacci number.\n### Response:\n"
+    - "### Instruction:\nWrite a Python class that implements a stack with push, pop and peek.\n### Response:\n"

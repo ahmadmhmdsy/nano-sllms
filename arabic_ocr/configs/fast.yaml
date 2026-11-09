@@ -1,0 +1,41 @@
+# Fast training config - optimized for speed
+name: fast
+
+model:
+  type: vit_decoder
+  patch_size: 16
+  image_height: 48
+  image_width: 256
+  vit_layers: 3  # Smaller model
+  vit_hidden: 192
+  vit_heads: 3
+  vit_ffn: 768
+  decoder_layers: 3
+  decoder_hidden: 192
+  decoder_heads: 3
+  vocab_size: 54  # Focused vocabulary
+  max_seq_len: 2048  # Increased from 512 to 2048
+  dropout: 0.2
+
+data:
+  train_dir: data/all_data/train
+  val_dir: data/all_data/val
+  batch_size: 256  # Much larger batch size
+  num_workers: 4
+  image_height: 48
+  image_width: 256
+  augment: true
+  vocab_path: data/focused_vocab.json
+
+train:
+  epochs: 20  # Fewer epochs
+  lr: 0.0002  # Higher learning rate for faster convergence
+  weight_decay: 0.01
+  max_grad_norm: 1.0
+  save_dir: runs/fast
+  log_interval: 50
+  eval_interval: 1
+
+eval:
+  batch_size: 512
+  max_new_tokens: 2048  # Increased from 512 to 2048

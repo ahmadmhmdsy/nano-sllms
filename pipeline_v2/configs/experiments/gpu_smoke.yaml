@@ -1,0 +1,78 @@
+schema_version: 2
+release: r1
+capabilities: [pretrain]
+run: {name: gpu_smoke, namespace: core, stage: S, seed: 42}
+data:
+  dataset_id: gpu_smoke_fixture
+  sources:
+    - source_id: tiny-corpus
+      kind: local
+      path_or_repo: pipeline_v2/tests/fixtures/tiny_corpus.jsonl
+      revision: null
+      file_set: [tiny_corpus.jsonl]
+      role: train
+      license: CC0
+      expected_rows: 13
+      expected_tokens: 1000
+      freshness_policy: {max_age: pinned, supersession: explicit-generation, optional_reason: null}
+      optional_profile: null
+  split_salt: 17
+  validation_fraction: 0.25
+  dedupe: exact_hash
+  normalization: unicode_nfkc
+  filters: []
+  regeneration_command: ["./.venv/Scripts/python.exe", "pipeline_v2/run.py", "run", "--config", "pipeline_v2/configs/experiments/gpu_smoke.yaml"]
+tokenizer:
+  source: local
+  revision_or_files: pipeline_v2/tests/fixtures/tiny_tokenizer/tokenizer.json
+  special_ids: {pad: 0, bos: 1, eos: 2}
+  context: 32
+  offsets: special_tokens
+model:
+  architecture: llama
+  hidden: 256
+  intermediate: 512
+  layers: 4
+  heads: 8
+  kv_heads: 4
+  context: 32
+  precision: fp16
+  attention: sdpa
+  tied_embeddings: false
+  base_model: null
+train:
+  optimizer: adamw
+  scheduler: cosine
+  learning_rate: 3.0e-3
+  max_steps: 84
+  batch_size: 2
+  gradient_accumulation: 1
+  max_grad_norm: 1.0
+  checkpoint_every_steps: 4
+  evaluation_cadence: 4
+  checkpoint_policy: complete_only
+  keep_last_checkpoints: 3
+  keep_best_checkpoints: 1
+  resume: true
+evaluation:
+  ids: [validation_loss]
+  versions: ["1"]
+  suites: [validation]
+  metrics: [val_loss, val_perplexity]
+  cadence_steps: 1
+  thresholds: {val_loss: 100.0, val_perplexity: 1000000000000000000000000000000.0}
+  directions: {val_loss: min, val_perplexity: min}
+  generation_samples: 1
+  generation_max_new_tokens: 16
+  selection_policy: best_validation_loss
+runtime:
+  device: cuda:0
+  precision: fp16
+  launch_profile: gpu-smoke
+  vram_fraction: 0.90
+features: {retention: manual, promotion: null}
+packing:
+  mode: concat
+  sequence_length: 32
+  overflow_policy: fail
+  dropped_tail_policy: count_and_drop

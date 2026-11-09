@@ -1,0 +1,81 @@
+{
+  "schema": "flow/0.1",
+  "meta": {
+    "name": "e2e-smoke-flow"
+  },
+  "graph": {
+    "nodes": [
+      {
+        "id": "n1",
+        "kind": "dataset",
+        "props": {},
+        "position": {
+          "x": 140,
+          "y": 150
+        },
+        "label": "RowTour-360"
+      },
+      {
+        "id": "n2",
+        "kind": "prepare",
+        "props": {
+          "min_chars": 40,
+          "rows": 480000,
+          "val_fraction": 0.05
+        },
+        "position": {
+          "x": 470,
+          "y": 150
+        }
+      },
+      {
+        "id": "n3",
+        "kind": "tokenize",
+        "props": {
+          "seq_len": 512,
+          "vocab": 32000
+        },
+        "position": {
+          "x": 800,
+          "y": 150
+        }
+      },
+      {
+        "id": "n4",
+        "kind": "train",
+        "props": {
+          "preset": "Small (~12M, smoke)",
+          "steps": 200,
+          "lr_preset": "Pretrain 4e-4"
+        },
+        "position": {
+          "x": 470,
+          "y": 500
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "e1",
+        "from": "n1",
+        "to": "n2",
+        "fromPort": "cleaned",
+        "toPort": "raw-dir"
+      },
+      {
+        "id": "e2",
+        "from": "n2",
+        "to": "n3",
+        "fromPort": "cleaned-dir",
+        "toPort": "cleaned-dir"
+      },
+      {
+        "id": "e3",
+        "from": "n3",
+        "to": "n4",
+        "fromPort": "shard-dir",
+        "toPort": "shard-dir"
+      }
+    ]
+  }
+}

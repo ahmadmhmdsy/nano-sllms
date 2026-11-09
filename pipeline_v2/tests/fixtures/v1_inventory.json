@@ -1,0 +1,125 @@
+{
+  "files": [
+    {
+      "bytes": 4843,
+      "path": "configs/next_pretrain.yaml",
+      "role": "v1-core-boundary",
+      "sha256": "2a9b27589f25315e64a6555c997168d2db966144c247ebea29a8976e88f5ee65"
+    },
+    {
+      "bytes": 1504,
+      "path": "configs/pilot.yaml",
+      "role": "v1-core-boundary",
+      "sha256": "9aa6eeee34c37b83c58fbcffaf0f9caa1a2774b23094ef45d5b6daf525800efe"
+    },
+    {
+      "bytes": 1319,
+      "path": "configs/smoke.yaml",
+      "role": "v1-core-boundary",
+      "sha256": "f539b4cf55205466bdde24487934cc210226997f0f99aea48281302ef78ee0fc"
+    },
+    {
+      "bytes": 2093,
+      "path": "configs/target.yaml",
+      "role": "v1-core-boundary",
+      "sha256": "eda518d634da746056d2c7dcaaf0a2ad488e804a01c9d98a2b4aede229139000"
+    },
+    {
+      "bytes": 12762,
+      "path": "scripts/eval.py",
+      "role": "v1-core-boundary",
+      "sha256": "f59e4c439a2fb165990b804fb770d7826de166ffc895aafe2499e57b4f08e246"
+    },
+    {
+      "bytes": 9685,
+      "path": "scripts/kd.py",
+      "role": "v1-core-boundary",
+      "sha256": "de81dffdca4bafa23de109a916d629697a79757337f71d58d396f80955493158"
+    },
+    {
+      "bytes": 20514,
+      "path": "scripts/mount.py",
+      "role": "v1-core-boundary",
+      "sha256": "0f3cfd4dff07b645f58bf0403c2e13a1c7249895cedb947be5ed8ac4cfa9391b"
+    },
+    {
+      "bytes": 14776,
+      "path": "scripts/prepare_data.py",
+      "role": "v1-core-boundary",
+      "sha256": "101b0dfffff741ed11f5d0fe646c9fdeb1307dd45ba974f524e7de12b223678f"
+    },
+    {
+      "bytes": 11003,
+      "path": "scripts/run_custom.py",
+      "role": "v1-core-boundary",
+      "sha256": "8581562da847df26633bb53b881be2fdf2dacebf69cdc502ccf681f25adb6a45"
+    },
+    {
+      "bytes": 2196,
+      "path": "scripts/sanity_check.py",
+      "role": "v1-core-boundary",
+      "sha256": "05552c43a2a502dce8e1178ab5bbc00faa6347565ffd9605b7432043a3d1416c"
+    },
+    {
+      "bytes": 9633,
+      "path": "scripts/sft.py",
+      "role": "v1-core-boundary",
+      "sha256": "0a49ba32cad6d54ef9d567bf24e97636dce38164fe2699bd7525138417c8b2af"
+    },
+    {
+      "bytes": 3092,
+      "path": "scripts/tokenize_data.py",
+      "role": "v1-core-boundary",
+      "sha256": "11336cf6a2c82290c34aae7daed5c4979fe19f27ed4a3d3ef6b209acdb517de0"
+    },
+    {
+      "bytes": 9311,
+      "path": "scripts/train.py",
+      "role": "v1-core-boundary",
+      "sha256": "8116b79499c6057a29742442d0e9cc2e8f691dcb6c52ea40c22b7fd50318e63f"
+    },
+    {
+      "bytes": 4495,
+      "path": "scripts/vram_probe.py",
+      "role": "v1-core-boundary",
+      "sha256": "a9961fe162f6cea1705be8aefb80072460751bb3bb701297fb62137d77b34107"
+    },
+    {
+      "bytes": 2043,
+      "path": "src/data.py",
+      "role": "v1-core-boundary",
+      "sha256": "8f8d0f4c95e7d89a7a205e91867c5c83c06743fc400fed786452a78e723e5b66"
+    },
+    {
+      "bytes": 24844,
+      "path": "src/model.py",
+      "role": "v1-core-boundary",
+      "sha256": "71851e38b027544302cb975ff2ceed5692557293d8cce6f4d8846a690f3ae03b"
+    },
+    {
+      "bytes": 1615,
+      "path": "tests/_common.py",
+      "role": "v1-core-boundary",
+      "sha256": "e0c625b5ed15f30640c0cb91413fb4ee01d1b2c7221a6d2d928906e22857b5bd"
+    },
+    {
+      "bytes": 2318,
+      "path": "tests/test_artifacts.py",
+      "role": "v1-core-boundary",
+      "sha256": "f7d314c1e49413ddd963fab8952af1b81718b8c97d1ea8eb0c18e1dd573a7815"
+    },
+    {
+      "bytes": 2862,
+      "path": "tests/test_explorer.py",
+      "role": "v1-core-boundary",
+      "sha256": "4a31f5a391a0cb9769ff4f270c7ec97e88fdabf921904262c81f41e6ac1e9fa3"
+    },
+    {
+      "bytes": 3248,
+      "path": "tests/test_simulator.py",
+      "role": "v1-core-boundary",
+      "sha256": "cdd9bc0221b355fddfcee59bf65c3d213d1848f7973c5ebd6c1dbf0cc0cd4e7d"
+    }
+  ],
+  "schema_version": 1
+}

@@ -1,0 +1,51 @@
+[build-system]
+requires = ["setuptools==78.1.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["slm_train*"]
+
+[project]
+name = "nano-slms-pipeline-v2"
+version = "0.1.0"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+  "accelerate==1.14.0",
+  "datasets==5.0.1",
+  "filelock==3.32.3",
+  "huggingface-hub==1.30.0",
+  "numpy==2.5.2",
+  "pydantic==2.13.5",
+  "PyYAML==6.0.3",
+  "safetensors==0.8.0",
+  "tensorboard==2.21.0",
+  "tokenizers==0.23.2",
+  "torch==2.14.0+cu126",
+  "transformers==5.16.1",
+]
+
+[project.optional-dependencies]
+test = ["pytest==9.1.1"]
+
+[project.scripts]
+nano-slms-v2 = "slm_train.cli:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+markers = [
+  "gpu: requires a user-opened GPU window",
+  "network: requires an explicitly declared source",
+]
+
+[tool.uv]
+package = true
+
+[[tool.uv.index]]
+name = "pytorch-cu126"
+url = "https://download.pytorch.org/whl/cu126"
+explicit = true
+
+[tool.uv.sources]
+torch = { index = "pytorch-cu126" }

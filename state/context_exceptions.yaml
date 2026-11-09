@@ -1,0 +1,53 @@
+# Exact, user-accepted historical context findings.
+#
+# Every record is an exact-match exception keyed by
+# (path, line, kind, target). A changed, shifted, new, or unlisted finding is
+# never accepted. A malformed, missing, unsafe, or unreadable registry fails
+# closed and accepts nothing. The two historical source documents are never
+# rewritten to silence a finding.
+#
+# decision_source: direct-user-instruction
+schema_version: 1
+exceptions:
+  - id: context-exception/tasks-60
+    status: accepted_historical
+    path: TASKS.md
+    line: 60
+    kind: malformed_table_row
+    reason: Legacy table formatting is preserved as historical evidence.
+    accepted_at: "2026-09-25"
+    decision_source: direct-user-instruction
+    evidence:
+      - docs/agent/reports/context-validation-2026-09-24.md
+  - id: context-exception/tasks-196
+    status: accepted_historical
+    path: TASKS.md
+    line: 196
+    kind: malformed_table_row
+    reason: Legacy table formatting is preserved as historical evidence.
+    accepted_at: "2026-09-25"
+    decision_source: direct-user-instruction
+    evidence:
+      - docs/agent/reports/context-validation-2026-09-24.md
+  - id: context-exception/experiments-25
+    status: accepted_historical
+    path: research/EXPERIMENTS.md
+    line: 25
+    kind: broken_markdown_link
+    target: research/_template_experiment.md
+    reason: Historical report link is preserved as an accepted exception.
+    accepted_at: "2026-09-25"
+    decision_source: direct-user-instruction
+    evidence:
+      - docs/agent/reports/context-validation-2026-09-24.md
+  - id: context-exception/experiments-28
+    status: accepted_historical
+    path: research/EXPERIMENTS.md
+    line: 28
+    kind: broken_markdown_link
+    target: research/WHAT_WORKS.md
+    reason: Historical report link is preserved as an accepted exception.
+    accepted_at: "2026-09-25"
+    decision_source: direct-user-instruction
+    evidence:
+      - docs/agent/reports/context-validation-2026-09-24.md

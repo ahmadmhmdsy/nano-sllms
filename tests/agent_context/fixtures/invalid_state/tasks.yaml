@@ -1,0 +1,11 @@
+schema_version: 1
+tasks:
+  - id: ui/u1
+    scope: ui
+    status: finished
+    evidence:
+      - missing/task-evidence.json
+  - id: ui/u1
+    scope: ui
+    status: done
+    evidence: []

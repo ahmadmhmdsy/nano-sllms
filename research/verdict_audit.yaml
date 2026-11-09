@@ -1,0 +1,84 @@
+meta:
+  created: "2026-10-06"
+  scope: "verdict recheck, both error directions, all tracks/tiers/arms/techniques"
+  hub: research/verdict_audit.md
+  parts_dir: research/verdict_audit/parts
+  tools:
+    - research/verdict_audit/tools/score_gate_bench.py
+    - research/verdict_audit/tools/score_probe.py
+  evidence_dir: research/verdict_audit/evidence
+metric_directions:
+  lower_is_better: [DER, WER, CDER, loss, val_loss, ECE, NLL, Brier, latency, VRAM, wall_s]
+  higher_is_better: [accuracy, val_acc, pass_rate, valid_at_k, F1, macro_F1, AUROC, agreement, mark_accuracy, retention]
+  diacritizer_registered: "mean DER over GATE_EXTERNAL = fadel_test + sadeed25 + wikinews2014 (lower is better)"
+  authority: ["diacritizer/scripts/train.py:39", "diacritizer/scripts/train.py:204-220"]
+counts:
+  total_entries: 102
+  confirmed: 51
+  miscited: 18
+  inverted: 6
+  no_artifact: 22
+  other: 5
+  by_part:
+    - {part: parts/dline_recent_e61_e67.md, scope: "E-061, E-063..E-067", entries: 6, confirmed: 4, miscited: 0, inverted: 1, no_artifact: 0, other: 1}
+    - {part: parts/e19_e23_bakeoff.md, scope: "E-19..E-23", entries: 24, confirmed: 12, miscited: 5, inverted: 4, no_artifact: 2, other: 1}
+    - {part: parts/uline_core_legacy.md, scope: "U-line, core, legacy registry", entries: 17, confirmed: 11, miscited: 1, inverted: 1, no_artifact: 4, other: 0}
+    - {part: parts/laya_e67_e75.md, scope: "Laya E-66..E-75", entries: 13, confirmed: 3, miscited: 2, inverted: 0, no_artifact: 8, other: 0}
+    - {part: parts/laya_l1_l2.md, scope: "Laya E-62..E-65", entries: 6, confirmed: 4, miscited: 1, inverted: 0, no_artifact: 1, other: 0}
+    - {part: parts/dline_legacy_e31_e63.md, scope: "D-line E-31..E-63 + mex E-38..E-55", entries: 36, confirmed: 17, miscited: 9, inverted: 0, no_artifact: 7, other: 3}
+defect_classes:
+  D-1: "metric-set ambiguity: 3-gate vs 4-gate means unlabelled"
+  D-2: "label-smoothing raises the val_loss floor; val_loss not comparable across arms"
+  D-3: "gate-CSV schema drift (legacy phase,src,der vs modern step,gate,DER)"
+  D-4: "unclosed runs: no summary.json and no final/ proves the process was killed"
+  D-5: "evidence-path fragility: scratch/ and gitignored runs/"
+  D-6: "INVERTED metric direction (most damaging)"
+  D-7: "wrong or naive baseline (false-negative engine)"
+  D-8: "slice-vs-full scoring pads missing prediction lines as errors"
+  D-9: "train-vs-test metric confusion"
+  D-10: "overclaim against the pre-registered bar"
+  D-11: "artifact overwrite / console-only evidence"
+  D-12: "silent warm-start no-op: a shape-mismatched pretrained_init loads 0 tensors, the run random-inits while config/report/registry all claim a warm start"
+  D-13: "PAD-convention drift on rebuild: ids match byte-for-byte but labels differ at PAD (-1 vs 0); a documented open hazard that fired 2026-10-06 on the first bed built after the doc"
+  D-14: "rebuild command does not reproduce its registered bed: --max-train truncates BEFORE the shuffle (wrong row set) and touches train only (silently wrong val split)"
+corrections:
+  - {id: 1, record: "E-067 P1", was: "FAIL (warm start hurts -6.1%)", now: "PASS/WINNER (6.07% better)", kind: inverted}
+  - {id: 2, record: "E-19 Fine-Tashkeel", was: "FAILS rule (a)", now: "PASSES rule (a): 21.33/23.27/37.62 vs gold 33.23/45.68/48.99", kind: slice_scoring}
+  - {id: 3, record: "E-23a", was: "NOT-ADOPTED, +1.45 worse", now: "WIN: at step 2000 beats gold on all four gates (mean3 40.20 vs 42.64)", kind: wrong_baseline}
+  - {id: 4, record: "E-23d sub-claim", was: "D1 loses to arm E", now: "D1 55.83 beats E 52.55", kind: inverted}
+  - {id: 5, record: "E-22 arm-C mean", was: "48.42 / -2.68", now: "48.34 / -2.76", kind: arithmetic}
+  - {id: 6, record: "E-23d vs arm C", was: "+7.41", now: "+7.49 (+9.46 vs gold)", kind: wrong_baseline}
+  - {id: 7, record: "E-23c delta", was: "+4.13", now: "+4.85 (4-gate 51.22 vs 46.37)", kind: wrong_baseline}
+  - {id: 8, record: "E-066", was: "in_progress step 47300", now: "interrupted; best 3-gate 0.4205 @40000 = FAIL on peak, PASS on delay", kind: stale}
+  - {id: 9, record: "E-063 M1", was: "none beats the gold", now: "0.4253 @5000 is marginally better than gold 0.4264", kind: overclaim}
+  - {id: 10, record: "laya/E-074", was: "test 0.7712", now: "TRAIN metric (n=6000)", kind: train_test_confusion}
+  - {id: 11, record: "E-63c M1", was: "all gates strictly better or equal vs gold", now: "FALSE - wn2014 49.07 > gold 48.99; better on 3 of 5 gates", kind: overclaim}
+  - {id: 12, record: "E-63s sweep", was: "BEST OVERALL = S3 40.77", now: "S4 (4.5M) best: mean_der 0.39962 @16500 = 39.96", kind: stale}
+  - {id: 13, record: "E-38a / E-45 / E-54c-d", was: "PASS / ALL PASS", now: "UNSUPPORTED - cited artifact holds another experiment's numbers", kind: overwrite}
+standings_3gate:
+  - {system: "E-071 P6 vote e70_c4b_ctx256@15000+vote(w256/s128)", params_m: 1.08, mean3: 0.3697, note: "NEW PROJECT BEST; inference-only sliding-window majority voting over the C4b weights - free, deterministic, no retraining; -1.337% vs the same weights single-pass (0.374712), every gate improves (fadel -1.850, sadeed25 -1.262, wikinews2014 -1.050), paired McNemar p<=3.2e-11, non-degenerate; der_canonical improves MORE (-2.5..-4.0%); the PROCEDURE ships WITH the weights; scope is window 256/stride 128 (ctx-matched), 128/64 not run"}
+  - {system: "E-070 C4b e70_c4b_ctx256@15000", params_m: 1.08, mean3: 0.3748, note: "NEW PROJECT BEST; C4 continued 60k steps at ctx 256; WIN per pre-registered rule (<=0.3825), -2.02% vs C1 and -6.49% at matched tokens; independently re-scored 0.374792; CAVEAT minimum rests on one early probe, second-best 0.3793 @40000, no sustained descent after 15k, val-best step 55000 disagrees with gate-best 15000"}
+  - {system: "E-069 C4 e69_c4_ctx256@60000", params_m: 1.08, mean3: 0.3872, note: "FAIL on its own best-of-run rule but beat C1 by 3.4-4.5% at MATCHED TOKENS (12/12 probes); best was its LAST probe - budget-limited; superseded by E-070"}
+  - {system: "E-068 C1 e67_c1_ft64_fullv3@90000", params_m: 1.08, mean3: 0.3825, note: "project best before E-070; F2 recipe + the real P1 warm start; WIN 3.74% vs F2 (bar 2%)"}
+  - {system: "E-065 F2 e63s_s7_18l64_adamw_fullv3@115000", params_m: 1.08, mean3: 0.3974, note: "previous best; never warm-started (D-12)"}
+  - {system: "E-063s S4 12Lx160@16500", params_m: 4.5, mean3: 0.3996, note: "corrected sweep best"}
+  - {system: "E-23a v3q@2000", params_m: 30.1, mean3: 0.4020, note: "corrected to WIN; adopted-candidate"}
+  - {system: "E-065 F1@100000", params_m: 1.08, mean3: 0.4067, note: ""}
+  - {system: "E-066 R1@40000", params_m: 1.08, mean3: 0.4205, note: "interrupted"}
+  - {system: "E-063c M1 16Lx272@5000", params_m: 17.2, mean3: 0.4253, note: ""}
+  - {system: "gold stage2b2500", params_m: 30.1, mean3: 0.4264, note: "deployed"}
+  - {system: "E-067 P9 ctx256@36000", params_m: 1.08, mean3: 0.4285, note: "trial bed + random init, 40k steps; value is the DELTA not the headline - ctx 256 beats ctx 128 by 4.0-6.4% and lifts val_acc +2.1 points"}
+  - {system: "E-067 P1 char-LM warm start@32000", params_m: 1.08, mean3: 0.4299, note: "C0-R confirmation in flight"}
+  - {system: "C0 / E-064 A2 control@38000", params_m: 1.08, mean3: 0.4577, note: "control"}
+structural_findings:
+  - "E-31..E-55 are absent from research/experiments.yaml (only diacritizer/E-061 and E-063 rows exist)"
+  - "research/EXPERIMENTS.md reuses E-40..E-59 ids across the mex/mu line and the DA/langid line - id-keyed attribution is ambiguous"
+  - "deployed gold stage2b2500 is 30.1M params at 3-gate 0.4264; the 1.08M E-070 C4b beats it by 5.2 DER (12.1%), E-068 C1 by 4.4 DER (10.3%), and E-065 F2 by 2.9 DER"
+  - "P6 sliding-window voting (E-071) is a FREE inference-only lever: -1.34% on the 3-gate mean (0.374712 -> 0.369702), every gate improving, McNemar p<=3.2e-11, non-degenerate; it is a deterministic transform of whatever weights it is handed, so the PROCEDURE ships with the checkpoint rather than being a new checkpoint"
+  - "best-of-run over noisy gate probes was NOT selecting noise here: E-072 tested the gate-best step on the held-out abdou control (41,378 words, never used for selection) and the ordering reproduced exactly (15000 < 40000 < 60000, McNemar p=4.8e-12 / p<1e-300). The top-two ranking is nevertheless METRIC-DEPENDENT - step 40000 leads der_canonical (0.2335 vs 0.2371) and macro_f1 (0.7340 vs 0.7285) while step 15000 leads the registered DER"
+  - "ctx 256 is a CONFIRMED lever that composes: P9 +4-6% on the trial bed, C4 -3.4..-4.5% and C4b -6.49% vs C1 at matched tokens (both at 16384 tokens/step). What does NOT compose is unlimited budget - past ~75000 combined steps the gate curve plateaus while val_acc keeps rising, so val_acc is not a proxy for gate rank at fixed budget"
+open_items:
+  - "C0-R (job pwsh-134) sizing the unseeded-init variance for the E-067 P1 win"
+  - "P6 sliding-window voting (E-071) RESOLVED 2026-10-06: WIN, recorded"
+  - "E-19 Fine-Tashkeel needs a full-gate run to become adoptable"
+  - "P9 ctx 256 needs re-tokenization"

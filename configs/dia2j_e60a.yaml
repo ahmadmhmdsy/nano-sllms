@@ -1,0 +1,30 @@
+# E-60a Rung A: small deep-narrow joint trunk (plan docs/plans/2026-09-21-dia-ladder-experts-plan.md)
+name: dia2j_e60a_a3
+model:
+  layers: 4
+  hidden: 320
+  heads: 8
+  kv_heads: 2
+  ctx: 96
+  ffn: 1280
+  tie_embeddings: false
+data:
+  tokens_dir: data/diac/v3q/tokens
+train:
+  output_dir: runs/mex/dia2j_e60a_a3
+  seed: 42
+  batch: 512
+  accum: 1
+  eval_batch: 256
+  max_steps: 3000
+  grad_scaler: true
+  eval_steps: 500
+  save_steps: 1000
+  logging_steps: 50
+  lr: 0.0001
+  head_lr: 0.0006
+  warmup_steps: 300
+  weight_decay: 0.1
+  mark_loss_weight: 1.0
+  logit_adjust_tau: 1.0
+  init_from: runs/mex/dia2j_e60a/final

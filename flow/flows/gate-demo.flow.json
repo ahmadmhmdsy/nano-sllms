@@ -1,0 +1,81 @@
+{
+  "schema": "flow/0.1",
+  "meta": {
+    "name": "gate-demo"
+  },
+  "graph": {
+    "nodes": [
+      {
+        "id": "n1",
+        "kind": "dataset",
+        "label": "TheGamingMahi/TinyCode",
+        "props": {},
+        "position": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "id": "n2",
+        "kind": "prepare",
+        "props": {
+          "rows": 3000,
+          "val_fraction": 0.02,
+          "min_chars": 80
+        },
+        "position": {
+          "x": 200,
+          "y": 0
+        }
+      },
+      {
+        "id": "n3",
+        "kind": "tokenize",
+        "props": {
+          "seq_len": 256,
+          "vocab": 32000
+        },
+        "position": {
+          "x": 400,
+          "y": 0
+        }
+      },
+      {
+        "id": "n4",
+        "kind": "train",
+        "props": {
+          "preset": "Small (~12M, smoke)",
+          "steps": 200,
+          "lr_preset": "Pretrain 4e-4"
+        },
+        "position": {
+          "x": 600,
+          "y": 0
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "e1",
+        "from": "n1",
+        "to": "n2",
+        "fromPort": "cleaned",
+        "toPort": "raw-dir"
+      },
+      {
+        "id": "e2",
+        "from": "n2",
+        "to": "n3",
+        "fromPort": "cleaned-dir",
+        "toPort": "cleaned-dir"
+      },
+      {
+        "id": "e3",
+        "from": "n3",
+        "to": "n4",
+        "fromPort": "shard-dir",
+        "toPort": "shard-dir"
+      }
+    ]
+  }
+}

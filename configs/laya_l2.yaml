@@ -1,0 +1,25 @@
+# Laya-line L2 (E-63): mixture pretrain (stage A) -> typed-decisions fine-tune (stage B).
+# Pre-registration: research/EXPERIMENTS.md E-63 (2026-09-22, user-approved).
+encoder: microsoft/MiniLM-L12-H384-uncased
+max_len: 512
+head_max_len: 192
+option_token_max: 48
+head_layers: 2
+dropout: 0.1
+mixture_train: data/laya/mixture/train.pt
+mixture_heldout: data/laya/mixture/heldout.pt
+typed_train: data/laya/typed_decisions/train.pt
+typed_test: data/laya/typed_decisions/test.pt
+out_dir: runs/laya/l2
+l1_model: runs/laya/l1/final/model.pt
+seed: 42
+epochs_stageA: 3
+epochs_stageB: 4
+micro_batch: 8
+grad_accum: 8
+lr_encoder: 2.5e-5
+lr_head: 1.0e-4
+weight_decay: 0.01
+clip: 1.0
+amp: fp16
+save_every_steps: 200

@@ -1,0 +1,41 @@
+# Simple training config with focused vocabulary
+name: simple
+
+model:
+  type: vit_decoder
+  patch_size: 16
+  image_height: 48
+  image_width: 256
+  vit_layers: 4  # Smaller model
+  vit_hidden: 256
+  vit_heads: 4
+  vit_ffn: 1024
+  decoder_layers: 4
+  decoder_hidden: 256
+  decoder_heads: 4
+  vocab_size: 54  # Focused vocabulary
+  max_seq_len: 64
+  dropout: 0.2
+
+data:
+  train_dir: data/all_data/train
+  val_dir: data/all_data/val
+  batch_size: 128  # Larger batch size for faster training
+  num_workers: 4
+  image_height: 48
+  image_width: 256
+  augment: true
+  vocab_path: data/focused_vocab.json
+
+train:
+  epochs: 30  # Fewer epochs
+  lr: 0.0001
+  weight_decay: 0.01
+  max_grad_norm: 1.0
+  save_dir: runs/simple
+  log_interval: 50
+  eval_interval: 1
+
+eval:
+  batch_size: 256
+  max_new_tokens: 64

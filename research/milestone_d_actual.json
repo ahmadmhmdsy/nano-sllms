@@ -1,0 +1,212 @@
+{
+  "generated_at_utc": "2026-09-09T19:05:00Z",
+  "revision": 2,
+  "revision_note": "rev 2: starcoderdata REMEASURED after the user accepted the Hub terms mid-session (was FAIL/unmeasured in rev 1); all four sources now measured; sizing arithmetic added",
+  "task": "TASKS.md row 13 (Milestone D) - spec research/pretrain_mix_proposal.md §5 items 4 + 11 (measurement at 2,000 rows/source + cross-source SHA1 dedupe)",
+  "measurement": {
+    "rows_requested_per_source": 2000,
+    "tokenizer": "codellama/CodeLlama-7b-hf",
+    "min_chars": 200,
+    "val_fraction": 0.02,
+    "dedupe": "sha1 exact (prepare_data.py)",
+    "method": "per-source legacy-path scratch configs under data/md_measure/<tag>/ (rows 2000, NO target_rows) -> scripts/prepare_data.py -> scripts/tokenize_data.py; per-row distribution via data/md_measure/token_stats.py; cross-dup via data/md_measure/cross_dup.py",
+    "disk_free_gb_before": {
+      "E": 36.35,
+      "C": 31.21
+    },
+    "disk_free_gb_after": {
+      "E": 36.3,
+      "C": 31.13
+    },
+    "network_budget": "well under the 30 min cap; the starcoderdata 2,000-row prepare completed in under 2 minutes (background job log data/md_measure/starcoderdata/prepare.log); no fallback to 500 rows needed"
+  },
+  "sources": {
+    "stack_smol": {
+      "dataset": "bigcode/the-stack-smol",
+      "config_form": "data_dir: data/python (its 'python' builder config is GONE from the Hub - only 'default' remains; probed 2026-09-09)",
+      "requested": 2000,
+      "rows_seen": 2091,
+      "kept": 2000,
+      "dups": 0,
+      "too_short": 91,
+      "rows_measured": 2000,
+      "sample_tokens": 5434305,
+      "tok_per_row": 2717.2,
+      "median": 929,
+      "p90": 5609,
+      "min": 58,
+      "max": 121723,
+      "tok_per_char": 0.3264,
+      "train_tokens": 5241122,
+      "val_tokens": 193183,
+      "proposal_est_tok_per_row": 700,
+      "delta_pct": 288.2,
+      "flag": "FAIL (>±25%)",
+      "note": "rows are WHOLE FILES (median 929 tok, heavy tail to 121k); the proposal's ~700 est was ~4x low"
+    },
+    "starcoderdata": {
+      "dataset": "bigcode/starcoderdata",
+      "config_form": "data_dir: python (VERIFIED 2026-09-09 post-acceptance: config 'python' does not exist here either - only 'default'; live 1-row probe returned keys content/id/max_stars_count/max_stars_repo_name/max_stars_repo_path)",
+      "requested": 2000,
+      "rows_seen": 2111,
+      "kept": 2000,
+      "dups": 0,
+      "too_short": 111,
+      "rows_measured": 2000,
+      "sample_tokens": 4691480,
+      "tok_per_row": 2345.7,
+      "median": 921,
+      "p90": 5317,
+      "min": 48,
+      "max": 146310,
+      "tok_per_char": 0.326,
+      "train_tokens": 4611364,
+      "val_tokens": 80116,
+      "proposal_est_tok_per_row": 600,
+      "delta_pct": 290.9,
+      "flag": "FAIL (>±25%)",
+      "note": "same whole-file profile as the-stack-smol (mean 2345.7 vs 2717.2, median 921 vs 929) - the 600 est was ~4x low too; rows are full repo files incl. license headers"
+    },
+    "csn": {
+      "dataset": "code-search-net/code_search_net",
+      "config_form": "config: python (verified)",
+      "requested": 2000,
+      "rows_seen": 2087,
+      "kept": 2000,
+      "dups": 0,
+      "too_short": 87,
+      "rows_measured": 2000,
+      "sample_tokens": 543524,
+      "tok_per_row": 271.8,
+      "median": 172,
+      "p90": 505,
+      "min": 50,
+      "max": 7341,
+      "tok_per_char": 0.2977,
+      "train_tokens": 535269,
+      "val_tokens": 8255,
+      "proposal_est_tok_per_row": 326,
+      "delta_pct": -16.6,
+      "flag": "PASS (within ±25%)",
+      "note": "consistent with M3's 47.9M/150k = ~319 tok/row (HANDOFF §6)"
+    },
+    "evol": {
+      "dataset": "nickrosh/Evol-Instruct-Code-80k-v1",
+      "config_form": "no config (verified)",
+      "requested": 2000,
+      "rows_seen": 2165,
+      "kept": 2000,
+      "dups": 0,
+      "too_short": 165,
+      "rows_measured": 2000,
+      "sample_tokens": 948877,
+      "tok_per_row": 474.4,
+      "median": 417,
+      "p90": 845,
+      "min": 43,
+      "max": 2272,
+      "tok_per_char": 0.2916,
+      "train_tokens": 927300,
+      "val_tokens": 21577,
+      "proposal_est_tok_per_row": 430,
+      "delta_pct": 10.3,
+      "flag": "PASS (within ±25%)",
+      "note": "text_of picks the 'output' field; rows are instruction+code-answer pairs"
+    }
+  },
+  "gate_incident_audit": {
+    "summary": "starcoderdata content reads 403 GatedRepoError at first probe (2026-09-09 ~18:25 UTC) despite valid HF_TOKEN (whoami OK user=ahmadsy): 'restricted and you are not in the authorized list'. Metadata was public (dataset_info gated=auto, 865 siblings; ls 59 parquet files in python/; stat train-00000 = 399,133,539 B). 2/2 retries used then; recorded FAIL in rev 1. The 2026-09-06 'verified unlockable' evidence had covered the-stack-smol only. User accepted the terms on the Hub page (~19:00 UTC); re-probe then returned a live row and the full 2,000-row measurement completed.",
+    "lesson": "gated=auto grants only AFTER the per-repo accept click - a valid token proves identity, not access; verify with a 1-row content probe per source on prep day"
+  },
+  "cross_source_dedup": {
+    "method": "SHA1 per row over the four measured 2k samples; first-wins global pass in mix order",
+    "rows_scanned": 8000,
+    "within_source_dups": {
+      "stack_smol": 0,
+      "starcoderdata": 0,
+      "csn": 0,
+      "evol": 0
+    },
+    "pairwise_intersections": {
+      "stack_smol|starcoderdata": 0,
+      "stack_smol|csn": 0,
+      "stack_smol|evol": 0,
+      "starcoderdata|csn": 0,
+      "starcoderdata|evol": 0,
+      "csn|evol": 0
+    },
+    "cross_source_dup_rows_measured": 0,
+    "cross_source_dup_rate_measured": 0,
+    "csn_starcoderdata_overlap_risk": "NOT OBSERVED at 2k-row scale (proposal §5.11 expected the CSN<->starcoderdata risk; 0 intersections; the shared-SHA1 machinery in mix mode will re-check at full scale)"
+  },
+  "sizing_arithmetic": {
+    "measured_tok_per_row": {
+      "stack_smol": 2717.2,
+      "starcoderdata": 2345.7,
+      "csn": 271.8,
+      "evol": 474.4
+    },
+    "as_configured_target_rows": {
+      "stack_smol": 10000,
+      "starcoderdata": 200000,
+      "csn": 15000,
+      "evol": 5000
+    },
+    "as_configured_tokens": {
+      "stack_smol": 27172000,
+      "starcoderdata": 469140000,
+      "csn": 4077000,
+      "evol": 2372000
+    },
+    "as_configured_total_tokens": 502761000,
+    "as_configured_over_budget_x": 3.75,
+    "as_configured_starcoder_token_share_pct": 93.3,
+    "option_A_token_proportional_30_55_10_5_at_134M_with_smol_capped_10k": {
+      "note": "smol physically caps at 10,000 python rows = 27.172M tok (20.3%); remaining 106.828M split 55:10:5",
+      "rows": {
+        "stack_smol": 10000,
+        "starcoderdata": 35778,
+        "csn": 56150,
+        "evol": 16091
+      },
+      "tokens": {
+        "stack_smol": 27172000,
+        "starcoderdata": 83923735,
+        "csn": 15260570,
+        "evol": 7632760
+      },
+      "total_tokens": 133989065,
+      "steps_at_32768": 4090
+    },
+    "option_B_keep_other_rows_resize_starcoder_to_134M": {
+      "note": "keep target_rows 10000/15000/5000; starcoder = (134,000,000 - 33,621,000) / 2345.7",
+      "rows": {
+        "stack_smol": 10000,
+        "starcoderdata": 42795,
+        "csn": 15000,
+        "evol": 5000
+      },
+      "total_tokens": 134005231,
+      "starcoder_token_share_pct": 74.9,
+      "steps_at_32768": 4090
+    },
+    "option_C_pure_55pct_share_for_starcoder": {
+      "note": "73.7M / 2345.7 = 31,411 rows; total then 107.32M (under budget; only consistent if smol share is also re-thought)",
+      "rows_starcoder": 31411,
+      "total_tokens": 107301983,
+      "steps_at_32768": 3275
+    },
+    "rows_yield_note": "kept/seen = 0.958 (smol), 0.947 (starcoder), 0.958 (csn), 0.924 (evol) at min_chars 200 - request ~5% more rows than the kept target",
+    "decision_note": "USER DECISION pending (run-gated): the config currently carries 200000 starcoder rows = 469.1M tokens (3.75x the 134M budget, 93.3% token share) - pick option A/B/C or another split before the real prep"
+  },
+  "wiring_evidence": {
+    "legacy_regression": "PRE-edit and POST-edit 5-row runs (data/legacy_check/legacy_regression.yaml, smoke chain, rows:5, NO target_rows) produced BYTE-IDENTICAL data outputs (sha256: source.txt 06EEF883…, train.jsonl 6D7AD77E…, val.jsonl 6625EB0F…); only additive raw/source_stats.json appeared",
+    "fallthrough_regression": "fake-dataset-first config fell through to TinyCode (4 train + 1 val), exit 0, both candidates recorded in source_stats.json",
+    "mix_zero_network_test": "two local candidates sharing one file: shared SHA1 set proven (source 2 dropped A/B/C as cross-source dups, kept only D); totals kept 4 / seen 11 / dups 5 / rate 0.454545 exactly as hand-computed",
+    "mix_refusal_test": "target_rows on only SOME candidates -> SystemExit 'mix mode requires target_rows on EVERY dataset_candidates entry' (exit 1)",
+    "mix_live_test": "4 real candidates, tiny targets: stack-smol via data_dir OK (29+1), starcoderdata 403 recorded + run CONTINUED (exit 0, pre-acceptance), csn OK (29+1), evol OK (19+1); totals 80 kept from 86 seen",
+    "next_pretrain_validation": "19/19 PASS then updated for data_dir forms: schema == target.yaml key sets; model dims == pilot dims @ctx 1024; CPU build 100.7M params; 4100 x 32,768 = 134,348,800; save_steps(100) % eval_steps(100) == 0; optim adamw_bnb_8bit; stack-smol AND starcoderdata candidates use data_dir (both verified by live 1-row probes)",
+    "starcoder_measure_run": "2,000 rows via data_dir: python, background pwsh job pwsh-5, EXIT=0, 1960 train + 40 val, well under the 20-min/2-GB policy (log: data/md_measure/starcoderdata/prepare.log)"
+  },
+  "failures": []
+}

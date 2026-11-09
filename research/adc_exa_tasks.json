@@ -1,0 +1,66 @@
+[
+  {
+    "kind": "search",
+    "slug": "adc_tashkeela_benchmarks",
+    "query": "Arabic diacritization dataset benchmark Tashkeela WikiNews Fadel AliOsm comparison",
+    "num": 10,
+    "type": "auto"
+  },
+  {
+    "kind": "search",
+    "slug": "adc_sadeed_2025",
+    "query": "SadeedDiac-25 Misraj Arabic diacritization shared task dataset",
+    "num": 8,
+    "type": "auto"
+  },
+  {
+    "kind": "search",
+    "slug": "adc_arabicdiac2025",
+    "query": "ArabicDIAC 2025 shared task Arabic diacritization NORA OMDataset",
+    "num": 10,
+    "type": "auto"
+  },
+  {
+    "kind": "search",
+    "slug": "adc_raw_arabic_lm",
+    "query": "Arabic raw text corpus pretraining MSA open license mC4 OSCAR arabica QLRD Almehrar",
+    "num": 10,
+    "type": "auto"
+  },
+  {
+    "kind": "search",
+    "slug": "adc_quran_classical",
+    "query": "Tanzil Quranic Arabic Corpus KACST Arabic Language Database classical Arabic corpus license",
+    "num": 10,
+    "type": "auto"
+  },
+  {
+    "kind": "search",
+    "slug": "adc_morph_analyzers",
+    "query": "CAMeL Tools morphological analyzer Farasa Arabic dialectal corpora EDBSA Zaebuc dialect benchmark",
+    "num": 10,
+    "type": "auto"
+  },
+  {
+    "kind": "search",
+    "slug": "adc_arabic_wiki_dumps",
+    "query": "arabic wikipedia dump Hugging Face wiki40a OSCAR race Alpaca arabic AraTweets dataset",
+    "num": 10,
+    "type": "auto"
+  },
+  {
+    "kind": "answer",
+    "slug": "adc_answer_big_vocalized",
+    "query": "What are the largest publicly available fully vocalized Classical Arabic corpora suitable for training a character-level language model? Which Arabic diacritization datasets already stage corpora on Hugging Face, what corpora exist beyond 100MB vocalized, and how are Arabic diacritization corpora like Tashkeela or Wikinews derived? Answer briefly."
+  },
+  {
+    "kind": "contents",
+    "slug": "adc_vocalized_eval",
+    "urls": [
+      "https://huggingface.co/datasets/effective-policy/vocalized-eval",
+      "https://huggingface.co/datasets/hplkrd/Sadeed_Diac",
+      "https://huggingface.co/datasets/Ahmed-SS/m3-ar-speech-diacr-lm"
+    ],
+    "max_characters": 5000
+  }
+]

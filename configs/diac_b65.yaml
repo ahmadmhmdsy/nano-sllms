@@ -1,0 +1,22 @@
+# OPTION B (user decision 2026-09-12): capacity scale-up 20L x 512h
+# (~76M params, vs v2b's 30M) on the SAME matched-128-window corpus (tokens_phase
+# = v2b, zero re-prep). Hypothesis under test: v2b's gate plateau was a
+# capability ceiling, not a data ceiling. Fits 6 GB fp16 at ctx 128.
+phase: b65
+tokens_phase: v2b
+model:
+  hidden: 512
+  layers: 20
+  n_heads: 8
+  n_kv: 2
+  ffn: 2048
+  ctx: 128
+lr: 1.5e-4
+weight_decay: 0.1
+batch_size: 32
+accum: 1
+total_steps: 30000
+save_every: 500
+log_every: 100
+eval_every: 500
+early_stop_patience: 12

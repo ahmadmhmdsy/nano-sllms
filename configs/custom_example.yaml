@@ -1,0 +1,73 @@
+# TEMPLATE: train YOUR OWN model on YOUR OWN data - no code changes needed.
+# Copy to configs/<your_name>.yaml, edit the marked fields, then run the
+# standard pipeline (README section "Train your own model on your own data"):
+#   sanity_check -> prepare_data -> tokenize_data -> train -> eval -> infer
+# Every script is config-driven: name + the dir keys below pick
+# runs/<name>/ and data/<name>/ paths, so parallel phases never collide.
+name: custom_example
+
+# Any HF tokenizer works (vocab_size is the embedding budget; keep
+# vocab_size >= the tokenizer's vocab - train.py takes the max automatically).
+tokenizer:
+  name: codellama/CodeLlama-7b-hf
+  vocab_size: 32768
+
+# Architecture (plain GQA decoder - PLAN.md A7). Scale freely within the M1
+# VRAM discipline: the 16L/1024 target measured 4.24 GB peak on the 8 GB card
+# at ctx 1024 (batch 1 + grad-ckpt). Size rule from PLAN section 3:
+# params ~ V*d + L*(4*d^2 + 3*d*ffn).
+model:
+  layers: 12
+  hidden: 768
+  heads: 12
+  kv_heads: 4
+  ffn: 2048
+  ctx: 512
+  dropout: 0.0
+  tie_embeddings: true
+
+data:
+  # Candidates are tried IN ORDER; the first that yields enough rows wins.
+  # (a) HF dataset (streamed, ungated only - see MEMORY.md for the gated list):
+  dataset_candidates:
+    - name: code-search-net/code_search_net
+      config: python
+  # (b) YOUR LOCAL FILE - .jsonl (one {"text": ...} per line), .json (list of
+  # objects), .txt (one row per line) or .csv (text-ish column). Path is
+  # relative to the repo root:
+  #    - path: data/custom_example/raw/my_data.jsonl
+  rows: 20000
+  val_fraction: 0.02
+  dedupe: true
+  min_chars: 200
+  shard_tokens: 8000000
+  raw_dir: data/custom_example/raw
+  tokens_dir: data/custom_example/tokens
+
+train:
+  output_dir: runs/custom_example
+  final_dir: runs/custom_example/final
+  max_steps: 3000
+  batch: 1
+  eval_batch: 4
+  accum: 32
+  lr: 4.0e-4
+  scheduler: cosine
+  warmup_steps: 150
+  weight_decay: 0.1
+  max_grad_norm: 1.0
+  logging_steps: 50
+  eval_steps: 500
+  save_steps: 500
+  save_total_limit: 3
+  fp16: true
+  grad_ckpt: true
+  optim: adamw_torch
+  dataloader_num_workers: 0
+  seed: 42
+
+eval:
+  max_new_tokens: 64
+  prompts:
+    - "def fibonacci(n):"
+    - "class Stack:"

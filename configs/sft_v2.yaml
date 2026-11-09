@@ -1,0 +1,73 @@
+# SFT v2 (TASKS row 19): re-SFT of the M3 target model on the minimax3
+# distillation corpus (26,469 pairs, 4 shapes: instruction/code, completion,
+# bugfix, reasoning; combined/all_train.jsonl). Same methodology as Tier 1
+# (configs/sft_t1.yaml): base runs/target/final, prompt-masked pairs via
+# sft_data.py, ast-filter, CSN forgetting-guard eval.
+# GATE: never while another training run is live on the GPU.
+name: sft_v2
+
+base_model: runs/target/final
+
+tokenizer:
+  name: codellama/CodeLlama-7b-hf
+  vocab_size: 32768
+  # CodeLlama ships no pad token -> sft.py sets pad = eos.
+
+model:
+  # T's dims live in the checkpoint's config.json; ctx here is T's TRAINED
+  # context (1024) - eval.py packs the CSN val shards at this ctx for the
+  # forgetting-guard regression check. SFT itself trains at sft.ctx = 512.
+  ctx: 1024
+
+data:
+  # minimax3 distillation corpus (local pairs file; sft_data.py local path)
+  dataset: data/distillation_data/minimax3/combined/all_train.jsonl
+  raw_dir: data/sft/minimax3           # source.txt, meta.json, val_instructions.jsonl
+  dataset_dir: data/sft/minimax3/ds
+  # CSN val shards for the forgetting-guard regression check (same gate as T1):
+  tokens_dir: data/target/tokens
+  rows: 25000
+  val_fraction: 0.02
+  # minimax3 pairs are intentionally shorter than Evol-Instruct traces
+  # (bugfix diffs, completions) - the 200-char T1 floor dropped 81% of the
+  # corpus; the corpus is already teacher-validated + deduped upstream.
+  min_chars: 30
+  min_instruction_chars: 10
+  dedupe: true
+  ast_filter: true
+  template: "### Instruction:\n{instruction}\n### Response:\n"
+
+sft:
+  ctx: 512
+  pilot_rows: 5000
+
+train:
+  output_dir: runs/sft_v2
+  final_dir: runs/sft_v2/final
+  epochs: 2                # ~25k x 2 / 16 accum = ~3.1k steps
+  batch: 1
+  eval_batch: 4
+  accum: 16
+  lr: 3.0e-5               # same as T1 (SFT LR << pretraining 4e-4)
+  scheduler: cosine
+  warmup_steps: 100
+  weight_decay: 0.1
+  max_grad_norm: 1.0
+  logging_steps: 50
+  eval_steps: 250
+  save_steps: 250
+  save_total_limit: 3
+  fp16: true
+  grad_ckpt: true
+  optim: adamw_torch
+  dataloader_num_workers: 0
+  seed: 42
+
+eval:
+  max_new_tokens: 256
+  instructions_file: data/sft/minimax3/val_instructions.jsonl
+  n_instructions: 50
+  sample_temperature: 0.8
+  prompts:
+    - "### Instruction:\nWrite a Python function that returns the nth Fibonacci number.\n### Response:\n"
+    - "### Instruction:\nWrite a Python class that implements a stack with push, pop and peek.\n### Response:\n"

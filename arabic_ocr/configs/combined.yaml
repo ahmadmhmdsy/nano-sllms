@@ -1,0 +1,40 @@
+# Combined data training config for Arabic OCR
+name: combined
+
+model:
+  type: vit_decoder
+  patch_size: 16
+  image_height: 48
+  image_width: 256
+  vit_layers: 6  # Deeper ViT
+  vit_hidden: 384  # Larger hidden
+  vit_heads: 6
+  vit_ffn: 1536
+  decoder_layers: 6  # Deeper decoder
+  decoder_hidden: 384
+  decoder_heads: 6
+  vocab_size: 256
+  max_seq_len: 64
+  dropout: 0.1
+
+data:
+  train_dir: data/combined/train
+  val_dir: data/combined/val
+  batch_size: 32
+  num_workers: 4
+  image_height: 48
+  image_width: 256
+  augment: true
+
+train:
+  epochs: 30
+  lr: 0.0001
+  weight_decay: 0.01
+  max_grad_norm: 1.0
+  save_dir: runs/combined
+  log_interval: 50
+  eval_interval: 1
+
+eval:
+  batch_size: 64
+  max_new_tokens: 64

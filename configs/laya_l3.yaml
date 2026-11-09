@@ -1,0 +1,33 @@
+# Laya-line L3 (E-65): from-scratch ~50M BERT encoder, domain-matched MLM pretrain.
+# Pre-registration: research/EXPERIMENTS.md E-65 (2026-09-22, user-approved).
+# NOTE: ladder keys live in configs/laya_l3_ladder.yaml (no duplicate keys).
+corpus_bin: data/laya/l3_corpus/train.bin
+heldout_bin: data/laya/l3_corpus/heldout.bin
+tokenizer: microsoft/MiniLM-L12-H384-uncased
+vocab_size: 30522
+hidden: 512
+layers: 6
+heads: 8
+ffn: 2048
+max_pos: 512
+seq: 256
+micro_batch: 32   # 48 OOM'd in backward (vocab logits 1.5GB fp32); 32 fits 7.2GiB cap
+grad_accum: 1
+lr: 6.0e-4
+warmup_steps: 1000
+total_tokens: 3.0e+8
+weight_decay: 0.01
+mask_prob: 0.15
+out_dir: runs/laya/l3
+save_every_steps: 1000
+log_every_steps: 200
+eval_every_steps: 1000
+vram_fraction: 0.9
+# --- scheduled bench monitoring (unseen data, several metrics) ---
+probe_every_steps: 4000
+probe_train_items: 2000
+probe_epochs: 2
+probe_micro: 8
+bench_log: runs/laya/l3/bench_log.jsonl
+typed_train: data/laya/typed_decisions/train.pt
+typed_test: data/laya/typed_decisions/test.pt

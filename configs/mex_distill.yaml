@@ -1,0 +1,63 @@
+# ME-mex_distill: MU1 arm D committee-distilled student (EXPERIMENTS row
+# E-29). EXACT architecture + params of mex_control.yaml (784,320 params,
+# hidden 160); train block differs only in max_steps/schedule/save layout,
+# plus the kd block. Schema = configs/smoke.yaml.
+name: mex_distill
+
+tokenizer:
+  name: data/mex/tokenizer     # local dir saved by Task 1 (AutoTokenizer-compatible)
+  vocab_size: 97
+
+model:
+  layers: 2
+  hidden: 160
+  heads: 4
+  kv_heads: 2
+  ffn: 640
+  ctx: 96
+  dropout: 0.0
+  tie_embeddings: true
+
+data:
+  dataset_candidates:
+    - name: local-mex-control   # unused by train.py: shards are pre-packed
+  rows: 0
+  val_fraction: 0.02
+  shard_tokens: 2000000
+  raw_dir: data/mex/control
+  tokens_dir: data/mex/control/tokens
+
+train:
+  output_dir: runs/mex/distill_student
+  final_dir: runs/mex/distill_student/final
+  max_steps: 12000
+  batch: 8
+  eval_batch: 16
+  accum: 4
+  lr: 1.0e-3
+  scheduler: cosine
+  warmup_steps: 20
+  weight_decay: 0.1
+  max_grad_norm: 1.0
+  logging_steps: 50
+  eval_steps: 500
+  save_steps: 500
+  save_total_limit: 3
+  fp16: true
+  grad_ckpt: false
+  optim: adamw_bnb_8bit
+  dataloader_num_workers: 0
+  seed: 42
+
+# Committee distillation (mex/src/kd.py). teacher_cache is built by
+# mex/scripts/distill_cache.py BEFORE the run: fp32 teacher-ensemble logits
+# for every train block, [n_blocks, ctx, vocab]. alpha 0.5 / temperature
+# 1.0 per EXPERIMENTS row E-29 (levers #2/#10 kept at 0.5/0.5).
+kd:
+  teacher_cache: runs/mex/distill_cache.npy
+  # teacher dirs are fixed by construction (12K expert finals archive):
+  teacher_root: runs/mex/archive_12000
+  teacher_experts: [x1, x2, x3, x4]
+  teacher_configs: [configs/mex_x1.yaml, configs/mex_x2.yaml, configs/mex_x3.yaml, configs/mex_x4.yaml]
+  alpha: 0.5
+  temperature: 1.0

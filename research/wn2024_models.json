@@ -1,0 +1,42 @@
+[
+  {
+    "model": "zmahood",
+    "pred": "models/e19/wn2024.zmahood.pred.txt"
+  },
+  {
+    "model": "mishkala",
+    "pred": "models/e19/wn2024.mishkala.pred.txt"
+  },
+  {
+    "model": "e63s_s4_12l160",
+    "pred": "models/e19/wn2024.e63s_s4_12l160.pred.txt"
+  },
+  {
+    "model": "stage2b2500",
+    "pred": "models/e19/wn2024.gold.raw.pred.txt"
+  },
+  {
+    "model": "e63s_s3_8l272",
+    "pred": "models/e19/wn2024.e63s_s3_8l272.pred.txt"
+  },
+  {
+    "model": "e63s_s5_10l128",
+    "pred": "models/e19/wn2024.e63s_s5_10l128.pred.txt"
+  },
+  {
+    "model": "e63s_s2_10l272",
+    "pred": "models/e19/wn2024.e63s_s2_10l272.pred.txt"
+  },
+  {
+    "model": "e63s_s1_12l272",
+    "pred": "models/e19/wn2024.e63s_s1_12l272.pred.txt"
+  },
+  {
+    "model": "e63s_s6_8l96",
+    "pred": "models/e19/wn2024.e63s_s6_8l96.pred.txt"
+  },
+  {
+    "model": "e63s_s7_18l64",
+    "pred": "runs/diac/e63s_s7_18l64/final/pred_wikinews2024.txt"
+  }
+]

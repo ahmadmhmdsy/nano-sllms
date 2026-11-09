@@ -1,0 +1,66 @@
+[
+  {
+    "kind": "search",
+    "slug": "milestone_d_stack_v2_overview",
+    "query": "bigcode the-stack-v2 dataset huggingface size languages parquet files license",
+    "num": 8,
+    "type": "auto"
+  },
+  {
+    "kind": "search",
+    "slug": "milestone_d_stack_v2_python_subset",
+    "query": "the-stack-v2 python subset size tokens dedup near-dedupe bigcode",
+    "num": 8,
+    "type": "auto"
+  },
+  {
+    "kind": "search",
+    "slug": "milestone_d_stack_smol_overview",
+    "query": "bigcode the-stack-smol huggingface dataset languages size rows",
+    "num": 8,
+    "type": "auto"
+  },
+  {
+    "kind": "search",
+    "slug": "milestone_d_starcoderdata_overview",
+    "query": "bigcode starcoderdata huggingface dataset languages parquet python size",
+    "num": 8,
+    "type": "auto"
+  },
+  {
+    "kind": "search",
+    "slug": "milestone_d_stack_v2_license",
+    "query": "the-stack-v2 license permissiveness code-pmop stack-v2-train-full-ids",
+    "num": 6,
+    "type": "auto"
+  },
+  {
+    "kind": "answer",
+    "slug": "milestone_d_answer_stackmix",
+    "query": "For pretraining a small 100M-parameter code LLM, what is the smallest practical mix of bigcode/the-stack-v2 (or the-stack-smol) python data and starcoderdata that yields a useful dataset under ~3 GB raw download on disk? Include dedup, license filtering, rows-per-token estimates, and best streaming approach."
+  },
+  {
+    "kind": "contents",
+    "slug": "milestone_d_stack_v2_card",
+    "urls": [
+      "https://huggingface.co/datasets/bigcode/the-stack-v2"
+    ],
+    "max_characters": 9000
+  },
+  {
+    "kind": "contents",
+    "slug": "milestone_d_stack_smol_card",
+    "urls": [
+      "https://huggingface.co/datasets/bigcode/the-stack-smol"
+    ],
+    "max_characters": 9000
+  },
+  {
+    "kind": "contents",
+    "slug": "milestone_d_starcoderdata_card",
+    "urls": [
+      "https://huggingface.co/datasets/bigcode/starcoderdata"
+    ],
+    "max_characters": 9000
+  }
+]

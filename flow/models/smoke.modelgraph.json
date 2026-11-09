@@ -1,0 +1,351 @@
+{
+  "format": "model/0.1",
+  "name": "smoke",
+  "nodes": [
+    {
+      "id": "tokens",
+      "kind": "input",
+      "props": {
+        "vocab_size": 32768,
+        "ctx": 256
+      },
+      "position": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "embed",
+      "kind": "embedding",
+      "props": {
+        "vocab_size": 32768,
+        "d": 256
+      },
+      "position": {
+        "x": 220,
+        "y": 0
+      }
+    },
+    {
+      "id": "stack",
+      "kind": "layerStack",
+      "props": {
+        "depth": 4,
+        "d": 256,
+        "heads": 4,
+        "kv_heads": 2,
+        "ffn": 1024
+      },
+      "position": {
+        "x": 460,
+        "y": 460
+      }
+    },
+    {
+      "id": "rope1",
+      "kind": "rope",
+      "props": {},
+      "position": {
+        "x": 460,
+        "y": 120
+      }
+    },
+    {
+      "id": "attn1",
+      "kind": "gqaAttention",
+      "props": {
+        "heads": 4,
+        "kv_heads": 2
+      },
+      "position": {
+        "x": 680,
+        "y": 120
+      }
+    },
+    {
+      "id": "ffn1",
+      "kind": "swigluFfn",
+      "props": {
+        "ffn": 1024
+      },
+      "position": {
+        "x": 920,
+        "y": 120
+      }
+    },
+    {
+      "id": "rope2",
+      "kind": "rope",
+      "props": {},
+      "position": {
+        "x": 460,
+        "y": 240
+      }
+    },
+    {
+      "id": "attn2",
+      "kind": "gqaAttention",
+      "props": {
+        "heads": 4,
+        "kv_heads": 2
+      },
+      "position": {
+        "x": 680,
+        "y": 240
+      }
+    },
+    {
+      "id": "ffn2",
+      "kind": "swigluFfn",
+      "props": {
+        "ffn": 1024
+      },
+      "position": {
+        "x": 920,
+        "y": 240
+      }
+    },
+    {
+      "id": "rope3",
+      "kind": "rope",
+      "props": {},
+      "position": {
+        "x": 460,
+        "y": 360
+      }
+    },
+    {
+      "id": "attn3",
+      "kind": "gqaAttention",
+      "props": {
+        "heads": 4,
+        "kv_heads": 2
+      },
+      "position": {
+        "x": 680,
+        "y": 360
+      }
+    },
+    {
+      "id": "ffn3",
+      "kind": "swigluFfn",
+      "props": {
+        "ffn": 1024
+      },
+      "position": {
+        "x": 920,
+        "y": 360
+      }
+    },
+    {
+      "id": "rope4",
+      "kind": "rope",
+      "props": {},
+      "position": {
+        "x": 460,
+        "y": 480
+      }
+    },
+    {
+      "id": "attn4",
+      "kind": "gqaAttention",
+      "props": {
+        "heads": 4,
+        "kv_heads": 2
+      },
+      "position": {
+        "x": 680,
+        "y": 480
+      }
+    },
+    {
+      "id": "ffn4",
+      "kind": "swigluFfn",
+      "props": {
+        "ffn": 1024
+      },
+      "position": {
+        "x": 920,
+        "y": 480
+      }
+    },
+    {
+      "id": "head",
+      "kind": "lmHead",
+      "props": {
+        "vocab_size": 32768,
+        "tied": true
+      },
+      "position": {
+        "x": 1140,
+        "y": 0
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "w-tokens-embed",
+      "from": "tokens",
+      "to": "embed",
+      "fromPort": "tokens",
+      "toPort": "tokens"
+    },
+    {
+      "id": "w-embed-stack",
+      "from": "embed",
+      "to": "stack",
+      "fromPort": "out",
+      "toPort": "x"
+    },
+    {
+      "id": "w-emb-rope1",
+      "from": "embed",
+      "to": "rope1",
+      "fromPort": "out",
+      "toPort": "x"
+    },
+    {
+      "id": "w-rope-q1",
+      "from": "rope1",
+      "to": "attn1",
+      "fromPort": "out",
+      "toPort": "q"
+    },
+    {
+      "id": "w-rope-k1",
+      "from": "rope1",
+      "to": "attn1",
+      "fromPort": "out",
+      "toPort": "k"
+    },
+    {
+      "id": "w-rope-v1",
+      "from": "rope1",
+      "to": "attn1",
+      "fromPort": "out",
+      "toPort": "v"
+    },
+    {
+      "id": "w-attn-ffn1",
+      "from": "attn1",
+      "to": "ffn1",
+      "fromPort": "out",
+      "toPort": "x"
+    },
+    {
+      "id": "w-emb-rope2",
+      "from": "embed",
+      "to": "rope2",
+      "fromPort": "out",
+      "toPort": "x"
+    },
+    {
+      "id": "w-rope-q2",
+      "from": "rope2",
+      "to": "attn2",
+      "fromPort": "out",
+      "toPort": "q"
+    },
+    {
+      "id": "w-rope-k2",
+      "from": "rope2",
+      "to": "attn2",
+      "fromPort": "out",
+      "toPort": "k"
+    },
+    {
+      "id": "w-rope-v2",
+      "from": "rope2",
+      "to": "attn2",
+      "fromPort": "out",
+      "toPort": "v"
+    },
+    {
+      "id": "w-attn-ffn2",
+      "from": "attn2",
+      "to": "ffn2",
+      "fromPort": "out",
+      "toPort": "x"
+    },
+    {
+      "id": "w-emb-rope3",
+      "from": "embed",
+      "to": "rope3",
+      "fromPort": "out",
+      "toPort": "x"
+    },
+    {
+      "id": "w-rope-q3",
+      "from": "rope3",
+      "to": "attn3",
+      "fromPort": "out",
+      "toPort": "q"
+    },
+    {
+      "id": "w-rope-k3",
+      "from": "rope3",
+      "to": "attn3",
+      "fromPort": "out",
+      "toPort": "k"
+    },
+    {
+      "id": "w-rope-v3",
+      "from": "rope3",
+      "to": "attn3",
+      "fromPort": "out",
+      "toPort": "v"
+    },
+    {
+      "id": "w-attn-ffn3",
+      "from": "attn3",
+      "to": "ffn3",
+      "fromPort": "out",
+      "toPort": "x"
+    },
+    {
+      "id": "w-emb-rope4",
+      "from": "embed",
+      "to": "rope4",
+      "fromPort": "out",
+      "toPort": "x"
+    },
+    {
+      "id": "w-rope-q4",
+      "from": "rope4",
+      "to": "attn4",
+      "fromPort": "out",
+      "toPort": "q"
+    },
+    {
+      "id": "w-rope-k4",
+      "from": "rope4",
+      "to": "attn4",
+      "fromPort": "out",
+      "toPort": "k"
+    },
+    {
+      "id": "w-rope-v4",
+      "from": "rope4",
+      "to": "attn4",
+      "fromPort": "out",
+      "toPort": "v"
+    },
+    {
+      "id": "w-attn-ffn4",
+      "from": "attn4",
+      "to": "ffn4",
+      "fromPort": "out",
+      "toPort": "x"
+    },
+    {
+      "id": "w-ffn-head",
+      "from": "ffn4",
+      "to": "head",
+      "fromPort": "out",
+      "toPort": "hidden"
+    }
+  ],
+  "meta": {
+    "description": "nano_SLMs smoke decoder (dense GQA + SwiGLU + tied embeddings), mirrored from src/model.py build_config"
+  }
+}

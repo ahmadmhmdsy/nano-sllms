@@ -1,0 +1,804 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Decoder Model Explorer — nano_SLMs · SmolLM2-135M · Qwen3.8-Flash-Next</title>
+<style>
+:root{
+  --bg:#0f0f13; --panel:#16161d; --panel2:#1c1c26; --line:#2a2a36; --line2:#3a3a48;
+  --ink:#e9e7e2; --dim:#9a97a3; --faint:#6a6776;
+  --embed:#56c8d8; --attn:#e0a458; --ffn:#a78bdc; --norm:#8a8f98; --out:#e8635a; --res:#7fc8a9;
+  --mono:ui-monospace,'Cascadia Mono',Consolas,monospace;
+  --serif:Georgia,'Iowan Old Style','Times New Roman',serif;
+  --sans:system-ui,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.6 var(--sans);
+  background-image:radial-gradient(1200px 500px at 70% -10%,rgba(167,139,220,.07),transparent 60%),radial-gradient(900px 420px at 10% 0%,rgba(86,200,216,.05),transparent 55%)}
+main{max-width:1460px;margin:0 auto;padding:0 26px 60px}
+header{max-width:1460px;margin:0 auto;padding:44px 26px 8px}
+.eyebrow{font:11px/1 var(--mono);letter-spacing:.22em;color:var(--faint);text-transform:uppercase;margin-bottom:14px}
+h1{font:600 46px/1.08 var(--serif);letter-spacing:-.01em;margin:0 0 14px}
+h1 .amp{color:var(--ffn)}
+.thesis{max-width:920px;color:var(--dim);font-size:16.5px}
+.thesis b{color:var(--ink)}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:18px;font:12px var(--mono)}
+.legend span{display:inline-flex;align-items:center;gap:7px;color:var(--dim)}
+.legend i{width:11px;height:11px;border-radius:3px;display:inline-block}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:26px;margin-top:26px}
+@media(max-width:1200px){.grid{grid-template-columns:1fr}}
+.cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px;min-width:0}
+@media(max-width:1350px){.cols{grid-template-columns:1fr 1fr}}
+@media(max-width:980px){.cols{grid-template-columns:1fr}}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.two.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media(max-width:1350px){.two.three{grid-template-columns:1fr 1fr 1fr}}
+@media(max-width:980px){.two{grid-template-columns:1fr}}
+.mcard{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 14px 12px;min-width:0}
+.mhead h2{font:600 21px/1.2 var(--serif);margin:0 0 2px}
+.mhead .sub{font:12px/1.5 var(--mono);color:var(--dim)}
+.mhead .badges{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 4px}
+.badge{font:10.5px var(--mono);letter-spacing:.06em;border:1px solid var(--line2);border-radius:20px;padding:3px 9px;color:var(--dim)}
+.badge.hot{color:#0f0f13;border:0}
+.mcard svg{display:block;width:100%;height:auto}
+svg text{user-select:none}
+.blk{cursor:pointer;outline:none}
+.blk:hover .box{stroke:var(--ink)}
+.blk.sel .box{stroke:var(--ink);stroke-width:2}
+.blk.live .box{stroke-width:2.4;filter:drop-shadow(0 0 6px rgba(255,255,255,.55))}
+.tick{cursor:pointer}
+.tick:hover{stroke-width:6}
+#detail{position:sticky;top:14px;align-self:start;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;min-height:420px}
+#detail .crumb{font:11px var(--mono);letter-spacing:.1em;color:var(--faint);text-transform:uppercase}
+#detail h3{font:600 24px/1.15 var(--serif);margin:6px 0 4px}
+#detail .tag{color:var(--dim);font-size:14px;margin:0 0 12px}
+.seg{display:inline-flex;border:1px solid var(--line2);border-radius:8px;overflow:hidden;margin:0 0 14px}
+.seg button{background:transparent;border:0;color:var(--dim);font:12px var(--mono);padding:6px 14px;cursor:pointer}
+.seg button.on{background:var(--panel2);color:var(--ink)}
+#detail .body p{margin:0 0 10px;font-size:14.5px}
+.mono{font-family:var(--mono)}
+.meter{margin:10px 0 2px;font:12px var(--mono);color:var(--dim)}
+.meter .bar{height:8px;border-radius:4px;background:#101017;border:1px solid var(--line);overflow:hidden;margin-top:5px}
+.meter .bar i{display:block;height:100%}
+.note{font-size:12.5px;color:var(--faint);border-left:2px solid var(--line2);padding-left:10px;margin-top:12px}
+section.block{margin-top:54px}
+h2.sec{font:600 30px/1.15 var(--serif);margin:0 0 4px}
+p.secd{color:var(--dim);max-width:940px;margin:0 0 18px}
+.demo{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.chip{font:13px var(--mono);background:var(--panel2);border:1px solid var(--line2);border-radius:20px;padding:6px 13px;cursor:pointer;color:var(--dim)}
+.chip.on{background:#e9e7e2;color:#101014;border-color:#e9e7e2;font-weight:700}
+.controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:16px}
+.controls button{background:var(--panel2);border:1px solid var(--line2);color:var(--ink);border-radius:8px;font:13px var(--mono);padding:7px 14px;cursor:pointer}
+.controls button:hover{border-color:var(--ink)}
+.controls select{background:var(--panel2);color:var(--ink);border:1px solid var(--line2);border-radius:8px;font:13px var(--mono);padding:7px}
+.simtag{font:10.5px var(--mono);letter-spacing:.14em;color:#d8a24a;border:1px dashed #6b5426;border-radius:6px;padding:4px 9px}
+.demo-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media(max-width:980px){.demo-grid{grid-template-columns:1fr}}
+.tracebox{background:#101017;border:1px solid var(--line);border-radius:10px;padding:14px;min-height:240px}
+.tracebox h4{margin:0 0 8px;font:12px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--faint);font-weight:600}
+#trace-step{font:600 17px var(--serif);margin:0 0 6px}
+#trace-txt{color:var(--dim);font-size:14px;margin:0 0 10px}
+.minis{display:flex;gap:18px;flex-wrap:wrap}
+.mini{flex:1;min-width:180px}
+.mini h5{margin:0 0 6px;font:11px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--faint);font-weight:500}
+.pbar{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.prow{display:grid;grid-template-columns:110px 1fr 48px;gap:10px;align-items:center;font:13px var(--mono)}
+.prow .lab{color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prow .track{background:#17171f;border-radius:5px;height:14px;overflow:hidden}
+.prow .fill{display:block;height:100%;width:0;transition:width .5s ease;background:var(--out)}
+.prow .pct{text-align:right;color:var(--dim)}
+.zones{display:flex;height:64px;border-radius:10px;overflow:hidden;border:1px solid var(--line2);margin:8px 0 6px}
+.zone{display:flex;flex-direction:column;justify-content:space-between;padding:8px 10px;font:11.5px var(--mono)}
+.zone small{color:rgba(255,255,255,.75)}
+.pshare{display:flex;height:34px;border-radius:8px;overflow:hidden;border:1px solid var(--line2);margin:6px 0 4px}
+.pshare div{display:flex;align-items:center;justify-content:center;font:11px var(--mono);color:#0f0f13;font-weight:700;white-space:nowrap;overflow:hidden}
+.ptit{font:12.5px var(--mono);color:var(--dim);margin:14px 0 4px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:9px 12px;text-align:left;vertical-align:top}
+th{font:11.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--dim);background:var(--panel2)}
+td .dim2{font:12px var(--mono);color:var(--dim)}
+ul.checks{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:8px 26px}
+ul.checks li{padding-left:26px;position:relative;color:var(--dim)}
+ul.checks li b{color:var(--ink)}
+ul.checks li::before{content:"+";position:absolute;left:2px;color:var(--res);font-family:var(--mono);font-weight:700}
+ul.diffs{list-style:none;padding:0;margin:0}
+ul.diffs li{padding:8px 0 8px 26px;position:relative;border-bottom:1px dashed var(--line);color:var(--dim)}
+ul.diffs li::before{content:"≠";position:absolute;left:2px;color:var(--attn);font-family:var(--mono);font-weight:700}
+footer{max-width:1460px;margin:50px auto 0;padding:22px 26px 40px;border-top:1px solid var(--line);color:var(--faint);font:12.5px/1.8 var(--mono)}
+footer a{color:var(--dim)}
+</style>
+</head>
+<body>
+<header>
+  <div class="eyebrow">Interactive architecture note · parameter counts computed from real configs · activations marked SIMULATED</div>
+  <h1>Two small decoders — and where the recipe goes next<span class="amp">.</span></h1>
+  <p class="thesis">Your <b>nano_SLMs · target</b> — 226.5M params, trained on Python code — and HuggingFace's <b>SmolLM2-135M</b> — 134.5M params, trained on general text — are the <b>same architecture family</b>: a Llama-style decoder-only transformer with GQA attention, RoPE, RMSNorm and SwiGLU. Alongside them sits <b>Qwen3.8-Flash-Next</b> — the open ~125B-preview of the <b>Qwen4 architecture</b>: the same skeleton evolved with hybrid linear attention and a 512-expert sparse MoE. All three stacks are drawn below, layer by layer. <b>Click any block</b> to open its story in the inspector, then <b>run a prompt</b> to watch a token travel.</p>
+  <div class="legend">
+    <span><i style="background:var(--embed)"></i>Input · embedding</span>
+    <span><i style="background:var(--attn)"></i>Attention · routing</span>
+    <span><i style="background:var(--ffn)"></i>FFN · knowledge</span>
+    <span><i style="background:var(--norm)"></i>Norm · stability</span>
+    <span><i style="background:var(--res)"></i>Residual · the highway</span>
+    <span><i style="background:var(--out)"></i>Output · prediction</span>
+  </div>
+</header>
+<main>
+<div class="grid">
+  <div class="cols">
+    <div class="mcard" id="col-nano"></div>
+    <div class="mcard" id="col-smollm2"></div>
+    <div class="mcard" id="col-qwen38"></div>
+  </div>
+  <aside id="detail">
+    <div class="crumb">block inspector</div>
+    <h3>Pick a block</h3>
+    <p class="tag">Click any shape in either diagram — token chips, the embedding table, a whole decoder layer, the attention or FFN step inside it, the knowledge band, the final norm, or the output head.</p>
+    <div class="note">Every number is drawn from the real specs: <span class="mono">configs/target.yaml</span> + <span class="mono">src/model.py</span> for nano_SLMs; HuggingFace's published <span class="mono">config.json</span> for SmolLM2-135M.</div>
+  </aside>
+</div>
+
+<section class="block" id="demo-sec">
+  <h2 class="sec">Watch a prompt travel</h2>
+  <p class="secd">A simulated forward pass: tokenize → embed → for every layer (norm → mixer → residual add → norm → FFN/experts → residual add) → final norm → LM head (tied in the two dense models, a separate head in Qwen) → softmax. Values are <b>illustrative</b>, shaped the way interpretability work describes real models: attention broad early and focused late, FFN activity peaking mid-depth, residual norm growing with depth.</p>
+  <div class="demo">
+    <div class="ptit"><span>Run on</span><span class="chips" id="demo-model"></span></div>
+    <div class="ptit"><span>Prompt</span><span class="chips" id="demo-prompts"></span></div>
+    <div class="controls">
+      <button id="btn-play">▶ Play</button>
+      <button id="btn-next">Next layer ⏭</button>
+      <button id="btn-reset">↺ Reset</button>
+      <select id="demo-speed"><option value="700">1× slow</option><option value="350" selected>2× normal</option><option value="160">4× fast</option></select>
+      <span class="simtag">SIMULATED ACTIVATIONS — NOT REAL INFERENCE</span>
+    </div>
+    <div class="demo-grid">
+      <div class="tracebox">
+        <h4>Trace</h4>
+        <p id="trace-step">Ready.</p>
+        <p id="trace-txt">Choose a prompt and press Play — the matching diagram lights up stage by stage. "Next layer" jumps between attention steps.</p>
+        <div class="minis">
+          <div class="mini"><h5>Residual stream ‖x‖ vs depth</h5><svg id="spark" width="100%" height="54" viewBox="0 0 300 54" preserveAspectRatio="none"></svg></div>
+          <div class="mini"><h5>Top-5 next token</h5><div class="pbar" id="pbars"><span style="color:var(--faint);font:12px var(--mono)">— appears after the final layer —</span></div></div>
+        </div>
+      </div>
+      <div class="tracebox">
+        <h4>At this layer · attention pattern (query = newest token)</h4>
+        <svg id="attgrid" width="100%" height="132" viewBox="0 0 320 132"></svg>
+        <h4 style="margin-top:12px">FFN memory slots firing (8 of thousands shown)</h4>
+        <svg id="ffnbars" width="100%" height="76" viewBox="0 0 320 76"></svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="block">
+  <h2 class="sec">Where the learning and knowledge live</h2>
+  <p class="secd">"Knowledge" is not a database — it is baked into the <b>weights</b> during training. Interpretability research (Geva et al. 2021: FFNs behave as key–value memories; Meng et al. 2022 "ROME": factual edits succeed in mid-layer FFNs) keeps finding the same depth profile in models like these. Treat it as a rule-of-thumb, not a per-layer measurement.</p>
+  <div class="two three">
+    <div class="mcard"><div id="kmap-nano"></div></div>
+    <div class="mcard"><div id="kmap-smollm2"></div></div>
+    <div class="mcard"><div id="kmap-qwen38"></div></div>
+  </div>
+  <div class="mcard" style="margin-top:22px;overflow-x:auto"><table id="ptable"></table></div>
+</section>
+
+<section class="block">
+  <h2 class="sec">Anything shared? — the two small ones: almost everything</h2>
+  <p class="secd">The punchline: SmolLM2-135M and your target model are <b>the same design</b> (Llama-family GQA decoder). They differ in scale, vocabulary, data and training — not in how they work. <b>Qwen3.8-Flash-Next</b> is the <b>next branch of the same family tree</b>: identical skeleton (decoder-only, pre-RMSNorm, residual stream, SiLU-gated expert FFNs, causal), with evolved organs — a 3:1 linear/full attention hybrid and 512-expert sparse MoE.</p>
+  <div class="two">
+    <div class="mcard" style="overflow-x:auto"><table id="spec-table"></table></div>
+    <div>
+      <div class="mcard" style="margin-bottom:22px"><div class="ptit"><span>Shared DNA</span></div><ul class="checks" id="sim-list"></ul></div>
+      <div class="mcard"><div class="ptit"><span>Where they differ</span></div><ul class="diffs" id="diff-list"></ul></div>
+    </div>
+  </div>
+</section>
+</main>
+<footer>
+  Sources &amp; honesty: nano_SLMs dims from <span class="mono">configs/target.yaml</span> + <span class="mono">src/model.py</span> (LlamaForCausalLM, SDPA, fp16); 226,526,208 params computed from those shapes (matches TASKS.md row 31 "226.5M"); ctx 1,024 pretrain, YaRN-extended to 4,096 in <span class="mono">runs/yarn_4096</span> (TASKS row 30). SmolLM2-135M dims from the published <a href="https://huggingface.co/HuggingFaceTB/SmolLM2-135M/raw/main/config.json">config.json</a>; 134,515,008 params computed from those shapes. Qwen3.8-Flash-Next dims from the published <a href="https://huggingface.co/Qwen/Qwen3.8-Flash-Next/raw/main/config.json">config.json</a> (released 2026-08-26; ≈125B total / ≈6B active per Qwen's announcement — text-stack math computed here from the config and consistent with both estimates; all its activations are equally SIMULATED). Depth-role bands and ALL activation numbers are educational approximations ("SIMULATED"), informed by Geva et al. 2021 (arXiv:2104.08696, FFN as key–value memory) and Meng et al. 2022 (arXiv:2202.05262, ROME mid-layer fact edits). Ġ / Ċ are tokenizer marks for space / newline. Single file · no dependencies · works offline.
+</footer>
+<script>
+"use strict";
+window.addEventListener("error",function(e){var d=document.createElement("div");d.id="jserr";d.style.cssText="position:fixed;top:0;left:0;background:#e8635a;color:#fff;font:11px monospace;padding:6px;z-index:99";d.textContent="JS-ERROR: "+e.message+" @ line "+(e.lineno||"?");document.body.appendChild(d);});
+window.addEventListener("unhandledrejection",function(e){var d=document.createElement("div");d.id="jsperr";d.style.cssText="position:fixed;top:20px;left:0;background:#e0a458;color:#000;font:11px monospace;padding:6px;z-index:99";d.textContent="PERR: "+e.reason;document.body.appendChild(d);});
+const MODELS = {
+  nano: {
+    key:"nano", name:"nano_SLMs · target", full:"LlamaForCausalLM (GQA decoder) — this repo",
+    layers:16, d:1024, heads:16, kv:4, ffn:3072, vocab:32768, ctx:"1,024 pretrain → 4,096 (YaRN)",
+    theta:"10,000", eps:"1e-5", prec:"fp16", impl:"PyTorch SDPA", tok:"CodeLlama tokenizer (32k, BPE)",
+    data:"CodeSearchNet Python + Evol-Instruct (KD / SFT runs on top)",
+    domain:"Python code", accent:"#56c8d8",
+    bands:{early:[1,5],mid:[6,11],late:[12,16]},
+    tokens:["def","Ġtop","_k","(","logits",",","Ġk","):"],
+    top1:"Ċ (newline)",
+    blurb:"Your trained flagship: a 16-layer GQA decoder for Python code. Every phase (S/P/T) and the KD/SFT tracks reuse this one architecture."
+  },
+  smollm2: {
+    key:"smollm2", name:"SmolLM2-135M", full:"LlamaForCausalLM — HuggingFaceTB",
+    layers:30, d:576, heads:9, kv:3, ffn:1536, vocab:49152, ctx:"8,192 native",
+    theta:"100,000", eps:"1e-5", prec:"bf16", impl:"HF transformers (SDPA)", tok:"SmolLM2 tokenizer (49k, BPE)",
+    data:"Public SmolLM2 mix: English web + code + math (multi-trillion-token recipe)",
+    domain:"General text · chat · knowledge", accent:"#e0a458",
+    bands:{early:[1,10],mid:[11,20],late:[21,30]},
+    tokens:["The","Ġcapital","Ġof","ĠFrance","Ġis"],
+    top1:"ĠParis", eps:"1e-5", arch:"dense",
+    blurb:"HuggingFace's small general-purpose chat model: the same skeleton as nano_SLMs, but deeper-and-narrower, with a bigger vocabulary and longer native context."
+  },
+  qwen38: {
+    key:"qwen38", name:"Qwen3.8-Flash-Next", full:"Qwen4ExpForConditionalGeneration — Qwen, 2026-08-26",
+    layers:48, d:2560, heads:24, kv:2, ffn:640, vocab:248320, ctx:"262,144 native (256K)",
+    theta:"10,000,000 · partial 25% · mRoPE", eps:"1e-6", prec:"bf16", arch:"hybrid",
+    experts:512, active:10, shared:1,
+    impl:"HF transformers (qwen4_exp)", tok:"Qwen tokenizer (248k + ngram parts)",
+    data:"Post-trained multimodal preview (text stack charted here)",
+    domain:"General · multimodal · long context", accent:"#e879a0",
+    bands:{early:[1,12],mid:[13,36],late:[37,48]},
+    tokens:["The","Ġcapital","Ġof","ĠFrance","Ġis"],
+    top1:"ĠParis",
+    blurb:"Alibaba's open preview of Qwen4: 48 layers mixing THREE GDN linear-attention layers with ONE gated full-attention layer (3:1), FFNs replaced by 512-expert sparse MoE (10 routed + 1 shared per token). ≈125B total, ≈6B active per token."
+  }
+};
+function headDim(M){return M.d/M.heads;}
+function kvDim(M){return M.kv*headDim(M);}
+function pEmbed(M){return M.vocab*M.d;}
+function pAttn(M){return 2*M.d*M.d + 2*M.d*kvDim(M);}
+function pFFN(M){return 3*M.d*M.ffn;}
+function pLayer(M){return pAttn(M)+pFFN(M)+2*M.d;}
+function pNorms(M){return (2*M.layers+1)*M.d;}
+function pTotal(M){return pEmbed(M)+M.layers*(pAttn(M)+pFFN(M))+pNorms(M);}
+function fmt(n){return n.toLocaleString("en-US");}
+function fmtB(n){return n>=1e9?(n/1e9).toFixed(1)+"B":(n/1e6).toFixed(1)+"M";}
+function layerKind(M,l){if(M.arch!=="hybrid")return"dense";return l%4===0?"full":"linear";}
+function qwenMoeLayer(M){return (M.experts+M.shared)*3*M.d*M.ffn + M.d*M.experts;}
+function qwTotal(M){return 2*pEmbed(M)+36*42073040+12*35980000+M.layers*qwenMoeLayer(M)+60000000;}
+function qwShares(M){return[["Embedding + output head (untied)",2*pEmbed(M),"#56c8d8"],["Token mixers — 36 linear + 12 full",36*42073040+12*35980000,"#e0a458"],["Sparse MoE — 512 experts ×48 + shared",M.layers*qwenMoeLayer(M),"#a78bdc"],["Router, norms, MTP + extras",60000000,"#8a8f98"]];}
+function blockParams(M,kind){if(M.arch!=="hybrid")return kind==="ffn"?fmt(pFFN(M)):fmt(pAttn(M));return kind==="ffn"?"≈"+fmtB(qwenMoeLayer(M)/1):(kind==="linear"?"≈42.1M":"≈36.0M");}
+function layerLabel(M,idx,suf){suf=suf||"";if(M.arch!=="hybrid")return"decoder block · layer "+idx+(suf?" "+suf:"");return"block "+idx+" · "+(layerKind(M,idx)==="full"?"gated attention (1 in 4)":"linear attention (GDN)")+(suf?" · "+suf:"");}
+function bandOf(M,i){const b=M.bands;if(i>=b.early[0]&&i<=b.early[1])return"early";if(i>=b.mid[0]&&i<=b.mid[1])return"mid";return"late";}
+function heat(M,i){const c=(M.bands.mid[0]+M.bands.mid[1])/2,half=(M.bands.mid[1]-M.bands.mid[0])/2+2;return Math.max(0.12,1-Math.abs(i-c)/half);}
+function mix(hex,frac){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);const f=a=>Math.round(a+(255-a)*frac*0.45);return"rgb("+f(r)+","+f(g)+","+f(b)+")";}
+
+/* ============================== SVG DIAGRAM ============================== */
+const NS="http://www.w3.org/2000/svg";
+function el(tag,attrs,txt){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(txt!=null)e.textContent=txt;return e;}
+function T(x,y,s,o){o=o||{};return el("text",{x:x,y:y,fill:o.fill||"#e9e7e2","font-size":o.fs||12,"font-family":o.mono?"ui-monospace,Consolas,monospace":"Georgia,serif","text-anchor":o.anchor||"start","font-weight":o.w||400},s);}
+const AR={id:"arr"};
+function defs(svg){const d=el("defs",{});const m=el("marker",{id:AR.id,viewBox:"0 0 10 10",refX:8,refY:5,markerWidth:8,markerHeight:8,orient:"auto-start-reverse"});m.appendChild(el("path",{d:"M0,0L10,5L0,10z",fill:"#5a5868"}));d.appendChild(m);svg.appendChild(d);}
+function arrow(svg,x1,y1,x2,y2){svg.appendChild(el("line",{x1:x1,y1:y1,x2:x2,y2:y2-3,stroke:"#5a5868","stroke-width":1.4,"marker-end":"url(#arr)"}));}
+function blk(svg,o){const g=el("g",{class:"blk",tabindex:"0"});for(const k in o.data)g.dataset[k]=String(o.data[k]);const box=el("rect",{class:"box",x:o.x,y:o.y,width:o.w,height:o.h,rx:9,fill:o.fill||"rgba(255,255,255,.02)",stroke:o.stroke,"stroke-width":1.3});g.appendChild(box);if(o.draw)o.draw(g,o);svg.appendChild(g);return g;}
+function line(svg,x1,y1,x2,y2,col,w,op){svg.appendChild(el("line",{x1:x1,y1:y1,x2:x2,y2:y2,stroke:col||"#7fc8a9","stroke-width":w||1.6,opacity:op==null?0.75:op}));}
+function renderDiagram(key,host){
+  const M=MODELS[key];
+  const W=440,railX=36,bx=64,bw=362,midN=M.bands.mid[1]-M.bands.mid[0]+1;
+  const blockH=230,bandH=118;
+  let y=10;const tokY=y;y+=56;const embY=y;y+=64;
+  const ys={};["b1","b2","band","bN1","bN"].forEach(st=>{ys[st]=y;y+=(st==="band"?bandH:blockH);y+=26;});
+  const fnY=y;y+=56;const headY=y;y+=66;const lgY=y;y+=56;const H=y+16;
+  const svg=el("svg",{viewBox:"0 0 "+W+" "+H,role:"img","aria-label":M.name+" layer diagram"});
+  defs(svg);host.appendChild(svg);
+  /* tokens */
+  const tw=(bw-4*8)/5;
+  for(let i=0;i<5;i++){
+    blk(svg,{x:bx+i*(tw+8),y:tokY,w:tw,h:34,data:{model:key,block:"tokens"},stroke:"#4a4a5a",draw:(g,o)=>{
+      g.appendChild(el("rect",{x:o.x+1,y:o.y+1,width:o.w-2,height:o.h-2,rx:16,fill:"rgba(86,200,216,.10)"}));
+      g.appendChild(T(o.x+o.w/2,o.y+21,M.tokens[i],{fs:10.5,mono:true,anchor:"middle",fill:"#bfe6ec"}));}});
+  }
+  svg.appendChild(T(W-8,tokY+21,"text → IDs",{fs:10,mono:true,anchor:"end",fill:"#6a6776"}));
+  arrow(svg,W/2,tokY+36,W/2,embY);
+  /* embedding */
+  blk(svg,{x:bx,y:embY,w:bw,h:56,data:{model:key,block:"embed"},stroke:"#56c8d8",draw:(g,o)=>{
+    g.appendChild(el("rect",{x:o.x+3,y:o.y+3,width:o.w-6,height:o.h-6,rx:7,fill:"rgba(86,200,216,.08)"}));
+    for(let i=0;i<7;i++)g.appendChild(el("rect",{x:o.x+14+i*26,y:o.y+10,width:16,height:o.h-20,rx:2,fill:i%2?"rgba(86,200,216,.25)":"rgba(86,200,216,.12)"}));
+    g.appendChild(T(o.x+o.w-14,o.y+24,"Embedding table",{fs:14.5,anchor:"end"}));
+    g.appendChild(T(o.x+o.w-14,o.y+42,fmt(M.vocab)+" × "+M.d+" · one learned vector per token",{fs:10.5,mono:true,anchor:"end",fill:"#9a97a3"}));}});
+  arrow(svg,W/2,embY+58,W/2,ys.b1);
+  /* decoder blocks */
+  function block(top,idx,label){
+    svg.appendChild(el("rect",{x:bx,y:top,width:bw,height:blockH,rx:12,fill:"rgba(255,255,255,.015)",stroke:"#33333f","stroke-width":1}));
+    const g=el("g",{class:"blk",tabindex:"0"});
+    g.dataset.model=key;g.dataset.block="layer";g.dataset.layer=String(idx);
+    g.appendChild(el("rect",{x:bx,y:top,width:bw,height:blockH,rx:12,fill:"transparent",stroke:"transparent"}));
+    g.appendChild(T(bx+12,top+16,label,{fs:12.5,fill:"#9a97a3"}));
+    svg.appendChild(g);
+    /* residual rail */
+    line(svg,railX,top+6,railX,top+224,"#7fc8a9",2.2,0.8);
+    /* pre-norm */
+    blk(svg,{x:bx+58,y:top+24,w:110,h:18,data:{model:key,block:"lnorm",layer:idx},stroke:"#4a4a5a",draw:(g2,o)=>{
+      g2.appendChild(el("rect",{x:o.x+1,y:o.y+1,width:o.w-2,height:o.h-2,rx:9,fill:"rgba(138,143,152,.16)"}));
+      g2.appendChild(T(o.x+o.w/2,o.y+13,"RMSNorm",{fs:9.5,mono:true,anchor:"middle",fill:"#b8bcc4"}));}});
+    line(svg,railX,top+33,bx+56,top+33);
+    line(svg,bx+113,top+42,bx+113,top+52);
+    /* attention */
+    blk(svg,{x:bx+58,y:top+52,w:bw-76,h:50,data:{model:key,block:"attn",layer:idx},stroke:"#e0a458",draw:(g2,o)=>{
+      g2.appendChild(el("rect",{x:o.x+2,y:o.y+2,width:o.w-4,height:o.h-4,rx:7,fill:"rgba(224,164,88,.10)"}));
+      const kk=layerKind(M,idx);
+      g2.appendChild(T(o.x+12,o.y+21,kk==="linear"?"Gated DeltaNet (linear attn)":"Gated Attention · GQA",{fs:13.5}));
+      g2.appendChild(T(o.x+12,o.y+40,kk==="linear"?"state mixer · 16 K / 48 V heads ×128 · conv-4":"1-in-4 layers · "+M.heads+" Q → "+M.kv+" KV · partial RoPE",{fs:10,mono:true,fill:"#d8c49e"}));
+      g2.appendChild(T(o.x+o.w-12,o.y+21,blockParams(M,kk),{fs:10.5,mono:true,anchor:"end",fill:"#9a97a3"}));}});
+    line(svg,bx+113,top+102,bx+113,top+116);
+    line(svg,bx+113,top+116,bx+52,top+116,"#e0a458",1.4);
+    /* add 1 */
+    blk(svg,{x:bx+25,y:top+104,w:26,h:26,data:{model:key,block:"add",layer:idx},stroke:"#7fc8a9",draw:(g2,o)=>{
+      g2.appendChild(el("circle",{cx:o.x+13,cy:o.y+13,r:11,fill:"rgba(127,200,169,.14)",stroke:"#7fc8a9","stroke-width":1.2}));
+      g2.appendChild(T(o.x+13,o.y+17,"+",{fs:13,anchor:"middle",fill:"#7fc8a9"}));}});
+    line(svg,railX,top+116,bx+23,top+116);
+    /* post-norm */
+    line(svg,railX,top+137,bx+56,top+137);
+    blk(svg,{x:bx+58,y:top+128,w:110,h:18,data:{model:key,block:"lnorm",layer:idx},stroke:"#4a4a5a",draw:(g2,o)=>{
+      g2.appendChild(el("rect",{x:o.x+1,y:o.y+1,width:o.w-2,height:o.h-2,rx:9,fill:"rgba(138,143,152,.16)"}));
+      g2.appendChild(T(o.x+o.w/2,o.y+13,"RMSNorm",{fs:9.5,mono:true,anchor:"middle",fill:"#b8bcc4"}));}});
+    line(svg,bx+113,top+146,bx+113,top+156);
+    /* ffn */
+    blk(svg,{x:bx+58,y:top+156,w:bw-76,h:50,data:{model:key,block:"ffn",layer:idx},stroke:"#a78bdc",draw:(g2,o)=>{
+      g2.appendChild(el("rect",{x:o.x+2,y:o.y+2,width:o.w-4,height:o.h-4,rx:7,fill:"rgba(167,139,220,.10)"}));
+      g2.appendChild(T(o.x+12,o.y+21,M.arch==="hybrid"?"Sparse MoE FFN":"SwiGLU FFN",{fs:13.5}));
+      g2.appendChild(T(o.x+12,o.y+40,M.arch==="hybrid"?"512 experts · 10 active + 1 shared":"gate·up "+fmt(M.ffn)+" → down "+M.d,{fs:10,mono:true,fill:"#cbbde8"}));
+      g2.appendChild(T(o.x+o.w-12,o.y+21,blockParams(M,"ffn"),{fs:10.5,mono:true,anchor:"end",fill:"#9a97a3"}));}});
+    line(svg,bx+113,top+206,bx+113,top+218);
+    line(svg,bx+113,top+218,bx+52,top+218,"#a78bdc",1.4);
+    /* add 2 */
+    blk(svg,{x:bx+25,y:top+206,w:26,h:26,data:{model:key,block:"add",layer:idx},stroke:"#7fc8a9",draw:(g2,o)=>{
+      g2.appendChild(el("circle",{cx:o.x+13,cy:o.y+13,r:11,fill:"rgba(127,200,169,.14)",stroke:"#7fc8a9","stroke-width":1.2}));
+      g2.appendChild(T(o.x+13,o.y+17,"+",{fs:13,anchor:"middle",fill:"#7fc8a9"}));}});
+    line(svg,railX,top+218,bx+23,top+218);
+  }
+  block(ys.b1,1,layerLabel(M,1,"/ "+M.layers));
+  block(ys.b2,2,layerLabel(M,2));
+  arrow(svg,W/2,ys.b1+blockH,W/2,ys.b2);
+  arrow(svg,W/2,ys.b2+blockH,W/2,ys.band);
+  /* middle band */
+  const band=el("g",{class:"blk",tabindex:"0"});
+  band.dataset.model=key;band.dataset.block="band";
+  band.appendChild(el("rect",{class:"box",x:bx,y:ys.band,width:bw,height:bandH,rx:12,fill:"rgba(167,139,220,.05)",stroke:"#a78bdc","stroke-width":1.2,"stroke-dasharray":"5 4"}));
+  band.appendChild(T(bx+14,ys.band+30,"layers "+M.bands.mid[0]+"–"+M.bands.mid[1],{fs:12.5,fill:"#cbbde8"}));
+  band.appendChild(T(bx+14,ys.band+48,"the knowledge",{fs:12.5,fill:"#cbbde8"}));
+  band.appendChild(T(bx+14,ys.band+63,"hotspot",{fs:12.5,fill:"#cbbde8"}));
+  band.appendChild(T(bx+14,ys.band+bandH-14,"one bar = one layer",{fs:9.5,mono:true,fill:"#6a6776"}));
+  for(let i=M.bands.mid[0];i<=M.bands.mid[1];i++){
+    const t=heat(M,i),ty=ys.band+16+((i-M.bands.mid[0]+0.5)/midN)*86;
+    const ln=el("line",{x1:bx+96,y1:ty,x2:bx+96+(bw-110)*t,y2:ty,stroke:mix("#a78bdc",t),"stroke-width":4,"stroke-linecap":"round",class:"tick"});
+    ln.dataset.model=key;ln.dataset.block="layer";ln.dataset.layer=String(i);
+    band.appendChild(ln);
+  }
+  svg.appendChild(band);
+  arrow(svg,W/2,ys.band+bandH,W/2,ys.bN1);
+  block(ys.bN1,M.layers-1,layerLabel(M,M.layers-1));
+  block(ys.bN,M.layers,layerLabel(M,M.layers,"last")+"");
+  arrow(svg,W/2,ys.bN1+blockH,W/2,ys.bN);
+  arrow(svg,W/2,ys.bN+blockH,W/2,fnY);
+  /* final norm */
+  blk(svg,{x:bx,y:fnY,w:bw,h:56,data:{model:key,block:"finalnorm"},stroke:"#8a8f98",draw:(g,o)=>{
+    g.appendChild(el("rect",{x:o.x+3,y:o.y+3,width:o.w-6,height:o.h-6,rx:7,fill:"rgba(138,143,152,.10)"}));
+    g.appendChild(T(o.x+16,o.y+24,"Final RMSNorm",{fs:14}));
+    g.appendChild(T(o.x+16,o.y+42,"one last rescale before reading out",{fs:10.5,mono:true,fill:"#9a97a3"}));}});
+  arrow(svg,W/2,fnY+58,W/2,headY);
+  /* LM head */
+  blk(svg,{x:bx,y:headY,w:bw,h:60,data:{model:key,block:"lmhead"},stroke:"#e8635a",draw:(g,o)=>{
+    g.appendChild(el("rect",{x:o.x+3,y:o.y+3,width:o.w-6,height:o.h-6,rx:7,fill:"rgba(232,99,90,.08)"}));
+    g.appendChild(T(o.x+16,o.y+25,"LM head — tied to the embedding table",{fs:13.5}));
+    g.appendChild(T(o.x+16,o.y+44,M.d+" → "+fmt(M.vocab)+" scores · same matrix reused",{fs:10.5,mono:true,fill:"#e0a39d"}));}});
+  arrow(svg,W/2,headY+62,W/2,lgY);
+  /* logits */
+  const lw=(bw-40)/5;
+  for(let i=0;i<5;i++){
+    blk(svg,{x:bx+i*(lw+10),y:lgY,w:lw,h:34,data:{model:key,block:"logits"},stroke:"#4a4a5a",draw:(g,o)=>{
+      g.appendChild(el("rect",{x:o.x+1,y:o.y+1,width:o.w-2,height:o.h-2,rx:8,fill:i===0?"rgba(232,99,90,.16)":"rgba(232,99,90,.05)"}));
+      g.appendChild(T(o.x+o.w/2,o.y+21,i===0?"★":"·",{fs:12,anchor:"middle",fill:i===0?"#e8635a":"#6a6776"}));}});
+  }
+  svg.appendChild(T(W-8,lgY+21,"softmax",{fs:10,mono:true,anchor:"end",fill:"#6a6776"}));
+  svg.appendChild(T(bx,lgY+50,"top-1: "+M.top1,{fs:11.5,mono:true,fill:"#e8635a"}));
+}
+const HEAD={
+  nano:'<div class="mhead"><h2>nano_SLMs · target</h2><div class="sub">LlamaForCausalLM · GQA decoder · this repo</div><div class="badges"><span class="badge">16 layers</span><span class="badge">d_model 1024</span><span class="badge">16Q / 4KV heads</span><span class="badge">FFN 3072</span><span class="badge hot" style="background:#56c8d8">226,526,208 params</span><span class="badge">ctx 1,024 → 4,096 YaRN</span><span class="badge">vocab 32k · code</span></div><p style="font-size:13px;color:var(--dim);margin:8px 0 2px">'+MODELS.nano.blurb+'</p></div>',
+  smollm2:'<div class="mhead"><h2>SmolLM2-135M</h2><div class="sub">LlamaForCausalLM · HuggingFaceTB</div><div class="badges"><span class="badge">30 layers</span><span class="badge">d_model 576</span><span class="badge">9Q / 3KV heads</span><span class="badge">FFN 1536</span><span class="badge hot" style="background:#e0a458">134,515,008 params</span><span class="badge">ctx 8,192</span><span class="badge">vocab 49k · general</span></div><p style="font-size:13px;color:var(--dim);margin:8px 0 2px">'+MODELS.smollm2.blurb+'</p></div>',
+  qwen38:'<div class="mhead"><h2>Qwen3.8-Flash-Next</h2><div class="sub">Qwen4 arch preview · hybrid attention + sparse MoE · 2026-08-26</div><div class="badges"><span class="badge">48 layers</span><span class="badge">d_model 2560</span><span class="badge">3 linear : 1 full attn</span><span class="badge">full: 24Q / 2KV</span><span class="badge">MoE 512e · 10 active + 1 shared</span><span class="badge hot" style="background:#e879a0">≈125B total · ≈6B active</span><span class="badge">ctx 262,144</span><span class="badge">vocab 248k · multimodal</span></div><p style="font-size:13px;color:var(--dim);margin:8px 0 2px">'+MODELS.qwen38.blurb+'</p></div>'
+};
+for(const key of ["nano","smollm2","qwen38"]){
+  const col=document.getElementById("col-"+key);
+  col.innerHTML=HEAD[key];
+  renderDiagram(key,col);
+}
+
+/* ============================== BLOCK INSPECTOR ============================== */
+const DETAIL=document.getElementById("detail");
+let infoMode="plain";
+const COMPS={
+  tokens:{t:"Tokenization — text → IDs",tag:"The doorway: words become subword pieces, pieces become integers.",
+    plain:function(M){return "The model never sees letters. Text is chopped into subword tokens by the "+M.tok+", and each token ID points at a row of the embedding table. nano_SLMs uses a code-friendly 32k vocabulary; SmolLM2 a 49k general one — so the same sentence can cost a different number of tokens (and attention steps) in each model.";},
+    tech:function(M){return "BPE tokenizer · vocab "+fmt(M.vocab)+". Ġ marks a leading space, Ċ a newline. No trainable weights here — a pure lookup that feeds embed_tokens.";}},
+  embed:{t:"Embedding table",tag:"Where meaning begins: one learned vector per vocabulary row.",
+    plain:function(M){return "Token ID → row lookup in a learned "+fmt(M.vocab)+" × "+M.d+" matrix ("+fmt(pEmbed(M))+" parameters). That vector is the token's initial meaning — a point in space where similar tokens sit close together. It knows single tokens, not combinations; context comes later."+(M.arch==="hybrid"?" NOT tied here — a separate output head mirrors it (two × "+fmtB(pEmbed(M))+" tables), and the rows also cover image/video tokens; the model is multimodal.":" In BOTH dense models this same matrix is reused as the output head (tied weights), so reading tokens in and writing predictions out share one geometry.")+"";},
+    tech:function(M){const sh=(M.arch==="hybrid"?qwTotal(M):pTotal(M));return fmt(M.vocab)+"×"+M.d+" matrix · "+fmt(pEmbed(M))+" params = "+(100*pEmbed(M)/sh).toFixed(1)+"% of the model · no bias · "+(M.arch==="hybrid"?"NOT tied — lm_head is a separate "+fmt(pEmbed(M))+"-param output matrix":"tied with lm_head.weight (safetensors from a tied model omit lm_head — see load_finetune_init in src/model.py)")+" · output [batch, seq, "+M.d+"].";}},
+  layer:{t:function(M,ly){return "Decoder block · layer "+ly+(M.arch==="hybrid"?(layerKind(M,ly)==="full"?" · full attn":" · GDN"):"");},tag:"One refinement pass on the residual stream: route information, then recall knowledge.",
+    plain:function(M,ly){const b=bandOf(M,ly);
+      const role=b==="early"?"Early layers mostly handle surface form: spelling, local grammar, short-range copying. Attention looks at nearby tokens; the FFN sharpens token-level patterns."
+      :b==="mid"?"Middle layers are the knowledge hotspot: FFN key–value memories fire on combinations of features and inject factual, semantic content ('this is a function def', 'capital-of', 'indentation rule'). Most of what the model knows is exercised here."
+      :"Late layers assemble the answer: attention gathers what the stack accumulated, features become prediction-shaped, and the representation converges on the next token.";
+      return "Layer "+ly+" of "+M.layers+" — "+b+" band. "+role;},
+    tech:function(M,ly){if(M.arch==="hybrid")return "x = x + Mixer(RMSNorm(x)); x = x + MoE(RMSNorm(x)). Mixer — 3 of 4 layers: Gated DeltaNet linear attention (16 K heads / 48 V heads ×128, conv 4, fixed-size state); every 4th: gated full attention (24Q/2KV, head 256, partial RoPE). FFN: sparse MoE — 512 experts / 10 active + 1 shared (inter 640, sigmoid gate). "+fmtB(qwenMoeLayer(M))+" MoE params/layer. Band: "+bandOf(M,ly)+" · norm eps "+M.eps+".";
+      return "x = x + Attn(RMSNorm(x)); x = x + SwiGLU(RMSNorm(x)). Stream [B,L,"+M.d+"]; per-layer params "+fmt(pLayer(M))+" ("+fmt(pAttn(M))+" attention + "+fmt(pFFN(M))+" FFN). Depth band: "+bandOf(M,ly)+" · RoPE θ "+M.theta+" · norm eps "+M.eps+".";}},
+  attn:{t:function(M,ly){return M.arch==="hybrid"?(layerKind(M,ly)==="full"?"Gated attention (1-in-4) — the exact mixer":"GDN linear attention — the state mixer"):"GQA attention — the router";},tag:"Decides which earlier tokens matter right now, and copies their information over.",
+    plain:function(M,ly){if(M.arch==="hybrid"){if(layerKind(M,ly)==="linear")return "This is a Gated DeltaNet — a LINEAR attention layer: instead of scoring every past token, each token reads and writes a fixed-size recurrent state (48 value heads × 128). Constant memory per token and no KV cache to grow — the engineered answer to 262,144-token context. Three of every four layers look like this; some of the routing work dense models do in attention is handed over to the MoE experts.";return "One layer in four is a real attention layer: GQA with "+M.heads+" query heads sharing "+M.kv+" key/value heads (head_dim 256), only 25% of dims rotary-embedded, plus a lightweight 'lightning indexer' that pre-selects which past tokens deserve exact scoring. Same information-ROUTING job as in the small models — syntax links, references, the induction trick — just done sparsely, every 4th layer.";}return "Each token emits a query ('what am I looking for?') plus keys and values ('what do I offer?'). Scores against every EARLIER token only — the causal mask — decide what gets blended in. Attention is information ROUTING, not storage: syntax links, pronoun→referent, bracket→bracket, and the induction trick ('last time, after these words came…'). GQA lets "+M.heads+" query heads share just "+M.kv+" key/value heads — a "+(M.heads/M.kv)+"× smaller KV cache than full multi-head attention, part of why small models can afford longer contexts.";},
+    tech:function(M,ly){if(M.arch==="hybrid"){if(layerKind(M,ly)==="linear")return "GDN: in_proj "+M.d+"×(16K×128 + 16Q×128 + 48V×128) √ conv1d(k=4) · SiLU·dt gate · state "+(16*128)+"×"+(48*128)+" · out_proj "+(48*128)+"×"+M.d+" · ≈42.1M params/layer · no KV cache (O(1) state/token) · only the sketch of sizes is exact — indexer/conv variants folded into the estimate.";return "full attn: Q "+M.d+"×"+(M.heads*256)+" · K,V "+M.d+"×"+(M.kv*256)+" · O "+(M.heads*256)+"×"+M.d+" · head_dim 256 · GQA 12:1 · partial rotary 25% (θ 10,000,000, mRoPE sections 11/11/10) + lightning indexer (budget 2048) ≈36.0M params/layer.";}return "WQ "+M.d+"×"+M.d+" · WK,WV "+M.d+"×"+kvDim(M)+" · WO "+M.d+"×"+M.d+" · head_dim "+headDim(M)+" · "+(M.heads/M.kv)+" Q heads per KV group · scores = RoPE(Q)·RoPE(K)ᵀ / √"+headDim(M)+", masked to j ≤ i, softmax, · V, → WO · "+fmt(pAttn(M))+" params/layer · KV cache "+(2*M.kv*headDim(M))+" values/token ("+(2*M.kv*headDim(M)*2/1024).toFixed(2)+" KiB @ 2 bytes) · SDPA kernel.";}},
+  ffn:{t:function(M){return M.arch==="hybrid"?"Sparse MoE — the sharded knowledge base":"SwiGLU FFN — the knowledge base";},tag:"The parameter-heavy block: the model's key–value memory.",
+    plain:function(M){if(M.arch==="hybrid")return "Here the knowledge base is SHARDED instead of one dense block. A tiny router looks at the token and activates "+M.active+" of "+M.experts+" expert FFNs (each just "+M.d+"→"+fmt(M.ffn)+"→"+M.d+", a SwiGLU key–value memory) plus one always-on shared expert; their combined update is added to the token. "+(M.layers*M.experts)+" experts across the stack hold ~97% of all parameters — the middle-area experts carry most factual load. Sparse MoE = enormous capacity (what the model can know) from modest compute per token (10 experts).";return "After attention gathers context, the FFN decides what it MEANS. Its matrices act as a fuzzy key–value memory: row i of the gate matrix is a slot KEY that fires when a specific pattern appears (a function signature, a capital-city frame, an indentation rule), and the down-projection stores the VALUE pushed into the token. With "+fmt(M.ffn)+" slots per layer × "+M.layers+" layers, this is where most learned facts and skills are exercised — and where most parameters live: "+(100*pFFN(M)/pTotal(M)).toFixed(0)+"% of this model. That is why interpretability work calls the middle-layer FFNs 'the knowledge base'.";},
+    tech:function(M){if(M.arch==="hybrid")return "router: "+M.d+"→"+M.experts+" (sigmoid, top-"+M.active+") · each expert: "+M.d+"→"+fmt(M.ffn)+"·"+fmt(M.ffn)+"→"+M.d+" SwiGLU = "+fmt(3*M.d*M.ffn)+" params · experts×"+M.experts+" = "+fmt(M.experts*3*M.d*M.ffn)+"/layer · shared expert +"+fmt(3*M.d*M.ffn)+" · ≈"+fmtB(qwenMoeLayer(M))+"/layer · "+(100*M.layers*qwenMoeLayer(M)/qwTotal(M)).toFixed(1)+"% of all parameters · router sees RMSNorm(x), aux-loss-free sigmoid gating.";return "gate,up: "+M.d+"→"+fmt(M.ffn)+" · down: "+fmt(M.ffn)+"→"+M.d+" · act = SiLU(gate) ⊙ up · no bias · "+fmt(pFFN(M))+" params/layer = "+(100*pFFN(M)/pTotal(M)).toFixed(1)+"% of total · input is RMSNorm(x): keys fire on the normalized stream.";}},
+  lnorm:{t:"RMSNorm — the stabilizer",tag:"Rescales every token vector so deep stacks stay stable.",
+    plain:function(M){return "Before attention, before the FFN, and once at the very end, each token's vector is rescaled to a standard length and multiplied by a learned per-dimension gain. It stores no knowledge — just "+M.d+" volume knobs — but this pre-norm placement is what allows "+M.layers+" stacked blocks to train cleanly.";},
+    tech:function(M){return "x / rms(x) · γ · rms = √(mean(x²)+"+M.eps+") · pre-norm ×2 per layer + final norm · "+((2*M.layers+1)*M.d)+" params in total (~0.02% of the model).";}},
+  add:{t:"Residual add — the highway",tag:"The connection that carries everything: layers only ADD edits.",
+    plain:function(M){return "Attention and FFN never overwrite the token vector; they add a small update onto it. The vector is a running document that each layer annotates — grammar notes early, meaning notes in the middle, prediction notes late. This is THE connection of the architecture: both the signal and the gradient flow through the running sum.";},
+    tech:function(M){return "x ← x + F(norm(x)) · the residual norm grows with depth (watch the demo sparkline) · the reason pre-norm + residual trains deeper than post-norm.";}},
+  finalnorm:{t:"Final RMSNorm",tag:"The last rescale before reading out.",
+    plain:function(M){return "After the last block, each token vector is normalized one more time so the output head always sees a consistent scale — plumbing, but necessary after "+M.layers+" layers of accumulated edits.";},
+    tech:function(M){return "same RMSNorm (eps "+M.eps+", gain "+M.d+") · output [B,L,"+M.d+"] → lm_head.";}},
+  lmhead:{t:function(M){return M.arch==="hybrid"?"LM head — separate (untied)":"LM head — tied to the embedding";},tag:"The embedding table read in reverse: vector → vocabulary scores.",
+    plain:function(M){return "The newest token's "+M.d+"-number summary is dotted against every row of an output matrix — "+fmt(M.vocab)+" dot products, one per possible token. High similarity = likely next token."+(M.arch==="hybrid"?" Here the head is a SEPARATE "+fmtB(pEmbed(M))+" matrix (untied), which also covers image/video tokens in the 248k vocabulary.":" The SAME matrix used for input embeddings is reused (tied), saving "+fmt(M.vocab*M.d)+" parameters and forcing the input and output geometry to agree. Both dense models do it.")+"";},
+    tech:function(M){return "lm_head = Linear("+M.d+" → "+fmt(M.vocab)+", bias=False), weight = embed_tokens.weight (tied) · no softmax inside — training applies cross-entropy over shifted labels.";}},
+  logits:{t:"Softmax → next token",tag:"Scores become probabilities; sampling picks the future.",
+    plain:function(M){return "Raw logits over "+fmt(M.vocab)+" tokens become probabilities via softmax. Greedy takes the top one; temperature / top-k sampling adds variety. The winner is appended to the text and the entire pass runs again for the next token — one token per forward pass.";},
+    tech:function(M){return "p = softmax(z/T) · repo inference: greedy / sampling via scripts/infer.py · eval re-enables use_cache for KV-cache decode; training keeps use_cache=False.";}},
+  band:{t:"The middle band — knowledge hotspot",tag:"One bar per middle layer; brighter = more knowledge traffic (rule-of-thumb).",
+    plain:function(M){return "Depth specializes. In this middle stretch, FFN key–value memories fire hardest: facts, idioms, code idioms, 'how the world is wired'. Click an individual bar to inspect that exact layer. Early layers around it handle surface form; late layers assemble the prediction."+(M.arch==="hybrid"?" Here the memory is sharded: 512 routed experts per layer act as many small key–value stores, and the router picks a team of 10 per token.":" The SAME pattern exists in all dense models — it comes from the shared recipe, not from one training run.")+"";},
+    tech:function(M){return "bands — early "+M.bands.early[0]+"–"+M.bands.early[1]+", middle "+M.bands.mid[0]+"–"+M.bands.mid[1]+", late "+M.bands.late[0]+"–"+M.bands.late[1]+" · heat = triangular ramp peaking at the mid-band center — a visualization of the Geva/ROME consensus, not a measured value for this checkpoint.";}}
+};
+function showDetail(model,block,layer){
+  const M=MODELS[model],C=COMPS[block];
+  if(!C)return;
+  const title=typeof C.t==="function"?C.t(M,layer):C.t;
+  const plain=typeof C.plain==="function"?C.plain(M,layer):C.plain;
+  const tech=typeof C.tech==="function"?C.tech(M,layer):C.tech;
+  let h='<div class="crumb">'+(M.name+(layer?" · layer "+layer:"")+" · "+title).replace(/</g,"&lt;")+"</div>";
+  h+="<h3>"+title+"</h3><p class=\"tag\">"+C.tag+"</p>";
+  h+='<div class="seg"><button data-m="plain" class="'+(infoMode==="plain"?"on":"")+'">Plain</button><button data-m="tech" class="'+(infoMode==="tech"?"on":"")+'">Technical</button></div>';
+  h+='<div class="body"><p data-mode="plain" style="'+(infoMode!=="plain"?"display:none":"")+'">'+plain+"</p>";
+  h+='<p data-mode="tech" class="mono" style="font-size:12.5px;line-height:1.7;color:#b8bcc4;'+(infoMode!=="tech"?"display:none":"")+'">'+tech+"</p></div>";
+  if(layer){
+    const b=bandOf(M,layer),ht=heat(M,layer);
+    h+='<div class="meter">knowledge heat at this depth (rule-of-thumb)<div class="bar"><i style="width:'+(ht*100).toFixed(0)+'%;background:'+(b==="mid"?"#a78bdc":b==="early"?"#56c8d8":"#e0a458")+'"></i></div><div style="margin-top:4px">'+b+" band · layer "+layer+" / "+M.layers+"</div></div>";
+  }
+  if(block==="attn"&&M.arch==="hybrid"&&layerKind(M,layer)==="linear"){
+    h+='<div class="note">Linear (GDN) mixer — no attention grid exists: a fixed-size recurrent state (48 V heads × 128) replaces the token-to-token matrix, and full attention only returns every 4th layer.</div>';
+  }
+  if(block==="attn"&&(M.arch!=="hybrid"||layerKind(M,layer)==="full")){
+    h+='<div class="note">Causal mask: token i may look only at tokens j ≤ i — the upper triangle of the attention grid stays dark forever. RoPE (θ '+M.theta+") bakes each token's position into Q/K as a rotation, so scores depend on relative distance with zero extra parameters. GQA pairing:</div><div class=\"gqahost\"></div>";
+  }
+  if(block==="embed"){
+    h+='<div class="note">'+(M.arch==="hybrid"?"Qwen3.8 does NOT tie: the embedding (0.64B) and a separate output head (0.64B) use different geometries, and the table also holds image/video token rows.":"This table is also the OUTPUT head (tied weights) — the only component that exists in two places at once.")+'</div>';
+  }
+  if(block==="band"){
+    h+='<div class="note">Same depth-banding shows up across all three models — a property of the shared recipe, not of one training run.</div>';
+  }
+  DETAIL.innerHTML=h;
+  DETAIL.querySelectorAll(".seg button").forEach(b=>b.addEventListener("click",()=>{infoMode=b.dataset.m;showDetail(model,block,layer);}));
+  if(block==="attn"&&DETAIL.querySelector(".gqahost"))drawGQA(M,DETAIL.querySelector(".gqahost"));
+  DETAIL.scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+function drawGQA(M,host){
+  if(!host)return;
+  const rows=Math.ceil(M.heads/2),rowH=24,top=8,W=360;
+  const kvY=k=>top+(k+0.5)*(rows*rowH)/M.kv;
+  const s=el("svg",{viewBox:"0 0 "+W+" "+(rows*rowH+26),height:rows*rowH+26});
+  for(let q=0;q<M.heads;q++){
+    const col=Math.floor(q/rows),row=q%rows;
+    const x=20+col*96,y=top+row*rowH;
+    s.appendChild(el("rect",{x:x,y:y,width:56,height:18,rx:4,fill:"rgba(224,164,88,.18)",stroke:"#e0a458","stroke-width":1}));
+    const t=el("text",{x:x+28,y:y+13,"text-anchor":"middle","font-size":9.5,"font-family":"ui-monospace,Consolas,monospace",fill:"#e0c9a0"});
+    t.textContent="Q"+q;s.appendChild(t);
+    const kv=Math.floor(q/(M.heads/M.kv));
+    s.appendChild(el("line",{x1:x+56,y1:y+9,x2:230,y2:kvY(kv),stroke:"#7fc8a9","stroke-width":1,opacity:0.6}));
+  }
+  for(let k=0;k<M.kv;k++){
+    const y=kvY(k)-9;
+    s.appendChild(el("rect",{x:230,y:y,width:110,height:18,rx:4,fill:"rgba(127,200,169,.14)",stroke:"#7fc8a9","stroke-width":1}));
+    const t=el("text",{x:285,y:y+13,"text-anchor":"middle","font-size":9.5,"font-family":"ui-monospace,Consolas,monospace",fill:"#a9d9c2"});
+    t.textContent="K/V head "+k;s.appendChild(t);
+  }
+  host.appendChild(s);
+}
+/* wire clicks (event delegation per column) */
+document.querySelectorAll('.mcard[id^="col-"]').forEach(col=>{
+  col.addEventListener("click",function(e){
+    const t=e.target.closest(".blk,.tick");
+    if(!t||!t.dataset||!t.dataset.model)return;
+    showDetail(t.dataset.model,t.dataset.block,t.dataset.layer?+t.dataset.layer:undefined);
+    col.querySelectorAll(".sel").forEach(x=>x.classList.remove("sel"));
+    t.classList.add("sel");
+  });
+});
+
+/* ============================== KNOWLEDGE MAP ============================== */
+function knowledgeMap(key,host){
+  const M=MODELS[key],L=M.layers,tot=M.arch==="hybrid"?qwTotal(M):pTotal(M);
+  const e=M.bands.early[1],l0=M.bands.late[0];
+  const wEarly=e/L*100,wMid=(l0-1-e)/L*100,wLate=(L-l0+1)/L*100;
+  const shares=M.arch==="hybrid"?qwShares(M):[
+    ["Embedding — meaning of single tokens",pEmbed(M),"#56c8d8"],
+    ["Attention — routing between tokens",pAttn(M)*L,"#e0a458"],
+    ["FFN — the knowledge base",pFFN(M)*L,"#a78bdc"],
+    ["Norms — stability",pNorms(M),"#8a8f98"]];
+  let sh="";
+  shares.forEach(s=>{const pct=s[1]/tot*100;sh+='<div style="background:'+s[2]+';width:'+pct.toFixed(1)+'%" title="'+s[0]+": "+fmt(s[1])+'">'+(pct>9?pct.toFixed(0)+"%":"")+"</div>";});
+  let legend="";
+  shares.forEach((s,i)=>{legend+=(i?'<span style="color:var(--faint)"> · </span>':'')+'<span style="color:'+s[2]+'">'+(s[1]/tot*100).toFixed(1)+"%</span>";});
+  host.innerHTML=
+    '<div class="ptit"><span>'+M.name+" — depth roles</span><span>"+L+" layers</span></div>"+
+    '<div class="zones">'+
+      '<div class="zone" style="width:'+wEarly.toFixed(1)+'%;background:rgba(86,200,216,.22)"><b style="font-size:11px">INPUT · SYNTAX</b><small>layers '+M.bands.early[0]+"–"+M.bands.early[1]+"</small></div>"+
+      '<div class="zone" style="width:'+wMid.toFixed(1)+'%;background:rgba(167,139,220,.30)"><b style="font-size:11px">KNOWLEDGE BASE</b><small>layers '+M.bands.mid[0]+"–"+M.bands.mid[1]+" · FFN peak</small></div>"+
+      '<div class="zone" style="width:'+wLate.toFixed(1)+'%;background:rgba(224,164,88,.22)"><b style="font-size:11px">REASONING · PREDICT</b><small>layers '+M.bands.late[0]+"–"+M.bands.late[1]+"</small></div>"+
+    "</div>"+
+    '<div class="ptit"><span>Where the parameters (≈ learned material) sit</span><span>'+(M.arch==="hybrid"?"≈"+fmtB(tot)+" (text stack)":"fmt (tot)".replace("fmt (tot)",fmt(tot))+" params")+"</span></div>"+
+    '<div class="pshare">'+sh+"</div>"+
+    '<div style="font:11.5px var(--mono);color:var(--faint)">hover the bar · '+legend+"</div>"+
+    '<p style="font-size:13.5px;color:var(--dim);margin:12px 0 0">Reading it: the <b style="color:var(--ffn)">middle-band FFNs</b> are where learned knowledge is exercised hardest — and where most parameters live. The <b style="color:var(--embed)">embedding</b> holds single-token meaning, <b style="color:var(--attn)">attention</b> moves information between tokens, and the <b style="color:var(--attn)">late band</b> turns accumulated features into a prediction. "+(M.arch==="hybrid"?"In this model the recipe EVOLVED: attention has largely left the parameters — 36 linear + 12 full-attention mixers hold only ~1.6% of the weights — while <b style=\"color:var(--ffn)\">≈97%</b> lives in 24,576 routed expert key–value memories (512 experts × 48 layers); the router fires just 10 + 1 shared per token. MoE = many small knowledge bases; the router picks the team per token.":"Same profile in both dense models, different proportions: SmolLM2 spends a bigger share on its 49k vocabulary (21% vs 15%), nano_SLMs on its wider FFNs (67% vs 59%).")+"</p>';
+}
+knowledgeMap("nano",document.getElementById("kmap-nano"));
+knowledgeMap("smollm2",document.getElementById("kmap-smollm2"));
+knowledgeMap("qwen38",document.getElementById("kmap-qwen38"));
+(function(){
+  const N=MODELS.nano,S=MODELS.smollm2;
+  const rows=[
+    ["Token IDs → embedding row","Single-token meaning; the first learned layer of knowledge.","both: the same matrix is the output head"],
+    ["Attention — Q,K,V,O + RoPE + causal mask","Routes information between positions: syntax, copying, induction. Moves knowledge; does not store it.",fmt(pAttn(N))+" / layer vs "+fmt(pAttn(S))+" / layer"],
+    ["SwiGLU FFN — gate·up → down","Key–value memory: facts, idioms, skills. The knowledge base, strongest in the middle band.",(100*pFFN(N)/pTotal(N)).toFixed(0)+"% of nano params · "+(100*pFFN(S)/pTotal(S)).toFixed(0)+"% of SmolLM2"],
+    ["RMSNorm ×3 per layer path","Keeps the residual stream scaled; carries no knowledge.","identical placement in both"],
+    ["Residual stream","The highway: each layer ADDS an edit onto the token's running vector.","the core connection in both"],
+    ["Final norm + tied LM head","Reads the vector out as vocabulary-wide scores → softmax → next token.","same matrix as the input embedding"],
+    ["Early band","Surface form: spelling, local grammar, short-range copying.","nano L1–5 · SmolLM2 L1–10"],
+    ["Middle band","Facts and semantics: FFN hotspot — 'what things mean'.","nano L6–11 · SmolLM2 L11–20"],
+    ["Late band","Task assembly and prediction prep — 'what comes next'.","nano L12–16 · SmolLM2 L21–30"]];
+  let h="<tr><th style='width:26%'>Component</th><th>Purpose · where its learning shows up</th><th style='width:30%'>In these two models</th></tr>";
+  rows.forEach(r=>{h+="<tr><td><b>"+r[0]+"</b></td><td>"+r[1]+"</td><td><span class='dim2'>"+r[2]+"</span></td></tr>";});
+  document.getElementById("ptable").innerHTML=h;
+})();
+
+/* ============================== DEMO PLAYER ============================== */
+const PROMPTS=[
+  {id:"france",label:"The capital of France is",toks:["The","Ġcapital","Ġof","ĠFrance","Ġis"],
+   pred:{nano:[["ĠParis",38],["Ġlocated",8],["Ġthe",7],["Ġa",6],["Ċ",5]],smollm2:[["ĠParis",71],["Ġa",6],["Ġlocated",5],["Ġnow",3],["Ġthe",3]],qwen38:[["ĠParis",74],["Ġa",5],["Ġlocated",4],["Ġnow",3],["Ġthe",2]]},
+   note:"World knowledge is exercised in the middle-band FFNs — a code-trained model is visibly less confident on it (see nano's flat top-5)."},
+  {id:"code",label:"def top_k(logits, k):",toks:["def","Ġtop","_k","(","logits",",","Ġk","):%%"].map(t=>t.replace("%%","")),
+   pred:{nano:[["Ċ",38],["ĠĠ",27],["Ġreturn",12],["Ġif",6],["Ġ#",4]],smollm2:[["Ċ",30],["ĠĠ",22],["Ġreturn",11],["ĠĠĠĠ",9],["Ġ#",5]],qwen38:[["Ċ",26],["ĠĠ",24],["Ġreturn",10],["ĠĠĠĠ",8],["Ġif",5]]},
+   note:"Code structure is learned statistics: newline + indentation after a def signature — the early and middle layers both expect it."},
+  {id:"fox",label:"The quick brown fox",toks:["The","Ġquick","Ġbrown","Ġfox"],
+   pred:{nano:[["Ġjumps",31],["Ġwas",9],["Ġran",7],["Ġhas",6],["Ġis",5]],smollm2:[["Ġjumps",62],["Ġjumped",9],["Ġover",6],["Ġran",5],["Ġis",4]],qwen38:[["Ġjumps",66],["Ġjumped",9],["Ġover",6],["Ġran",4],["Ġis",3]]},
+   note:"An idiom is memorized statistics: the induction pattern fires — 'last time, after this phrase came…'."}
+];
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+const demo={model:"nano",prompt:0,step:0,playing:false,timer:null,steps:[]};
+function buildSteps(){
+  const M=MODELS[demo.model],steps=[{s:"tokens"},{s:"embed"}];
+  for(let l=1;l<=M.layers;l++){steps.push({s:"lnorm",l:l},{s:"attn",l:l},{s:"add",l:l},{s:"lnorm2",l:l},{s:"ffn",l:l},{s:"add2",l:l});}
+  steps.push({s:"finalnorm"},{s:"head"},{s:"softmax"});
+  return steps;
+}
+function stageLabel(st){
+  const M=MODELS[demo.model];
+  const map={
+    tokens:["Tokenize","Text → "+M.tokens.length+" token IDs via the "+M.tok+". (Ġ = space, Ċ = newline.)"],
+    embed:["Embed","Each ID picks its row from the "+fmt(M.vocab)+" × "+M.d+" table → a "+M.d+"-number meaning vector per token."],
+    lnorm:function(l){return["Layer "+l+" · pre-norm","RMSNorm rescales the stream before attention reads it."];},
+    lnorm2:function(l){return["Layer "+l+" · pre-norm (2nd)","RMSNorm again before the FFN reads it."];},
+    attn:function(l){const b=bandOf(M,l);
+      if(M.arch==="hybrid")return layerKind(M,l)==="full"
+        ?["Layer "+l+" · gated attention (full, 1 in 4)","The exact mixer: GQA 24Q/2KV, head 256, partial RoPE — the only layers with a true token-to-token attention grid (shown opposite)."]
+        :["Layer "+l+" · GDN linear attention (state mixer)","Compresses the past into a fixed-size state (48 value heads × 128) that every token reads and writes — constant memory per token; that is how 262K context stays affordable. No attention grid exists here."];
+      return["Layer "+l+" · GQA attention ("+b+" band)",
+      b==="mid"?"Middle-depth attention: routing is now semantic — linking related concepts, not just neighbors."
+      :b==="early"?"Early attention: broad, mostly local — spelling and short-range structure."
+      :"Late attention: focused gathering of everything the stack produced."];},
+    ffn:function(l){const b=bandOf(M,l);
+      if(M.arch==="hybrid")return["Layer "+l+" · sparse MoE ("+b+" band)","A router activates 10 of 512 expert key–value memories (+1 shared expert) and injects their combined update. In MoE models nearly ALL parameters — nearly all learned knowledge — live in these experts."];
+      return["Layer "+l+" · SwiGLU FFN ("+b+" band)",
+      b==="mid"?"Peak knowledge traffic: key–value memories fire and inject factual / semantic updates into the stream."
+      :b==="early"?"The FFN sharpens token-level patterns; little world knowledge is involved yet."
+      :"The FFN converts accumulated features toward prediction-shaped ones."];},
+    add:function(l){return["Layer "+l+" · residual add","The attention update is ADDED onto the highway — the token keeps its full history."];},
+    add2:function(l){return["Layer "+l+" · residual add","The FFN update is added; the stream's norm grows as depth accumulates edits."];},
+    finalnorm:["Final RMSNorm","One last rescale of the newest token's vector."],
+    head:M.arch==="hybrid"?["LM head (untied)","The newest vector is dotted against a SEPARATE "+M.d+" → "+fmt(M.vocab)+" output matrix — scoring every possible next token."]:["LM head (tied)","Dot product against all "+fmt(M.vocab)+" embedding rows — the same matrix that read the tokens in."],
+    softmax:["Softmax → next token","Top-5 probabilities below (SIMULATED values). The chosen token is appended and the whole loop repeats."]};
+  const v=map[st.s];
+  return typeof v==="function"?v(st.l):v;
+}
+function highlight(st){
+  document.querySelectorAll(".blk.live").forEach(x=>x.classList.remove("live"));
+  let sel=null;
+  if(st.s==="tokens")sel='[data-block="tokens"]';
+  else if(st.s==="embed")sel='[data-block="embed"]';
+  else if(st.s==="finalnorm")sel='[data-block="finalnorm"]';
+  else if(st.s==="head")sel='[data-block="lmhead"]';
+  else if(st.s==="softmax")sel='[data-block="logits"]';
+  else if(st.s==="lnorm"||st.s==="lnorm2")sel='[data-block="lnorm"][data-layer="'+st.l+'"]';
+  else if(st.s==="attn")sel='[data-block="attn"][data-layer="'+st.l+'"]';
+  else if(st.s==="ffn")sel='[data-block="ffn"][data-layer="'+st.l+'"]';
+  else if(st.s==="add"||st.s==="add2")sel='[data-block="add"][data-layer="'+st.l+'"]';
+  if(sel)document.querySelectorAll("#col-"+demo.model+" "+sel).forEach(e=>e.classList.add("live"));
+}
+function attGrid(l){
+  const M=MODELS[demo.model],p=PROMPTS[demo.prompt],n=p.toks.length;
+  const svg=document.getElementById("attgrid");
+  while(svg.firstChild)svg.removeChild(svg.firstChild);
+  const cell=Math.min(30,Math.floor(240/n)),ox=46,oy=20;
+  const rnd=mulberry32(demo.prompt*131+l*17+M.layers);
+  const T2=3.2-2.6*(l/M.layers);
+  const w=[];
+  for(let i=0;i<n;i++){w.push([]);for(let j=0;j<=i;j++){
+    let v=1+(Math.abs(i-j)<=1?1.6:0)+rnd()*1.4;
+    if(j===0)v+=0.6;if(i===j)v+=0.8;
+    w[i].push(Math.pow(v,T2));}}
+  for(let i=0;i<n;i++){const s=w[i].reduce((a,b)=>a+b,0);for(let j=0;j<=i;j++)w[i][j]/=s;}
+  const q=n-1;
+  for(let j=0;j<n;j++)svg.appendChild(el("text",{x:ox+j*cell+cell/2,y:14,"text-anchor":"middle","font-size":8.5,"font-family":"ui-monospace,Consolas,monospace",fill:"#6a6776"},p.toks[j].slice(0,6)));
+  for(let j=0;j<n;j++){
+    if(j>q){svg.appendChild(el("rect",{x:ox+j*cell,y:oy,width:cell-2,height:cell-2,rx:2,fill:"rgba(255,255,255,.02)"}));continue;}
+    const v=w[q][j];
+    svg.appendChild(el("rect",{x:ox+j*cell,y:oy,width:cell-2,height:cell-2,rx:2,fill:"rgba(224,164,88,"+(0.08+v*0.85).toFixed(3)+")"}));
+    svg.appendChild(el("text",{x:ox+j*cell+cell/2-1,y:oy+cell+10,"text-anchor":"middle","font-size":8,"font-family":"ui-monospace,Consolas,monospace",fill:v>0.25?"#e0a458":"#54525e"},v.toFixed(2)));
+  }
+  svg.appendChild(el("text",{x:6,y:oy+cell/2+3,"font-size":8.5,"font-family":"ui-monospace,Consolas,monospace",fill:"#e0a458"},"L"+l));
+  svg.appendChild(el("text",{x:6,y:oy+cell+20,"font-size":8,"font-family":"ui-monospace,Consolas,monospace",fill:"#6a6776"},"causal: q='"+p.toks[q].slice(0,8)+"' sees only j ≤ q"));
+}
+function gdnNote(l){
+  const svg=document.getElementById("attgrid");
+  while(svg.firstChild)svg.removeChild(svg.firstChild);
+  svg.appendChild(el("text",{x:14,y:36,"font-size":11.5,"font-family":"ui-monospace,Consolas,monospace",fill:"#e0a458"},"linear attention — no attention grid"));
+  svg.appendChild(el("text",{x:14,y:58,"font-size":10.5,"font-family":"ui-monospace,Consolas,monospace",fill:"#9a97a3"},"GDN keeps a fixed-size recurrent state instead of"));
+  svg.appendChild(el("text",{x:14,y:74,"font-size":10.5,"font-family":"ui-monospace,Consolas,monospace",fill:"#9a97a3"},"scoring every past token — O(1) memory per token, 48"));
+  svg.appendChild(el("text",{x:14,y:90,"font-size":10.5,"font-family":"ui-monospace,Consolas,monospace",fill:"#9a97a3"},"value heads × 128 at layer "+l+". Full attention returns every 4th layer."));
+}
+function ffnBars(l){
+  const M=MODELS[demo.model],svg=document.getElementById("ffnbars");
+  while(svg.firstChild)svg.removeChild(svg.firstChild);
+  const rnd=mulberry32(demo.prompt*77+l*13+1),h=heat(M,l);
+  for(let i=0;i<8;i++){
+    const v=Math.min(1,rnd()*0.55+h*(0.35+rnd()*0.55)),y=6+i*8;
+    svg.appendChild(el("rect",{x:0,y:y,width:290*v,height:5,rx:2.5,fill:"rgba(167,139,220,"+(0.25+v*0.65).toFixed(3)+")"}));
+  }
+  svg.appendChild(el("text",{x:296,y:40,"font-size":9,"font-family":"ui-monospace,Consolas,monospace",fill:"#6a6776"},"slot"));
+  svg.appendChild(el("text",{x:296,y:52,"font-size":9,"font-family":"ui-monospace,Consolas,monospace",fill:"#6a6776"},"activity"));
+}
+function spark(upToLayer){
+  const M=MODELS[demo.model],svg=document.getElementById("spark");
+  while(svg.firstChild)svg.removeChild(svg.firstChild);
+  const N=M.layers,pts=[];
+  const vMax=Math.sqrt(1+0.20*N);
+  for(let i=1;i<=N;i++){const v=Math.sqrt(1+0.20*i);pts.push([10+(i-1)/(N-1)*280,46-((v-1)/(vMax-1))*36]);}
+  if(upToLayer>1)svg.appendChild(el("polyline",{points:pts.slice(0,upToLayer).map(p=>p.join(",")).join(" "),fill:"none",stroke:"#7fc8a9","stroke-width":2,"stroke-linecap":"round"}));
+  if(upToLayer>0){const p=pts[upToLayer-1];svg.appendChild(el("circle",{cx:p[0],cy:p[1],r:3.5,fill:"#7fc8a9"}));}
+  svg.appendChild(el("line",{x1:10,y1:50,x2:290,y2:50,stroke:"#2a2a36","stroke-width":1}));
+  svg.appendChild(el("text",{x:10,y:10,"font-size":9,"font-family":"ui-monospace,Consolas,monospace",fill:"#6a6776"},"depth → (SIMULATED)"));
+}
+function showPreds(){
+  const p=PROMPTS[demo.prompt],list=p.pred[demo.model],host=document.getElementById("pbars");
+  host.innerHTML=list.map(x=>'<div class="prow"><span class="lab">'+x[0].replace(/Ġ/g,"␣").replace(/Ċ/g,"⏎")+'</span><span class="track"><span class="fill" data-w="'+x[1]+'"></span></span><span class="pct">'+x[1]+'%</span></div>').join("");
+  requestAnimationFrame(()=>host.querySelectorAll(".fill").forEach(f=>{f.style.width=f.dataset.w+"%";}));
+}
+function renderStep(){
+  const st=demo.steps[demo.step];
+  if(!st)return;
+  const lab=stageLabel(st),p=PROMPTS[demo.prompt];
+  document.getElementById("trace-step").textContent=lab[0];
+  document.getElementById("trace-txt").textContent=lab[1]+(st.s==="softmax"?"  ·  "+p.note:"");
+  highlight(st);
+  if(st.s==="attn"){if(demo.model==="qwen38"&&layerKind(MODELS[demo.model],st.l)==="linear"){gdnNote(st.l);}else{attGrid(st.l);}}
+  if(st.s==="ffn")ffnBars(st.l);
+  if(st.l)spark(st.l);else spark(0);
+  if(st.s==="softmax")showPreds();
+  if(st.s==="head")document.getElementById("pbars").innerHTML='<span style="color:var(--faint);font:12px var(--mono)">scoring '+fmt(MODELS[demo.model].vocab)+" tokens…</span>";
+}
+function tick(){
+  if(!demo.playing)return;
+  demo.step++;
+  if(demo.step>=demo.steps.length){demo.playing=false;setPlayBtn();return;}
+  renderStep();
+  demo.timer=setTimeout(tick,+document.getElementById("demo-speed").value);
+}
+function setPlayBtn(){document.getElementById("btn-play").textContent=demo.playing?"⏸ Pause":"▶ Play";}
+function jumpLayer(){
+  let i=demo.step;
+  while(true){i++;if(i>=demo.steps.length){i=demo.steps.length-1;break;}if(demo.steps[i].s==="attn")break;}
+  demo.step=i;renderStep();
+}
+/* demo controls */
+const dmodelHost=document.getElementById("demo-model");
+["nano","smollm2","qwen38"].forEach(function(k){
+  const b=document.createElement("button");
+  b.className="chip"+(k===demo.model?" on":"");
+  b.textContent=MODELS[k].name;b.dataset.k=k;
+  if(k===demo.model)b.style.borderColor=MODELS[k].accent;
+  b.addEventListener("click",function(){
+    demo.model=k;demo.steps=buildSteps();demo.step=0;
+    Array.prototype.forEach.call(dmodelHost.children,function(c){
+      const on=c.dataset.k===k;
+      c.classList.toggle("on",on);
+      c.style.borderColor=on?MODELS[k].accent:"";
+    });
+    document.getElementById("pbars").innerHTML='<span style="color:var(--faint);font:12px var(--mono)">— appears after the final layer —</span>';
+    document.getElementById("attgrid").innerHTML="";
+    document.getElementById("ffnbars").innerHTML="";
+    renderStep();
+  });
+  dmodelHost.appendChild(b);
+});
+const dpromptHost=document.getElementById("demo-prompts");
+PROMPTS.forEach(function(p,i){
+  const b=document.createElement("button");
+  b.className="chip"+(i===demo.prompt?" on":"");
+  b.textContent=p.label;
+  b.addEventListener("click",function(){
+    demo.prompt=i;demo.steps=buildSteps();demo.step=0;
+    Array.prototype.forEach.call(dpromptHost.children,function(c,j){c.classList.toggle("on",j===i);});
+    renderStep();
+  });
+  dpromptHost.appendChild(b);
+});
+document.getElementById("btn-play").addEventListener("click",function(){
+  if(demo.playing){demo.playing=false;clearTimeout(demo.timer);setPlayBtn();return;}
+  if(demo.step>=demo.steps.length-1)demo.step=0;
+  demo.playing=true;setPlayBtn();tick();
+});
+document.getElementById("btn-next").addEventListener("click",function(){demo.playing=false;clearTimeout(demo.timer);setPlayBtn();jumpLayer();});
+document.getElementById("btn-reset").addEventListener("click",function(){demo.playing=false;clearTimeout(demo.timer);demo.step=0;setPlayBtn();renderStep();});
+demo.steps=buildSteps();
+/* ============================== COMPARE TABLES ============================== */
+(function(){
+  const N=MODELS.nano,S=MODELS.smollm2,Q=MODELS.qwen38;
+  const spec=[
+    ["Architecture family","LlamaForCausalLM — dense GQA decoder","LlamaForCausalLM — dense GQA decoder","Qwen4ExpForConditionalGeneration — hybrid linear/full attention + sparse MoE (Qwen4-arch preview)"],
+    ["Parameters","226,526,208 (computed)","134,515,008 (computed)","≈124.6B text stack (announced ≈125B) · ≈6B active/token"],
+    ["Layers × width","16 × 1024","30 × 576","48 × 2560"],
+    ["Token mixer","GQA · 16Q/4KV · head_dim 64 · SDPA","GQA · 9Q/3KV · head_dim 64","hybrid 3:1 — Gated DeltaNet linear (16 K / 48 V ×128, conv-4) : gated attention 24Q/2KV · head_dim 256"],
+    ["Positional encoding","RoPE θ "+N.theta,"RoPE θ "+S.theta,"mRoPE θ 10,000,000 · partial rotary 25%"],
+    ["FFN","dense SwiGLU "+N.ffn,"dense SwiGLU "+S.ffn,"sparse MoE — 512 experts, 10 active + 1 shared (inter 640)"],
+    ["Normalization","RMSNorm eps "+N.eps+" · pre-norm","RMSNorm eps "+S.eps+" · pre-norm","RMSNorm eps "+Q.eps+" · pre-norm"],
+    ["Tied embeddings","yes — embed = lm_head","yes — embed = lm_head","no — separate output head"],
+    ["Vocabulary","32,768 (CodeLlama BPE)","49,152 (SmolLM2 BPE)","248,320 (+ ngram parts)"],
+    ["Context","1,024 → 4,096 via YaRN fine-tune","8,192 native","262,144 native (256K)"],
+    ["Extra heads","—","—","1-layer MTP (multi-token prediction)"],
+    ["Precision / impl","fp16 · PyTorch SDPA (sm_75 Turing)","bf16 · HF transformers","bf16 · HF transformers (qwen4_exp)"],
+    ["Trained on","CodeSearchNet Python + Evol-Instruct (+ KD / SFT tracks)","Public SmolLM2 mix: web + code + math (multi-trillion tokens)","Post-trained multimodal preview (text stack charted here)"],
+    ["Speaks","Python code, repo and agent tasks","General chat, world knowledge, some code","General + multimodal, very long context, sparse routing"]];
+  let h="<tr><th style='width:15%'>Spec</th><th>nano_SLMs · target</th><th>SmolLM2-135M</th><th>Qwen3.8-Flash-Next</th></tr>";
+  spec.forEach(r=>{h+="<tr><td>"+r[0]+"</td><td>"+r[1]+"</td><td>"+r[2]+"</td><td>"+r[3]+"</td></tr>";});
+  document.getElementById("spec-table").innerHTML=h;
+  const sims=[
+    ["Decoder-only, autoregressive","all three predict the next token from a causal view of the past"],
+    ["Pre-RMSNorm residual blocks","x + Mixer(norm(x)); x + FFN(norm(x)) — the same wiring in all three"],
+    ["RoPE-based positioning","positions enter as rotations of Q/K in all three (Qwen rotates just 25% of dims, multi-modal mRoPE)"],
+    ["SiLU-gated FFN / expert modules","SwiGLU MLPs in the dense pair; SwiGLU experts inside the MoE — the same gated recipe"],
+    ["Causal mask","strict left-to-right information flow in all three"],
+    ["Residual highway","layers only ADD edits onto the running token vector — everywhere"],
+    ["GQA-style KV sharing","nano 16→4 · SmolLM2 9→3 · Qwen full-attn 24→2 — sparser KV sharing every generation"]];
+  document.getElementById("sim-list").innerHTML=sims.map(s=>"<li><b>"+s[0]+"</b> — "+s[1]+"</li>").join("");
+  const diffs=[
+    "Attention engine: pure GQA everywhere in the dense pair vs Qwen's 3:1 linear-GDN / full-attention hybrid + a lightning indexer — the very pattern this repo's own GDN-hybrid milestone (G1) imitates at small scale",
+    "FFN: one dense key–value memory layer vs 512 routed experts + 1 shared — 'the knowledge base' shattered into 24,576 small memories",
+    "Sparsity: 100% of parameters active per token in the dense pair vs ~5% in the MoE (10 of 512 experts)",
+    "Tied embeddings: BOTH dense models tie; Qwen does not — separate 0.64B output head",
+    "Scale: 226.5M and 134.5M dense vs ≈125B total / ≈6B active MoE",
+    "Context: 1k→4k (YaRN) and 8k vs 262,144 native — the linear layers make long context cheap",
+    "Decoding: one token per step vs MTP: 1 extra draft layer predicts multiple tokens ahead",
+    "Diet: Python code vs trillions of text/code/math tokens vs post-trained multimodal preview"];
+  document.getElementById("diff-list").innerHTML=diffs.map(d=>"<li>"+d+"</li>").join("");
+  const pt=[
+    ["Token IDs → embedding row","Single-token meaning; the first learned layer of knowledge.","nano / SmolLM2: tied with the output head · Qwen: untied (+0.64B head)"],
+    ["Attention layers","Routes information between positions — moves knowledge; does not store it.",fmt(pAttn(N))+" / layer · "+fmt(pAttn(S))+" / layer · Qwen: full attn ≈36M every 4th layer, GDN linear ≈42M"],
+    ["FFN / expert modules","Key–value memory: facts, idioms, skills — the knowledge base, strongest mid-depth.",(100*pFFN(N)/pTotal(N)).toFixed(0)+"% of nano · "+(100*pFFN(S)/pTotal(S)).toFixed(0)+"% of SmolLM2 · ~97% of Qwen across 24,576 experts"],
+    ["RMSNorm ×3 per layer path","Keeps the residual stream scaled; carries no knowledge.","identical placement in all three"],
+    ["Residual stream","Each layer ADDS an edit onto the token's running vector.","the core connection in all three"],
+    ["Final norm + LM head","Reads the vector out as vocabulary-wide scores → softmax → next token.","tied (dense pair) vs separate head (Qwen)"],
+    ["Early band","Surface form: spelling, local grammar, short-range copying.","nano L1–5 · SmolLM2 L1–10 · Qwen L1–12"],
+    ["Middle band","Facts and semantics — 'what things mean'.","nano L6–11 · SmolLM2 L11–20 · Qwen L13–36"],
+    ["Late band","Task assembly and prediction prep — 'what comes next'.","nano L12–16 · SmolLM2 L21–30 · Qwen L37–48"]];
+  let ph="<tr><th style='width:22%'>Component</th><th>Purpose · where its learning shows up</th><th style='width:34%'>In the three models</th></tr>";
+  pt.forEach(r=>{ph+="<tr><td><b>"+r[0]+"</b></td><td>"+r[1]+"</td><td><span class='dim2'>"+r[2]+"</span></td></tr>";});
+  document.getElementById("ptable").innerHTML=ph;
+})();
+spark(0);
+</script>
+</body>
+</html>

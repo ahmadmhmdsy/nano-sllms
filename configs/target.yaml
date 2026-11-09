@@ -1,0 +1,69 @@
+# M3 target: ~250M params; run only after the M1 probe approves it (PLAN.md §3).
+name: target
+
+tokenizer:
+  name: codellama/CodeLlama-7b-hf
+  vocab_size: 32768
+
+model:
+  layers: 16
+  hidden: 1024
+  heads: 16
+  kv_heads: 4
+  ffn: 3072
+  ctx: 1024
+  dropout: 0.0
+  tie_embeddings: true
+
+data:
+  # the-stack-v2 is gated; bare 'code_search_net' no longer resolves on the Hub
+  # (moved under a namespace). CodeSearchNet python = 150k real GitHub functions,
+  # verified streaming (2026-09). Evol-Instruct is the ungated fallback.
+  dataset_candidates:
+    - name: code-search-net/code_search_net
+      config: python
+    - name: nickrosh/Evol-Instruct-Code-80k-v1
+  rows: 150000
+  val_fraction: 0.02
+  dedupe: true
+  min_chars: 200
+  shard_tokens: 8000000
+  raw_dir: data/target/raw
+  tokens_dir: data/target/tokens
+
+train:
+  output_dir: runs/target
+  final_dir: runs/target/final
+  # 5000 steps @ ctx 1024 = 164M tokens (same budget as 10k @ 512; VRAM probe
+  # 2025-11: seq 1024 peak 4.24 GB allocated / 4.4 GB reserved on RTX 3000 6 GB).
+  max_steps: 5000
+  early_stopping_patience: 3
+  batch: 1
+  eval_batch: 2             # 2x1024 = pilot's 4x512 eval tile; keeps mid-train eval VRAM safe on 6 GB
+  accum: 32
+  lr: 4.0e-4
+  scheduler: cosine
+  warmup_steps: 150
+  weight_decay: 0.1
+  max_grad_norm: 1.0
+  logging_steps: 50
+  # User decision at the step-2000 resume: checkpoint every 100-200 steps to
+  # bound crash loss (100 ~ 40 min at the throttled pace); rotation keeps the
+  # best (eval_loss) + 2 latest, <=3 on disk. HF requires save_steps to be a
+  # round multiple of eval_steps when load_best_model_at_end is on, so eval
+  # moved 500 -> 100 to stay aligned with the tighter save cadence.
+  eval_steps: 100
+  save_steps: 100
+  save_total_limit: 3
+  fp16: true
+  grad_ckpt: true
+  optim: adamw_torch          # 8-bit Adam is the M1-gated fallback
+  dataloader_num_workers: 2
+  seed: 42
+
+eval:
+  max_new_tokens: 64
+  prompts:
+    - "def fibonacci(n):"
+    - "import numpy as np\n\ndef mean_absolute_error(y_true, y_pred):"
+    - "class Stack:"

@@ -1,0 +1,50 @@
+# SA-B step 3 (HANDOFF 2026-10-27i/j, user-approved 2026-10-27): SA-4 retrained on the scope-weighted view
+# data/sa_b_scoped/sa4 (scratch/sa_b_train_view.py: in-scope he/mbpp/fix/repair x2, imports/helpers 50 %).
+# Identical to configs/sft_sa4.yaml except dataset_dir and output paths. 74,089 rows ~ 1,158 steps.
+# Init: runs/sa3_scale075 (as SA-4). Judge: 370 clean gate + 99 scoped gate vs runs/sa4_scale075.
+name: sft_sa_b
+
+base_model: runs/sa3_scale075
+
+tokenizer:
+  name: models/hf/SmolLM2-135M   # SmolLM2's own tokenizer (eos <|endoftext|>=0)
+  vocab_size: 49152
+
+model:
+  ctx: 8192
+
+data:
+  dataset_dir: data/sa_b_scoped/sa4/ds
+
+sft:
+  ctx: 1024
+  pilot_rows: 2048
+
+peft:
+  r: 16
+  lora_alpha: 32
+  lora_dropout: 0.0
+  target_modules: [q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj]
+  bias: none
+
+train:
+  output_dir: runs/sft_sa_b
+  final_dir: runs/sft_sa_b/final
+  epochs: 1
+  batch: 8
+  eval_batch: 8
+  accum: 8
+  lr: 1.0e-4
+  scheduler: cosine
+  warmup_steps: 30
+  weight_decay: 0.0
+  max_grad_norm: 1.0
+  logging_steps: 10
+  eval_steps: 200
+  save_steps: 200
+  save_total_limit: 3
+  fp16: true
+  grad_ckpt: true
+  optim: adamw_torch
+  dataloader_num_workers: 2
+  seed: 42

@@ -1,0 +1,18 @@
+# D-pilot FAST deep-narrow variant per user decision (2026-09-12): 128-ctx local task,
+# ~22M params, 14 layers x 384 hidden. Replaces the 1024-ctx 30M pilot (~17s/step too slow).
+# 1000-step smoke passed (val_acc 0.9090 @ step 1000, ~0.25s/step) — full rung active per user 2026-09-12.
+phase: pilot128
+model:
+  hidden: 384
+  layers: 14
+  n_heads: 8
+  n_kv: 2
+  ffn: 1536
+  ctx: 128
+lr: 2.0e-4
+weight_decay: 0.1
+batch_size: 32
+accum: 1
+total_steps: 30000
+save_every: 200
+log_every: 100

@@ -1,0 +1,63 @@
+# M2 pilot: ~110M params, real multi-hour run (PLAN.md §3).
+name: pilot
+
+tokenizer:
+  name: codellama/CodeLlama-7b-hf
+  vocab_size: 32768
+
+model:
+  layers: 12
+  hidden: 768
+  heads: 12
+  kv_heads: 4
+  ffn: 2048
+  ctx: 512
+  dropout: 0.0
+  tie_embeddings: true
+
+data:
+  # the-stack-v2 is gated (needs manual terms acceptance on the HF page) so it
+  # cannot be used from this session; these are public, ungated equivalents.
+  dataset_candidates:
+    - name: bigcode/the-stack-smol
+      data_dir: data/python   # 'config: python' builder is GONE from the Hub (only 'default' remains; probed 2026-09-09)
+    - name: bigcode/starcoderdata
+      config: python
+    - name: nickrosh/Evol-Instruct-Code-80k-v1
+  rows: 50000
+  val_fraction: 0.02
+  dedupe: true
+  min_chars: 200
+  shard_tokens: 8000000
+  raw_dir: data/pilot/raw
+  tokens_dir: data/pilot/tokens
+
+train:
+  output_dir: runs/pilot
+  final_dir: runs/pilot/final
+  max_steps: 3000
+  early_stopping_patience: 3
+  batch: 1
+  eval_batch: 4
+  accum: 32
+  lr: 4.0e-4
+  scheduler: cosine
+  warmup_steps: 100
+  weight_decay: 0.1
+  max_grad_norm: 1.0
+  logging_steps: 50
+  eval_steps: 500
+  save_steps: 500
+  save_total_limit: 3
+  fp16: true
+  grad_ckpt: true
+  optim: adamw_torch          # switch to adamw_bnb_8bit only if OOM
+  dataloader_num_workers: 2
+  seed: 42
+
+eval:
+  max_new_tokens: 64
+  prompts:
+    - "def fibonacci(n):"
+    - "import numpy as np\n\ndef mean_absolute_error(y_true, y_pred):"
+    - "class Stack:"

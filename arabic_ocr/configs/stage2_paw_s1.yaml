@@ -1,0 +1,44 @@
+# Stage 2 - PAW detector, STRIDE-1 variant (plan V2, docs/plans/2026-09-29-arabic-ocr-nano-model.md)
+# Gate: PAW Hmean >= 90% on held-out synthetic pages.
+#
+# Why stride 1: the stride-2 CRAFT region score ceilings at 92.27% with a PERFECT
+# map, so the 90% gate has only 2.3 points of headroom -- and at the thresholds
+# where merging is controllable (tau 0.7) the ceiling is 86.28%, BELOW the gate
+# (HANDOFF 2026-10-04 (j)/(k)). At stride 1 the measured ceiling is 96.91% (k=0.15).
+# The measured defect at stride 2 was that a PAW's Gaussian has sigma ~= 1.7 output
+# px (sub-pixel); stride 1 doubles it to ~3.4 px.
+name: stage2_paw_s1
+data:
+  train_dir: runs/stage2_synth/train
+  val_dir: runs/stage2_synth/val
+  image_height: 720
+  image_width: 960
+  min_side: 6          # PAWs thinner than this are dropped from the target (see paw_targets.py)
+  output_stride: 1     # stride-1 variant; sigma doubles vs the stride-2 runs
+  shrink_ratio: 0.4
+  target_mode: craft
+  craft_k: 0.2
+  batch_size: 4        # halved for the 4x larger output map; accum doubled to keep effective 16
+  num_workers: 4
+model:
+  type: paw_detector
+  widths: [32, 64, 128, 224]
+  blocks: [1, 1, 2, 1]
+  fpn: 80
+  out_stride: 1
+train:
+  epochs: 30
+  lr: 0.001
+  weight_decay: 0.0001
+  max_grad_norm: 5.0
+  accum: 4
+  pos_weight: 10.0
+  thresh_weight: 0.0   # craft eval never reads the thresh head (HANDOFF (j))
+  amp: true
+  save_dir: runs/stage2_paw_s1
+  eval_interval: 2
+  log_interval: 20
+  gate: 90.0
+eval:
+  iou_thr: 0.5
+  min_side: 6

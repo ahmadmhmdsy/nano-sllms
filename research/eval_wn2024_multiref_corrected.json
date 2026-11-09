@@ -1,0 +1,128 @@
+{
+  "artifact": "WikiNews 2024 multi-reference DER (corrected)",
+  "generated": "2026-10-02 11:29:51",
+  "generator": "diacritizer/scripts/eval_multi_ref.py",
+  "command_template": ".venv\\Scripts\\python.exe diacritizer\\scripts\\eval_multi_ref.py --pred <PRED> --ref models\\e19\\wn2024.gold.raw.pred.ref.txt --model <NAME>",
+  "ref": {
+    "path": "models/e19/wn2024.gold.raw.pred.ref.txt",
+    "sha256": "8353777058E515253DB67D152BCC61180732BBA6F3BAF1334FC92B6B41525705",
+    "lines": 356,
+    "words": 10616
+  },
+  "correction": {
+    "date": "2026-10-02",
+    "what": "eval_multi_ref.py main() aggregation was buggy: it summed per-line DER fractions and divided by total words, under-reporting the corpus rate by ~words-per-line (~29.8x) and changing the ranking.",
+    "fix": "Word-weighted aggregation (accumulate rate*words per line, divide by total words), matching eval_der.aggregate.",
+    "prior_s7_der": 0.023393011037157595,
+    "corrected_s7_der": 0.6864167294649586
+  },
+  "cross_check": {
+    "method": "diacritizer/scripts/eval.py compare on the same s7 pred/ref",
+    "registered_wikinews2024_gate_der": 0.68604,
+    "corrected_multi_ref_der": 0.6864167294649586,
+    "verdict": "MATCH (parity confirmed per MEMORY 71)"
+  },
+  "caveat": "The WikiNews 2024 gate inputs contain '/' alternatives; models copy '/' into predictions. DER compares diacritic marks only ('/' is not a mark), so DER is robust, but absolute values are on a contaminated-input condition and are not comparable to clean-input DER figures. mishkala/zmahood are recomputed here on the same condition, not their published numbers.",
+  "results_sorted_by_der_ascending": [
+    {
+      "model": "zmahood",
+      "pred": "models/e19/wn2024.zmahood.pred.txt",
+      "der": 0.4788055764883195,
+      "der_nocase": 0.4205915599095705,
+      "wer": 0.48021853805576487,
+      "preserve": 0.9255840241145441,
+      "words": 10616,
+      "lines": 356
+    },
+    {
+      "model": "mishkala",
+      "pred": "models/e19/wn2024.mishkala.pred.txt",
+      "der": 0.5244913338357197,
+      "der_nocase": 0.4585531273549359,
+      "wer": 0.5257159005275056,
+      "preserve": 0.8943104747550866,
+      "words": 10616,
+      "lines": 356
+    },
+    {
+      "model": "e63s_s4_12l160",
+      "pred": "models/e19/wn2024.e63s_s4_12l160.pred.txt",
+      "der": 0.5589675960813866,
+      "der_nocase": 0.46288620949510173,
+      "wer": 0.5594385832705351,
+      "preserve": 0.9255840241145441,
+      "words": 10616,
+      "lines": 356
+    },
+    {
+      "model": "stage2b2500",
+      "pred": "models/e19/wn2024.gold.raw.pred.txt",
+      "der": 0.5765825169555389,
+      "der_nocase": 0.47418990203466466,
+      "wer": 0.5770535041446873,
+      "preserve": 0.9255840241145441,
+      "words": 10616,
+      "lines": 356
+    },
+    {
+      "model": "e63s_s3_8l272",
+      "pred": "models/e19/wn2024.e63s_s3_8l272.pred.txt",
+      "der": 0.5835531273549359,
+      "der_nocase": 0.4636397889977393,
+      "wer": 0.5841183119819141,
+      "preserve": 0.9255840241145441,
+      "words": 10616,
+      "lines": 356
+    },
+    {
+      "model": "e63s_s5_10l128",
+      "pred": "models/e19/wn2024.e63s_s5_10l128.pred.txt",
+      "der": 0.5923134890730972,
+      "der_nocase": 0.49067445365486057,
+      "wer": 0.5928786737000754,
+      "preserve": 0.9255840241145441,
+      "words": 10616,
+      "lines": 356
+    },
+    {
+      "model": "e63s_s2_10l272",
+      "pred": "models/e19/wn2024.e63s_s2_10l272.pred.txt",
+      "der": 0.5998492840994725,
+      "der_nocase": 0.4730595327807084,
+      "wer": 0.6004144687264507,
+      "preserve": 0.9255840241145441,
+      "words": 10616,
+      "lines": 356
+    },
+    {
+      "model": "e63s_s1_12l272",
+      "pred": "models/e19/wn2024.e63s_s1_12l272.pred.txt",
+      "der": 0.6051243406179352,
+      "der_nocase": 0.4794649585531274,
+      "wer": 0.6055953278070837,
+      "preserve": 0.9255840241145441,
+      "words": 10616,
+      "lines": 356
+    },
+    {
+      "model": "e63s_s6_8l96",
+      "pred": "models/e19/wn2024.e63s_s6_8l96.pred.txt",
+      "der": 0.6068198944988696,
+      "der_nocase": 0.515542577241899,
+      "wer": 0.607290881688018,
+      "preserve": 0.9255840241145441,
+      "words": 10616,
+      "lines": 356
+    },
+    {
+      "model": "e63s_s7_18l64",
+      "pred": "runs/diac/e63s_s7_18l64/final/pred_wikinews2024.txt",
+      "der": 0.6864167294649586,
+      "der_nocase": 0.60060286360211,
+      "wer": 0.686887716654107,
+      "preserve": 0.9255840241145441,
+      "words": 10616,
+      "lines": 356
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+schema_version: 1
+experiments:
+  - id: ui/E-001
+    scope: ui
+    status: closed
+    verdict: accepted
+    evidence: []

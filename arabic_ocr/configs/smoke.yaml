@@ -1,0 +1,39 @@
+# Smoke test config for Arabic OCR nano model
+name: smoke
+
+model:
+  type: vit_decoder  # vit_decoder, crnn, vlm, distilled
+  patch_size: 16
+  image_height: 48
+  image_width: 256
+  vit_layers: 4
+  vit_hidden: 256
+  vit_heads: 4
+  vit_ffn: 1024
+  decoder_layers: 4
+  decoder_hidden: 256
+  decoder_heads: 4
+  vocab_size: 256  # character-level
+  max_seq_len: 64
+  dropout: 0.1
+
+data:
+  train_dir: data/tiny/train
+  val_dir: data/tiny/val
+  batch_size: 4
+  num_workers: 0
+  image_height: 48
+  image_width: 256
+
+train:
+  epochs: 2
+  lr: 0.001
+  weight_decay: 0.01
+  max_grad_norm: 1.0
+  save_dir: runs/smoke
+  log_interval: 5
+  eval_interval: 10
+
+eval:
+  batch_size: 8
+  max_new_tokens: 64

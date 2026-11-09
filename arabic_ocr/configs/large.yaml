@@ -1,0 +1,39 @@
+# Large CRNN model config for Arabic OCR
+name: large
+
+model:
+  type: crnn
+  vocab_size: 256
+  image_height: 48
+  image_width: 256
+  cnn_channels: [64, 128, 256, 512]  # Larger CNN
+  cnn_kernel: 3
+  cnn_stride: 2
+  cnn_padding: 1
+  lstm_hidden: 512  # Larger LSTM
+  lstm_layers: 3  # More layers
+  lstm_dropout: 0.2
+  dropout: 0.2
+
+data:
+  train_dir: data/real/train
+  val_dir: data/real/val
+  batch_size: 16
+  num_workers: 2
+  image_height: 48
+  image_width: 256
+  augment: true
+
+train:
+  epochs: 50
+  lr: 0.0001
+  weight_decay: 0.01
+  max_grad_norm: 1.0
+  save_dir: runs/large
+  log_interval: 20
+  eval_interval: 1
+  pretrained: runs/full/best.pt
+
+eval:
+  batch_size: 32
+  max_new_tokens: 64

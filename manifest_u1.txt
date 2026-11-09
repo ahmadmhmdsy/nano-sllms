@@ -1,0 +1,6 @@
+U-1 resume pack manifest 2026-09-24
+- runs/u1_full/final/model.safetensors  sha256 DF49EC923657E7E2E9521308C4F5F172E091E944F4BA5EE485D6A72CF0FB8215
+- runs/u1_full/final/{config.json,generation_config.json,tokenizer.json,tokenizer_config.json} - small, git-tracked anyway (belt+braces)
+- runs/u1_full/final/train_summary.json + runs/u1_full/logs/ tfevents stay git-tracked; verify eval 0.2705 after restore
+- data/u1/full/tokens/*.bin + configs/u1_* + ui/ are GIT-TRACKED (commit 8c3cb40): no need in the zip
+- regenerable locally and NOT in the zip: data/u1/raw/u1_main_50k.jsonl (ui.scripts.build_corpus --per-arch 6250 --seed 0) and data/u1/raw/side/omen_alpha_all*.jsonl (concat of the 4 tracked ui/data/omen_alpha/side_*_batch files; authoring scripts scratch/omen_side_build*.py kept on this machine and gitignored by policy)

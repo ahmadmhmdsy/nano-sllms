@@ -1,0 +1,24 @@
+== e70_c4b_ctx256  (12 probes with all 3 gates)
+   3-gate mean: min=0.374792  mean=0.388148  max=0.402974  band=7.52% of min
+   rho(fadel_test  , sadeed25    ) = +0.888
+   rho(fadel_test  , wikinews2014) = +0.783
+   rho(sadeed25    , wikinews2014) = +0.755
+   mean inter-gate rho = +0.809
+   Spearman-Brown reliability of the 3-gate mean = 0.927
+   -> ceiling on |rho| any dev set can reach vs this mean = 0.963
+   rho(fadel_test   vs mean of other 2) = +0.818
+   rho(sadeed25     vs mean of other 2) = +0.832
+   rho(wikinews2014 vs mean of other 2) = +0.811
+
+== e69_c4_ctx256  (12 probes with all 3 gates)
+   3-gate mean: min=0.387232  mean=0.398088  max=0.410390  band=5.98% of min
+   rho(fadel_test  , sadeed25    ) = +0.804
+   rho(fadel_test  , wikinews2014) = +0.867
+   rho(sadeed25    , wikinews2014) = +0.860
+   mean inter-gate rho = +0.844
+   Spearman-Brown reliability of the 3-gate mean = 0.942
+   -> ceiling on |rho| any dev set can reach vs this mean = 0.971
+   rho(fadel_test   vs mean of other 2) = +0.811
+   rho(sadeed25     vs mean of other 2) = +0.860
+   rho(wikinews2014 vs mean of other 2) = +0.839
+

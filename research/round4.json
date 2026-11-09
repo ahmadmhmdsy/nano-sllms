@@ -1,0 +1,30 @@
+[
+  {
+    "kind": "contents",
+    "slug": "c9_arxiv_full",
+    "urls": [
+      "https://arxiv.org/html/2608.30320"
+    ],
+    "max_characters": 60000
+  },
+  {
+    "kind": "contents",
+    "slug": "c10_flashnext_blog",
+    "urls": [
+      "https://qwen.ai/blog?id=qwen3.8-flash-next"
+    ],
+    "max_characters": 20000
+  },
+  {
+    "kind": "answer",
+    "slug": "a3_qwen3_report_training",
+    "query": "Summarize the Qwen3 Technical Report (arXiv 2505.09388): pretraining (36 trillion tokens, three stages), the four-stage post-training pipeline (long chain-of-thought SFT, reasoning RL, thinking-mode fusion SFT, general RL), and how small Qwen3 models (0.6B-8B) were trained via strong-to-weak distillation from larger Qwen3 flagships."
+  },
+  {
+    "kind": "search",
+    "slug": "s9_qwen35_report",
+    "query": "Qwen3.5 technical report pretraining tokens hybrid attention",
+    "num": 5,
+    "type": "auto"
+  }
+]

@@ -1,0 +1,35 @@
+# E-58: 15-label head remount on the dia2f_replay trunk (user-approved rung).
+# Tooling: mex/scripts/train_e58_head.py (LoRA + MarkHead15 on v3q bare rows,
+# per-base 15-class CE), merges LoRA into the trunk, saves
+# runs/mex/dia2h_15head/{model.safetensors, head15.safetensors}.
+name: dia2h_e58b
+model: { layers: 2, hidden: 1280, heads: 32, kv_heads: 16, ctx: 96, ffn: 5120, dropout: 0.0, tie_embeddings: false }
+base_run: runs/mex/dia2f_replay/final
+train:
+  output_dir: runs/mex/dia2g_15head
+  final_dir: runs/mex/dia2g_15head
+  seed: 42
+  batch: 128
+  accum: 2
+  max_steps: 4000
+  eval_steps: 1000
+  save_steps: 1000
+  lr: 0.00005
+  warmup_steps: 50
+  weight_decay: 0.1
+  max_grad_norm: 1.0
+  fp16: true
+  head_lr: 0.001
+data:
+  v3q_src: data/diac/v3q/tokens
+  train_rows: 512000
+  val_rows: 60000
+lora:
+  targets: [q_proj, v_proj, gate_proj, up_proj, down_proj]
+  r: 8
+  alpha: 16
+  dropout: 0.05
+gates:
+  g1: "external mark-acc mean >= 0.65"
+  g2: "contrastive_lift mean >= 0.20"
+  g3: "composed per-base 15-way acc >= 0.78 AND mixed CE <= 2.5"

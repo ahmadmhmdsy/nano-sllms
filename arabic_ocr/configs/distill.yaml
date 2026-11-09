@@ -1,0 +1,62 @@
+# Knowledge distillation config
+name: distill
+
+# Teacher model (larger, more accurate)
+teacher_model:
+  type: vit_decoder
+  patch_size: 16
+  image_height: 48
+  image_width: 256
+  vit_layers: 8
+  vit_hidden: 512
+  vit_heads: 8
+  vit_ffn: 2048
+  decoder_layers: 8
+  decoder_hidden: 512
+  decoder_heads: 8
+  vocab_size: 256
+  max_seq_len: 64
+  dropout: 0.1
+
+# Student model (smaller, faster)
+model:
+  type: vit_decoder
+  patch_size: 16
+  image_height: 48
+  image_width: 256
+  vit_layers: 4
+  vit_hidden: 256
+  vit_heads: 4
+  vit_ffn: 1024
+  decoder_layers: 4
+  decoder_hidden: 256
+  decoder_heads: 4
+  vocab_size: 256
+  max_seq_len: 64
+  dropout: 0.1
+
+data:
+  train_dir: data/all_data/train
+  val_dir: data/all_data/val
+  batch_size: 32
+  num_workers: 4
+  image_height: 48
+  image_width: 256
+  augment: true
+
+train:
+  epochs: 30
+  lr: 0.0001
+  weight_decay: 0.01
+  max_grad_norm: 1.0
+  save_dir: runs/distilled
+  log_interval: 50
+  eval_interval: 1
+
+distill:
+  temperature: 2.0
+  alpha: 0.5
+
+eval:
+  batch_size: 64
+  max_new_tokens: 64

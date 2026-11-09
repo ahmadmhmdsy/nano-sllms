@@ -1,0 +1,100 @@
+schema_version: 2
+release: r1
+capabilities: [pretrain]
+# E-012 continuation: u5_full_long completed at step 2400 still underfit
+# (val_loss 1.008, still decreasing). This arm doubles the budget to 4800 steps
+# to find the plateau. Same recipe: 12L/192h, 73.6k fused corpus, eos+final_n.
+# Checkpoint policy: last (save during training, not just at completion)
+# to avoid losing progress on crash (rules/gpu.md checkpoint frequency rule).
+run: {name: u5_full_long2, namespace: ui, stage: S, seed: 42}
+data:
+  dataset_id: ui_chain_eos_u5full
+  sources:
+    - source_id: u5-large-fused
+      kind: local
+      path_or_repo: data/u4/prepared/raw/train.jsonl
+      revision: null
+      file_set: [train.jsonl]
+      role: train
+      license: Repo-internal-synthetic
+      expected_rows: 73600
+      expected_tokens: 0
+      freshness_policy: {max_age: pinned, supersession: explicit_generation, optional_reason: null}
+      optional_profile: null
+  split_salt: 17
+  validation_fraction: 0.1
+  dedupe: exact_hash
+  normalization: ui_task_nl
+  filters: []
+  regeneration_command: ["& .venv/Scripts/python.exe", "-m ui.scripts.build_fused_u4"]
+tokenizer:
+  source: local
+  revision_or_files: data/target/tokenizer/tokenizer.json
+  special_ids: {pad: 0, bos: 1, eos: 2}
+  context: 512
+  offsets: special_tokens
+model:
+  architecture: llama
+  hidden: 192
+  intermediate: 768
+  layers: 12
+  heads: 8
+  kv_heads: 2
+  context: 512
+  precision: fp16
+  attention: sdpa
+  tied_embeddings: true
+  base_model: null
+train:
+  optimizer: adamw
+  scheduler: cosine
+  learning_rate: 1.0e-3
+  max_steps: 4800
+  batch_size: 8
+  gradient_accumulation: 2
+  max_grad_norm: 1.0
+  checkpoint_every_steps: 50
+  evaluation_cadence: 240
+  checkpoint_policy: last
+  keep_last_checkpoints: 3
+  keep_best_checkpoints: 1
+  resume: true
+  checkpoint_averaging: final_n
+  checkpoint_averaging_n: 2
+  monitor:
+    enabled: true
+    eval_fraction: 0.1
+    probe_tasks_file: data/u5/prepared/probe_tasks.jsonl
+    probe_tasks: 20
+    probe_k: 1
+    probe_pass_k: 4
+    probe_temperature: 0.8
+    probe_top_p: 0.95
+    probe_max_new_tokens: 256
+    overfit_patience: 2
+  early_stop:
+    enabled: true
+    patience_evals: 4
+    min_steps_fraction: 0.5
+evaluation:
+  ids: [validation_loss]
+  versions: ["1"]
+  suites: [validation]
+  metrics: [val_loss, val_perplexity]
+  cadence_steps: 100
+  thresholds: {val_loss: 12.0, val_perplexity: 162000.0}
+  generation_samples: 1
+  generation_max_new_tokens: 32
+  directions: {val_loss: min, val_perplexity: min}
+  selection_policy: best_validation_loss
+runtime:
+  device: cuda:0
+  precision: fp16
+  launch_profile: u2-arm
+  vram_fraction: 0.55
+features: {retention: manual, promotion: null}
+packing:
+  mode: concat
+  sequence_length: 512
+  overflow_policy: fail
+  dropped_tail_policy: count_and_drop

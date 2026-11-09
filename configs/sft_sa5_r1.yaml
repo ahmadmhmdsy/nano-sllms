@@ -1,0 +1,51 @@
+# SA-5 round 1 (research/2026-10-26_sa5_rft_proposal.md): LoRA SFT on rejection-sampled rows from
+# runs/sa4_scale075 (scripts/sa5_rft.py --round 1 --code 300 --fix 500 --tool 300 -> data/sa5_r1 ->
+# scripts/sa3_data.py). 767 rows (575 kept + 192 SA-4 replay), 188k tokens; val = data/sa4/val (748 rows).
+# Copied from sft_sa4.yaml; small set -> 2 epochs, accum 4 (eff. batch 32) ~ 48 steps, eval/save every 12.
+# Then lora_scale_merge.py at 0.75 and 1.0 and the SA-5 gate.
+name: sft_sa5_r1
+
+base_model: runs/sa4_scale075
+
+tokenizer:
+  name: models/hf/SmolLM2-135M   # SmolLM2's own tokenizer (eos <|endoftext|>=0)
+  vocab_size: 49152
+
+model:
+  ctx: 8192
+
+data:
+  dataset_dir: data/sa5_r1/ds
+
+sft:
+  ctx: 1024
+  pilot_rows: 256
+
+peft:
+  r: 16
+  lora_alpha: 32
+  lora_dropout: 0.0
+  target_modules: [q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj]
+  bias: none
+
+train:
+  output_dir: runs/sft_sa5_r1
+  final_dir: runs/sft_sa5_r1/final
+  epochs: 2
+  batch: 8
+  eval_batch: 8
+  accum: 4
+  lr: 1.0e-4
+  scheduler: cosine
+  warmup_steps: 5
+  weight_decay: 0.0
+  max_grad_norm: 1.0
+  logging_steps: 2
+  eval_steps: 12
+  save_steps: 12
+  save_total_limit: 4
+  fp16: true
+  grad_ckpt: true
+  optim: adamw_torch
+  dataloader_num_workers: 2
+  seed: 42

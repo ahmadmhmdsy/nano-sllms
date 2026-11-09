@@ -1,0 +1,40 @@
+# SmolLM2-135M — dims from the published HF config.json (verified 2026-09-10)
+id: smollm2
+name: SmolLM2-135M
+fullName: LlamaForCausalLM — HuggingFaceTB
+accent: "#e0a458"
+archKind: denseGqaMoe
+blurb: >-
+  HuggingFace's small general-purpose chat model: the same skeleton as
+  nano_SLMs, but deeper-and-narrower, bigger vocabulary, longer native context.
+tok: SmolLM2 tokenizer (49k, BPE)
+data: "Public SmolLM2 mix — English web + code + math (multi-trillion-token recipe)"
+domain: General text · chat · knowledge
+shape:
+  layers: 30
+  d: 576
+  heads: 9
+  kv: 3
+  ffn: 1536
+  vocab: 49152
+  ctx: "8,192 native"
+  theta: "100,000"
+  eps: "1e-5"
+  tied: true
+  precision: bf16
+  attentionImpl: HF transformers (SDPA)
+bands: { early: [1, 10], mid: [11, 20], late: [21, 30] }
+facts:
+  tokens: [The, "Ġcapital", "Ġof", "ĠFrance", "Ġis"]
+  top1: "ĠParis"
+demo:
+  preds:
+    france: [["ĠParis", 71], ["Ġa", 6], ["Ġlocated", 5], ["Ġnow", 3], ["Ġthe", 3]]
+    code: [["Ċ", 30], ["ĠĠ", 22], ["Ġreturn", 11], ["ĠĠĠĠ", 9], ["Ġ#", 5]]
+    fox: [["Ġjumps", 62], ["Ġjumped", 9], ["Ġover", 6], ["Ġran", 5], ["Ġis", 4]]
+honesty:
+  sources:
+    - "published HF config.json: https://huggingface.co/HuggingFaceTB/SmolLM2-135M/raw/main/config.json"
+  trainedOn: Public SmolLM2 mix — web + code + math, multi-trillion tokens
+  speaks: General chat, world knowledge, some code
+  simulatedNote: all activations SIMULATED; depth bands are rule-of-thumb

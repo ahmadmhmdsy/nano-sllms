@@ -1,0 +1,16 @@
+{
+  "scope": "core",
+  "requested_outcome": "Add deterministic offline task-closeout reflection support",
+  "actual_outcome": "Reflection generator, archive docs, and lesson staging added",
+  "changed_files": ["docs/agent/REFLECTION.md", "scripts/closeout_reflection.py"],
+  "validation_performed": ["unittest tests.agent_context.test_closeout_reflection -v"],
+  "failures_near_misses": [],
+  "root_causes": [],
+  "fixes": [],
+  "evidence": ["tests/agent_context/test_closeout_reflection.py"],
+  "reusable_lesson": "Validate reflection payloads before any repository write.",
+  "rule_candidate": "closeout: run the dry-run reflection before any --write",
+  "open_questions": [],
+  "confidence_limitations": "Fully offline and deterministic; not exercised against dynamic repository state.",
+  "source_reflection": "docs/reflections/example.md"
+}

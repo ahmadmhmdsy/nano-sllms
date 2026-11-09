@@ -1,0 +1,98 @@
+schema_version: 2
+release: r1
+capabilities: [pretrain]
+# U-5 small depth arm (u5b): 14L/160h; micro-batch 4 x accum 4 (same effective
+# batch 8 as u5a - E-12 lesson) after the 14L arch OOM'd at micro-batch 8 under
+# the 0.55 allocator ceiling (BLOCKED run preserved, batch tuning is declared).
+run: {name: u5b_depth14_small, namespace: ui, stage: S, seed: 42}
+data:
+  dataset_id: ui_chain_eos_u5small
+  sources:
+    - source_id: u5-small-slice
+      kind: local
+      path_or_repo: data/u5/prepared/raw/train_small.jsonl
+      revision: null
+      file_set: [train_small.jsonl]
+      role: train
+      license: Repo-internal-synthetic
+      expected_rows: 12000
+      expected_tokens: 0
+      freshness_policy: {max_age: pinned, supersession: explicit-generation, optional_reason: null}
+      optional_profile: null
+  split_salt: 17
+  validation_fraction: 0.1
+  dedupe: exact_hash
+  normalization: ui_task_nl
+  filters: []
+  regeneration_command: ["& .\\.venv\\Scripts\\python.exe", "scratch\\build_u5_small_slice.py"]
+tokenizer:
+  source: local
+  revision_or_files: data/target/tokenizer/tokenizer.json
+  special_ids: {pad: 0, bos: 1, eos: 2}
+  context: 512
+  offsets: special_tokens
+model:
+  architecture: llama
+  hidden: 160
+  intermediate: 960
+  layers: 14
+  heads: 8
+  kv_heads: 2
+  context: 512
+  precision: fp16
+  attention: sdpa
+  tied_embeddings: true
+  base_model: null
+train:
+  optimizer: adamw
+  scheduler: cosine
+  learning_rate: 1.0e-3
+  max_steps: 600
+  batch_size: 4
+  gradient_accumulation: 4
+  max_grad_norm: 1.0
+  checkpoint_every_steps: 100
+  evaluation_cadence: 100
+  checkpoint_policy: complete_only
+  keep_last_checkpoints: 2
+  keep_best_checkpoints: 1
+  resume: true
+  checkpoint_averaging: final_n
+  checkpoint_averaging_n: 2
+  # E-005 native monitor + early stop: probes at the 1/10 budget cadence on
+  # READ-ONLY reserved test tasks; early stop only after half the budget,
+  # driven by validation loss, vetoed while probe validity still improves.
+  monitor:
+    enabled: true
+    eval_fraction: 0.1
+    probe_tasks_file: data/u5/prepared/probe_tasks.jsonl
+    probe_tasks: 40
+    probe_k: 1
+    probe_max_new_tokens: 512
+    overfit_patience: 2
+  early_stop:
+    enabled: true
+    patience_evals: 2
+    min_steps_fraction: 0.5
+evaluation:
+  ids: [validation_loss]
+  versions: ["1"]
+  suites: [validation]
+  metrics: [val_loss, val_perplexity]
+  cadence_steps: 100
+  thresholds: {val_loss: 12.0, val_perplexity: 162000.0}
+  generation_samples: 1
+  generation_max_new_tokens: 32
+  directions: {val_loss: min, val_perplexity: min}
+  selection_policy: best_validation_loss
+runtime:
+  device: cuda:0
+  precision: fp16
+  launch_profile: u2-arm
+  vram_fraction: 0.55
+features: {retention: manual, promotion: null}
+packing:
+  mode: concat
+  sequence_length: 512
+  overflow_policy: fail
+  dropped_tail_policy: count_and_drop

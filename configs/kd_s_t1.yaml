@@ -1,0 +1,57 @@
+# C12 Tier 3 (TASKS row 20): intra-ladder KD - frozen P (runs/pilot/final,
+# 100.68M) teaches an S-sized student (4L/256, ~12.3M) on the pilot packed
+# shards. Fair A/B: configs/kd_s_baseline.yaml is the SAME run without KD
+# (plain train.py, identical data/steps/seed). Read-out (plan §5): distilled
+# >= baseline at <= 1/3 the steps => the ~1/10 claim transfers to this GPU.
+# GATE: never while another training run is live on the GPU.
+name: kd-s-t1
+
+tokenizer:
+  name: codellama/CodeLlama-7b-hf
+  vocab_size: 32768
+
+model:
+  layers: 4
+  hidden: 256
+  heads: 4
+  kv_heads: 2
+  ffn: 1024
+  ctx: 512
+  dropout: 0.0
+  tie_embeddings: true
+
+kd:
+  teacher: runs/pilot/final
+  tau: 1.0
+  alpha: 0.5               # 0.5*KL + 0.5*CE blend (plan §5 "optional 0.5*CE")
+
+data:
+  raw_dir: data/pilot/raw
+  tokens_dir: data/pilot/tokens
+
+train:
+  output_dir: runs/kd-s-t1
+  final_dir: runs/kd-s-t1/final
+  max_steps: 2000          # identical to the baseline arm
+  batch: 8
+  eval_batch: 8
+  accum: 1
+  lr: 4.0e-4
+  scheduler: cosine
+  warmup_steps: 100
+  weight_decay: 0.1
+  max_grad_norm: 1.0
+  logging_steps: 25
+  eval_steps: 250
+  save_steps: 250
+  save_total_limit: 3
+  fp16: true
+  grad_ckpt: true
+  optim: adamw_torch
+  dataloader_num_workers: 0
+  seed: 42
+
+eval:
+  max_new_tokens: 64
+  prompts:
+    - "def fibonacci(n):"

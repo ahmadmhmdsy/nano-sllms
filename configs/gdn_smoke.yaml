@@ -1,0 +1,85 @@
+# G1 sandbox: S-scale GDN / gated-attention hybrid (TASKS row 16; spec =
+# research/gdn_sandbox_design.md section 2.1). Trains on the IDENTICAL M0
+# smoke corpus (data/smoke/raw + data/smoke/tokens already built) -- zero
+# downloads, same val split as the gqa control (configs/gdn_smoke_ab.yaml).
+#
+# Exact parameter count (verified by instantiation, src.gdn layout):
+#   embedding (tied)   32_768 x 256            =  8_388_608
+#   3 x GDN layer      1_319_504 each          =  3_958_512
+#     (q 65_536 + k 65_536 + v 131_072 + g 131_072 + b 2_048 + a 2_048
+#      + depthwise conv 1024ch x k4 = 4_096 + o_norm 64 + dt_bias 8
+#      + A_log 8 + 2 norms 512 + SwiGLU 3x256x1024 = 786_432)
+#   1 x GA layer       984_576
+#     (q 65_536 + k 32_768 + v 32_768 + o 65_536 + per-head gate 1_024
+#      + 2 norms 512 + SwiGLU 786_432)
+#   final norm 256
+#   TOTAL = 13_331_952 (13.33M; design target ~13.4M, budget [10.5, 14.2]M)
+# Param-matched control: configs/gdn_smoke_ab.yaml (delta 0.01%).
+name: gdn_smoke
+
+tokenizer:
+  name: codellama/CodeLlama-7b-hf   # 32k sentencepiece; public, ungated; ~2 MB
+  vocab_size: 32768
+
+model:
+  arch: gdn_hybrid            # NEW -- {gqa, gdn_hybrid}; default gqa
+  layers: 4                   # 4 layers -> [GDN, GDN, GDN, GA] (one 3:1 block)
+  hidden: 256
+  heads: 4                    # GA Q heads
+  kv_heads: 2                 # GA KV heads (GQA inside GA only)
+  linear_heads: 4             # GDN key/QK heads (value heads = this * expand_v)
+  head_dim_gdn: 64            # d_k = d_v at S (4 k-heads * 64 = 256 qk_dim)
+  expand_v: 2                 # v heads = 8 x 64 = 512 (Qwen3-Next convention)
+  ffn: 1024
+  ctx: 256
+  dropout: 0.0
+  tie_embeddings: true
+  hybrid_step: 1              # one GA per 3:1 block; block period = 3*1+1 = 4
+  use_short_conv: true        # depthwise causal conv k=4 on q/k/v
+  use_sigmoid_gate: true      # GDN + GA output gates (design section 4 R5)
+  use_zero_centered_rmsnorm: true
+  gdn_state_dtype: fp32       # required for fp16 stability (design section 4 R1)
+
+data:
+  dataset_candidates:                # first one that yields enough rows wins
+    - name: TheGamingMahi/TinyCode
+    - name: nickrosh/Evol-Instruct-Code-80k-v1
+    - name: code_search_net
+      config: python
+    - name: sahil2801/CodeAlpaca-20k
+  rows: 2000
+  val_fraction: 0.02
+  dedupe: true
+  min_chars: 60
+  shard_tokens: 8000000
+  raw_dir: data/smoke/raw            # reuse the M0 corpus (no re-download)
+  tokens_dir: data/smoke/tokens
+
+train:
+  output_dir: runs/gdn_smoke
+  final_dir: runs/gdn_smoke/final
+  max_steps: 200
+  batch: 1
+  eval_batch: 4
+  accum: 32
+  lr: 4.0e-4
+  scheduler: cosine
+  warmup_steps: 10
+  weight_decay: 0.1
+  max_grad_norm: 1.0
+  logging_steps: 10
+  eval_steps: 50
+  save_steps: 50
+  save_total_limit: 3
+  fp16: true
+  grad_ckpt: true
+  optim: adamw_torch
+  dataloader_num_workers: 0
+  seed: 42
+
+eval:
+  max_new_tokens: 64
+  prompts:
+    - "def fibonacci(n):"
+    - "import numpy as np\n\ndef mean_absolute_error(y_true, y_pred):"
+    - "class Stack:"

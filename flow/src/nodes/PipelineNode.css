@@ -1,0 +1,103 @@
+.pipeline-node {
+  border: 1px solid #888;
+  border-radius: 6px;
+  padding: 6px 10px;
+  background: #fff;
+  min-width: 130px;
+}
+
+.pipeline-node.selected {
+  border-color: #369;
+  box-shadow: 0 0 0 2px rgba(51, 102, 153, 0.25);
+}
+
+.pipeline-node-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.run-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #aaa; /* idle */
+}
+
+.run-dot-running { background: #d80; }
+.run-dot-done { background: #2a2; }
+.run-dot-error { background: #c22; }
+
+.pipeline-node-props {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.prop-badge {
+  font-size: 10px;
+  background: #eee;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  padding: 0 4px;
+}
+
+.pipeline-node-ports {
+  margin-top: 6px;
+}
+
+.pipeline-port {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  font-size: 11px;
+  position: relative;
+}
+
+.pipeline-port .react-flow__handle {
+  min-width: 8px;
+  min-height: 8px;
+  width: 8px;
+  height: 8px;
+  position: static;
+  transform: none;
+  transform: translate(0, 0);
+}
+
+.pipeline-port-label {
+  color: #555;
+}
+
+.pipeline-node-infer {
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.infer-note {
+  font-size: 10px;
+  color: #666;
+}
+
+.infer-open-webui {
+  font-size: 11px;
+  padding: 2px 6px;
+  cursor: pointer;
+}
+
+/* window.open attempt inside the dialog body */
+.infer-handoff-cmd {
+  display: block;
+  font-family: Consolas, monospace;
+  font-size: 11px;
+  padding: 4px;
+  background: #eee;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  overflow: auto;
+}
+

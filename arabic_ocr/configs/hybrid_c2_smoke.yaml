@@ -1,0 +1,43 @@
+name: hybrid_c2_smoke
+model:
+  type: vit_hybrid
+  patch_size: 16
+  image_height: 64
+  image_width: 1024
+  vit_layers: 6
+  vit_hidden: 512
+  vit_heads: 8
+  vit_ffn: 2048
+  decoder_layers: 6
+  decoder_hidden: 512
+  decoder_heads: 8
+  vocab_size: 256
+  max_seq_len: 192
+  dropout: 0.1
+  pad_loss_weight: 0.1
+  ctc_weight: 0.3
+data:
+  train_dir: data/linecorpus_smoke/train
+  val_dir: data/linecorpus_smoke/val
+  batch_size: 16
+  num_workers: 6
+  image_height: 64
+  image_width: 1024
+  augment: true
+  vocab_path: data/linecorpus_vocab.json
+  max_len: 192
+  min_text_len: 2
+  max_text_len: 160
+  keep_aspect: true
+train:
+  model_type: vit_hybrid
+  epochs: 5
+  lr: 0.0005
+  weight_decay: 0.01
+  max_grad_norm: 1.0
+  save_dir: runs/hybrid_c2_smoke
+  log_interval: 25
+  eval_interval: 1
+  eval_generate: true
+eval:
+  batch_size: 32

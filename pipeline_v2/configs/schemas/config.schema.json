@@ -1,0 +1,718 @@
+{
+  "$comment": "Pydantic model_json_schema cannot express model-level cross-field validators (context, precision, evaluator, and promotion relationships). Runtime Pydantic validation is authoritative.",
+  "$defs": {
+    "DataConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "dataset_id": {
+          "title": "Dataset Id",
+          "type": "string"
+        },
+        "dedupe": {
+          "title": "Dedupe",
+          "type": "string"
+        },
+        "filters": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Filters",
+          "type": "array"
+        },
+        "normalization": {
+          "title": "Normalization",
+          "type": "string"
+        },
+        "regeneration_command": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Regeneration Command",
+          "type": "array"
+        },
+        "sources": {
+          "items": {
+            "$ref": "#/$defs/SourceDeclaration"
+          },
+          "title": "Sources",
+          "type": "array"
+        },
+        "split_salt": {
+          "minimum": 0,
+          "title": "Split Salt",
+          "type": "integer"
+        },
+        "validation_fraction": {
+          "exclusiveMaximum": 1,
+          "exclusiveMinimum": 0,
+          "title": "Validation Fraction",
+          "type": "number"
+        }
+      },
+      "required": [
+        "dataset_id",
+        "sources",
+        "split_salt",
+        "validation_fraction",
+        "dedupe",
+        "normalization",
+        "filters",
+        "regeneration_command"
+      ],
+      "title": "DataConfig",
+      "type": "object"
+    },
+    "EvaluatorSuiteConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "cadence_steps": {
+          "exclusiveMinimum": 0,
+          "title": "Cadence Steps",
+          "type": "integer"
+        },
+        "directions": {
+          "additionalProperties": {
+            "enum": [
+              "min",
+              "max"
+            ],
+            "type": "string"
+          },
+          "title": "Directions",
+          "type": "object"
+        },
+        "ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Ids",
+          "type": "array"
+        },
+        "metrics": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Metrics",
+          "type": "array"
+        },
+        "selection_policy": {
+          "title": "Selection Policy",
+          "type": "string"
+        },
+        "suites": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Suites",
+          "type": "array"
+        },
+        "thresholds": {
+          "additionalProperties": {
+            "type": "number"
+          },
+          "title": "Thresholds",
+          "type": "object"
+        },
+        "versions": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Versions",
+          "type": "array"
+        },
+        "generation_samples": {
+          "exclusiveMinimum": 0,
+          "title": "Generation Samples",
+          "type": "integer"
+        },
+        "generation_max_new_tokens": {
+          "exclusiveMinimum": 0,
+          "title": "Generation Max New Tokens",
+          "type": "integer"
+        },
+        "generation_temperature": {
+          "default": 1.0,
+          "minimum": 0,
+          "title": "Generation Temperature",
+          "type": "number"
+        },
+        "generation_top_k": {
+          "default": 50,
+          "exclusiveMinimum": 0,
+          "title": "Generation Top K",
+          "type": "integer"
+        },
+        "generation_top_p": {
+          "default": 1.0,
+          "exclusiveMinimum": 0,
+          "maximum": 1,
+          "title": "Generation Top P",
+          "type": "number"
+        }
+      },
+      "required": [
+        "ids",
+        "versions",
+        "suites",
+        "metrics",
+        "cadence_steps",
+        "thresholds",
+        "directions",
+        "selection_policy",
+        "generation_samples",
+        "generation_max_new_tokens"
+      ],
+      "title": "EvaluatorSuiteConfig",
+      "type": "object"
+    },
+    "FeaturesConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "promotion": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PromotionReference"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "retention": {
+          "const": "manual",
+          "title": "Retention",
+          "type": "string"
+        }
+      },
+      "required": [
+        "retention",
+        "promotion"
+      ],
+      "title": "FeaturesConfig",
+      "type": "object"
+    },
+    "FreshnessPolicy": {
+      "additionalProperties": false,
+      "properties": {
+        "max_age": {
+          "title": "Max Age",
+          "type": "string"
+        },
+        "optional_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Optional Reason"
+        },
+        "supersession": {
+          "title": "Supersession",
+          "type": "string"
+        }
+      },
+      "required": [
+        "max_age",
+        "supersession"
+      ],
+      "title": "FreshnessPolicy",
+      "type": "object"
+    },
+    "ModelConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "architecture": {
+          "const": "llama",
+          "title": "Architecture",
+          "type": "string"
+        },
+        "attention": {
+          "enum": [
+            "sdpa",
+            "flash_attention_2"
+          ],
+          "title": "Attention",
+          "type": "string"
+        },
+        "base_model": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Base Model"
+        },
+        "context": {
+          "exclusiveMinimum": 0,
+          "title": "Context",
+          "type": "integer"
+        },
+        "heads": {
+          "exclusiveMinimum": 0,
+          "title": "Heads",
+          "type": "integer"
+        },
+        "hidden": {
+          "exclusiveMinimum": 0,
+          "title": "Hidden",
+          "type": "integer"
+        },
+        "intermediate": {
+          "exclusiveMinimum": 0,
+          "title": "Intermediate",
+          "type": "integer"
+        },
+        "kv_heads": {
+          "exclusiveMinimum": 0,
+          "title": "Kv Heads",
+          "type": "integer"
+        },
+        "layers": {
+          "exclusiveMinimum": 0,
+          "title": "Layers",
+          "type": "integer"
+        },
+        "precision": {
+          "enum": [
+            "fp16",
+            "bf16"
+          ],
+          "title": "Precision",
+          "type": "string"
+        },
+        "tied_embeddings": {
+          "title": "Tied Embeddings",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "architecture",
+        "hidden",
+        "intermediate",
+        "layers",
+        "heads",
+        "kv_heads",
+        "context",
+        "tied_embeddings",
+        "precision",
+        "attention"
+      ],
+      "title": "ModelConfig",
+      "type": "object"
+    },
+    "PackingConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "dropped_tail_policy": {
+          "title": "Dropped Tail Policy",
+          "type": "string"
+        },
+        "mode": {
+          "enum": [
+            "concat",
+            "document_masked"
+          ],
+          "title": "Mode",
+          "type": "string"
+        },
+        "overflow_policy": {
+          "title": "Overflow Policy",
+          "type": "string"
+        },
+        "sequence_length": {
+          "exclusiveMinimum": 0,
+          "title": "Sequence Length",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "mode",
+        "sequence_length",
+        "overflow_policy",
+        "dropped_tail_policy"
+      ],
+      "title": "PackingConfig",
+      "type": "object"
+    },
+    "PromotionReference": {
+      "additionalProperties": false,
+      "properties": {
+        "checkpoint": {
+          "title": "Checkpoint",
+          "type": "string"
+        },
+        "data_manifest": {
+          "title": "Data Manifest",
+          "type": "string"
+        },
+        "evaluator_manifest": {
+          "title": "Evaluator Manifest",
+          "type": "string"
+        },
+        "gate_report": {
+          "title": "Gate Report",
+          "type": "string"
+        },
+        "predecessor_run_id": {
+          "title": "Predecessor Run Id",
+          "type": "string"
+        },
+        "predecessor_stage": {
+          "enum": [
+            "S",
+            "P"
+          ],
+          "title": "Predecessor Stage",
+          "type": "string"
+        }
+      },
+      "required": [
+        "predecessor_stage",
+        "predecessor_run_id",
+        "checkpoint",
+        "data_manifest",
+        "evaluator_manifest",
+        "gate_report"
+      ],
+      "title": "PromotionReference",
+      "type": "object"
+    },
+    "RunConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "namespace": {
+          "title": "Namespace",
+          "type": "string"
+        },
+        "seed": {
+          "minimum": 0,
+          "title": "Seed",
+          "type": "integer"
+        },
+        "stage": {
+          "enum": [
+            "S",
+            "P",
+            "T"
+          ],
+          "title": "Stage",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "namespace",
+        "stage",
+        "seed"
+      ],
+      "title": "RunConfig",
+      "type": "object"
+    },
+    "RuntimeConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "device": {
+          "title": "Device",
+          "type": "string"
+        },
+        "launch_profile": {
+          "title": "Launch Profile",
+          "type": "string"
+        },
+        "precision": {
+          "enum": [
+            "fp16",
+            "bf16"
+          ],
+          "title": "Precision",
+          "type": "string"
+        }
+      },
+      "required": [
+        "device",
+        "precision",
+        "launch_profile"
+      ],
+      "title": "RuntimeConfig",
+      "type": "object"
+    },
+    "SourceDeclaration": {
+      "additionalProperties": false,
+      "properties": {
+        "expected_rows": {
+          "minimum": 0,
+          "title": "Expected Rows",
+          "type": "integer"
+        },
+        "expected_tokens": {
+          "minimum": 0,
+          "title": "Expected Tokens",
+          "type": "integer"
+        },
+        "file_set": {
+          "items": {
+            "type": "string"
+          },
+          "title": "File Set",
+          "type": "array"
+        },
+        "freshness_policy": {
+          "$ref": "#/$defs/FreshnessPolicy"
+        },
+        "kind": {
+          "enum": [
+            "local",
+            "huggingface"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "license": {
+          "title": "License",
+          "type": "string"
+        },
+        "optional_profile": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Optional Profile"
+        },
+        "path_or_repo": {
+          "title": "Path Or Repo",
+          "type": "string"
+        },
+        "revision": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Revision"
+        },
+        "role": {
+          "enum": [
+            "train",
+            "validation"
+          ],
+          "title": "Role",
+          "type": "string"
+        },
+        "source_id": {
+          "title": "Source Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_id",
+        "kind",
+        "path_or_repo",
+        "revision",
+        "file_set",
+        "role",
+        "license",
+        "expected_rows",
+        "expected_tokens",
+        "freshness_policy"
+      ],
+      "title": "SourceDeclaration",
+      "type": "object"
+    },
+    "TokenizerConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "context": {
+          "exclusiveMinimum": 0,
+          "title": "Context",
+          "type": "integer"
+        },
+        "offsets": {
+          "title": "Offsets",
+          "type": "string"
+        },
+        "revision_or_files": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
+          ],
+          "title": "Revision Or Files"
+        },
+        "source": {
+          "title": "Source",
+          "type": "string"
+        },
+        "special_ids": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "title": "Special Ids",
+          "type": "object"
+        }
+      },
+      "required": [
+        "source",
+        "revision_or_files",
+        "special_ids",
+        "context",
+        "offsets"
+      ],
+      "title": "TokenizerConfig",
+      "type": "object"
+    },
+    "TrainingConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "batch_size": {
+          "exclusiveMinimum": 0,
+          "title": "Batch Size",
+          "type": "integer"
+        },
+        "checkpoint_every_steps": {
+          "exclusiveMinimum": 0,
+          "title": "Checkpoint Every Steps",
+          "type": "integer"
+        },
+        "checkpoint_policy": {
+          "title": "Checkpoint Policy",
+          "type": "string"
+        },
+        "evaluation_cadence": {
+          "exclusiveMinimum": 0,
+          "title": "Evaluation Cadence",
+          "type": "integer"
+        },
+        "gradient_accumulation": {
+          "exclusiveMinimum": 0,
+          "title": "Gradient Accumulation",
+          "type": "integer"
+        },
+        "max_grad_norm": {
+          "exclusiveMinimum": 0,
+          "title": "Max Grad Norm",
+          "type": "number"
+        },
+        "optimizer": {
+          "title": "Optimizer",
+          "type": "string"
+        },
+        "scheduler": {
+          "title": "Scheduler",
+          "type": "string"
+        }
+      },
+      "required": [
+        "optimizer",
+        "scheduler",
+        "batch_size",
+        "gradient_accumulation",
+        "max_grad_norm",
+        "checkpoint_every_steps",
+        "evaluation_cadence",
+        "checkpoint_policy"
+      ],
+      "title": "TrainingConfig",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "capabilities": {
+      "items": {
+        "const": "pretrain",
+        "type": "string"
+      },
+      "maxItems": 1,
+      "minItems": 1,
+      "title": "Capabilities",
+      "type": "array"
+    },
+    "data": {
+      "$ref": "#/$defs/DataConfig"
+    },
+    "evaluation": {
+      "$ref": "#/$defs/EvaluatorSuiteConfig"
+    },
+    "extends": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Extends",
+      "type": "array"
+    },
+    "features": {
+      "$ref": "#/$defs/FeaturesConfig"
+    },
+    "model": {
+      "$ref": "#/$defs/ModelConfig"
+    },
+    "packing": {
+      "$ref": "#/$defs/PackingConfig"
+    },
+    "release": {
+      "const": "r1",
+      "title": "Release",
+      "type": "string"
+    },
+    "run": {
+      "$ref": "#/$defs/RunConfig"
+    },
+    "runtime": {
+      "$ref": "#/$defs/RuntimeConfig"
+    },
+    "schema_version": {
+      "const": 2,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "tokenizer": {
+      "$ref": "#/$defs/TokenizerConfig"
+    },
+    "train": {
+      "$ref": "#/$defs/TrainingConfig"
+    }
+  },
+  "required": [
+    "schema_version",
+    "release",
+    "capabilities",
+    "run",
+    "data",
+    "tokenizer",
+    "model",
+    "train",
+    "evaluation",
+    "runtime",
+    "features",
+    "packing"
+  ],
+  "title": "ConfigDocument",
+  "type": "object"
+}

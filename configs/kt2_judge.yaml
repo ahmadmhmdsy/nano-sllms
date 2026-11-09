@@ -1,0 +1,49 @@
+# KT-2 (ladder Phase 2, TASKS row 44): SmolLM2-360M as STANDALONE on-policy
+# judge/rerank over OUR student (Track D V1 contract; row-14 judge protocol
+# FROZEN: strict-JSON verdict {verdict pass|partial|fail, score 0-2, reason},
+# 5-step parse ladder -> ast.literal_eval fallback, unparseable-rate gate
+# < 10%, judge temp 0.2 / top_p 0.9 / max 120, teacher inference STANDALONE).
+# On-policy = the STUDENT (row-41 winner final_a60) samples; the teacher only
+# SCORES text (mean token logprob + JSON verdict) -> tokenizer mismatch is a
+# non-issue. Winners must pass the AST gate -> pairs.jsonl -> sft_data.py.
+# Prompt pool (user 2026-09-10): omen_alpha distill corpus (25k pairs, exec-
+# verified, 0 overlap w/ minimax3) + minimax3; text-only records synthesize
+# into completion prompts (capped share); HF extra data NOT needed at this
+# pool size (revisit for KT-3's pretrain mix).
+name: kt2_judge
+
+student:
+  base: runs/yarn_lora_sft_v1/final_a60
+  tokenizer: codellama/CodeLlama-7b-hf
+  template: "### Instruction:\n{instruction}\n### Response:\n"
+  gen_ctx: 1024
+  max_new_tokens: 256
+  temperature: 0.8
+  top_p: 0.95
+  eos_token_id: 2
+  pad_token_id: 2
+
+teacher:
+  snapshot: "C:/Users/AhmadMhmoud/.cache/huggingface/hub/models--HuggingFaceTB--SmolLM2-360M/snapshots/f8027fd0eaeea54caa13c31d31b9fdc459c38b49"
+  temperature: 0.2          # row-14 frozen judge sampling
+  top_p: 0.9
+  max_new_tokens: 120
+
+prompts:
+  sources:
+    - data/distillation_data/omen_alpha/combined/all_train.jsonl
+    - data/distillation_data/minimax3/combined/all_train.jsonl
+  n_prompts: 250
+  n_probe: 30
+  k_candidates: 4
+  synth_share: 0.25         # cap for text-only -> completion-prompt synthesis
+  min_instruction_chars: 10
+  max_instruction_chars: 1200
+  seed: 42
+
+gates:
+  unparseable_max: 0.10
+
+output:
+  dir: runs/kt2_judge
+  pairs_out: data/sft/kt2_judge/pairs.jsonl

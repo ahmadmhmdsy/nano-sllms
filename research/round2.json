@@ -1,0 +1,79 @@
+[
+  {
+    "kind": "contents",
+    "slug": "c1_github_flashnext",
+    "urls": [
+      "https://github.com/qwenlm/qwen3.8-flash-next"
+    ],
+    "max_characters": 14000
+  },
+  {
+    "kind": "contents",
+    "slug": "c2_aliyun_blog",
+    "urls": [
+      "https://www.alibabacloud.com/blog/qwen3-8-flash-next-a-new-architecture-towards-ultimate-cost-efficiency_603501"
+    ],
+    "max_characters": 14000
+  },
+  {
+    "kind": "contents",
+    "slug": "c3_hf_model_card",
+    "urls": [
+      "https://huggingface.co/Qwen/Qwen3.8-Flash-Next"
+    ],
+    "max_characters": 12000
+  },
+  {
+    "kind": "contents",
+    "slug": "c4_arxiv_design_paper",
+    "urls": [
+      "https://arxiv.org/html/2608.30320"
+    ],
+    "max_characters": 16000
+  },
+  {
+    "kind": "contents",
+    "slug": "c5_qwen38_blog",
+    "urls": [
+      "https://qwen.ai/blog?id=qwen3.8"
+    ],
+    "max_characters": 12000
+  },
+  {
+    "kind": "contents",
+    "slug": "c6_intuitionlabs_guide",
+    "urls": [
+      "https://intuitionlabs.ai/articles/qwen3-8-flash-next-architecture-memory"
+    ],
+    "max_characters": 12000
+  },
+  {
+    "kind": "contents",
+    "slug": "c7_mlabonne_qwen35",
+    "urls": [
+      "https://huggingface.co/blog/mlabonne/qwen35"
+    ],
+    "max_characters": 10000
+  },
+  {
+    "kind": "search",
+    "slug": "s5_training_recipe",
+    "query": "Qwen3.8-Flash-Next training Muon optimizer indexer two-stage pretraining",
+    "num": 6,
+    "type": "auto"
+  },
+  {
+    "kind": "search",
+    "slug": "s6_qwen38_family_training",
+    "query": "Qwen3.8-Max training recipe data reinforcement learning Qwen3.8 technical report",
+    "num": 6,
+    "type": "auto"
+  },
+  {
+    "kind": "search",
+    "slug": "s7_flashnext_small_variants",
+    "query": "Qwen3.8 Flash-Next small model distilled dense variant",
+    "num": 6,
+    "type": "auto"
+  }
+]

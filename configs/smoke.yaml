@@ -1,0 +1,61 @@
+# M0 smoke: smallest model+data that proves the whole pipeline (PLAN.md §M0).
+name: smoke
+
+tokenizer:
+  name: codellama/CodeLlama-7b-hf   # 32k sentencepiece; public, ungated; ~2 MB
+  vocab_size: 32768
+
+model:
+  layers: 4
+  hidden: 256
+  heads: 4
+  kv_heads: 2
+  ffn: 1024
+  ctx: 256
+  dropout: 0.0
+  tie_embeddings: true
+
+data:
+  dataset_candidates:                # first one that yields enough rows wins
+    - name: TheGamingMahi/TinyCode
+    - name: nickrosh/Evol-Instruct-Code-80k-v1
+    - name: code_search_net
+      config: python
+    - name: sahil2801/CodeAlpaca-20k
+  rows: 2000
+  val_fraction: 0.02
+  dedupe: true
+  min_chars: 60
+  shard_tokens: 8000000
+  raw_dir: data/smoke/raw
+  tokens_dir: data/smoke/tokens
+
+train:
+  output_dir: runs/smoke
+  final_dir: runs/smoke/final
+  max_steps: 200
+  early_stopping_patience: 3
+  batch: 1
+  eval_batch: 4
+  accum: 32
+  lr: 4.0e-4
+  scheduler: cosine
+  warmup_steps: 10
+  weight_decay: 0.1
+  max_grad_norm: 1.0
+  logging_steps: 10
+  eval_steps: 50
+  save_steps: 50
+  save_total_limit: 3
+  fp16: true
+  grad_ckpt: true
+  optim: adamw_torch
+  dataloader_num_workers: 2
+  seed: 42
+
+eval:
+  max_new_tokens: 64
+  prompts:
+    - "def fibonacci(n):"
+    - "import numpy as np\n\ndef mean_absolute_error(y_true, y_pred):"
+    - "class Stack:"

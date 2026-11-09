@@ -1,0 +1,58 @@
+# Continued pretraining (CPT) of SmolLM2-135M on the re-tokenized example-level
+# CodeParrot corpus. Prepared 2026-10-17. See research/2026-10-17_smollm2_cpt_corpus.md.
+#
+# NO peft block on purpose: src/model.py maybe_wrap_peft() is a no-op without it,
+# so scripts/sft.py runs FULL-parameter causal-LM training (the correct CPT mode
+# for raw code). Add a peft block only as the OOM fallback.
+name: cpt_smollm2_ex
+
+base_model: models/hf/SmolLM2-135M
+
+tokenizer:
+  name: models/hf/SmolLM2-135M   # vocab 49152, eos/bos/unk = '<|endoftext|>' = 0, pad None
+
+model:
+  ctx: 8192
+
+data:
+  # Materialized by scratch/smollm2_make_dataset_ex.py from
+  # data/reference/smollm2_corpus_ex/{train,val}.bin at ctx=1024.
+  dataset_dir: data/reference/smollm2_corpus_ex/ds
+  source_bin_dir: data/reference/smollm2_corpus_ex
+
+sft:
+  ctx: 1024
+  # 1000 rows = 32 optimizer steps at batch 2 x accum 16: long enough for the
+  # s/it average to settle, short enough to stay a plumbing gate.
+  pilot_rows: 1000
+
+train:
+  output_dir: runs/cpt_smollm2_ex
+  final_dir: runs/cpt_smollm2_ex/final
+  epochs: 1
+  # Effective batch 4 x 8 = 32 rows/step, matching the LoRA reference runs.
+  # Full-parameter CPT holds fp32 weights 538 MiB + grads 538 MiB + Adam m/v
+  # 1076 MiB = ~2.15 GiB FIXED, and the fp32 logits buffer is
+  # 4 x 1024 x 49152 x 4 B = 768 MiB, so the step-1 peak is ~4.33 GiB.
+  # That is why --vram-cap-gib 4.0 OOM'd on 2026-10-17: the CAP was binding,
+  # not the GPU (~1.1 GiB was held by foreign desktop apps; ~6.9 GiB free).
+  # batch 2 x accum 16 does fit under a 4.5 GiB cap (pilot PASSED, 2026-10-17)
+  # but costs ~15 s/step vs ~5.4 s/step - the same 32-row batch split into 16
+  # micro-steps instead of 8 - so the full run keeps batch 4 at a 5.5 GiB cap.
+  batch: 4
+  eval_batch: 4
+  accum: 8
+  lr: 3.0e-5
+  scheduler: cosine
+  warmup_steps: 100
+  weight_decay: 0.0
+  max_grad_norm: 1.0
+  logging_steps: 10
+  eval_steps: 500
+  save_steps: 500
+  save_total_limit: 3
+  fp16: true
+  grad_ckpt: true
+  optim: adamw_torch
+  dataloader_num_workers: 2
+  seed: 42

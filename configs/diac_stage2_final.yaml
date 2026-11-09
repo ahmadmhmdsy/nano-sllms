@@ -1,0 +1,28 @@
+# D-line E-17: FINAL model fine-tune (user-mandated 2026-09-14).
+# Recipe B (winner of E-16, all 4 gates) warm-initialized from the v4
+# whole-corpus stage-1 LM (370 M chars, wn2024 excluded, abdou/sadeed/qcri
+# full + fadel train). Same corpus v3, lr, steps as E-16 arms for comparability.
+# Overfit watchdog: gate probe every 1250 steps; the final model is the
+# [GATE-BEST] / best.pt snapshot, NEVER run-end weights.
+# Held-out control kept out of ALL training: abdou test-00000 split.
+phase: stage2final
+tokens_phase: v3
+pretrained_init: runs/diac/stage1lm_v4/final/model.pt
+reset_last_n_layers: 2
+gate_eval_every: 1250
+model:
+  hidden: 272
+  layers: 28
+  n_heads: 8
+  n_kv: 2
+  ffn: 1088
+  ctx: 128
+lr: 2.0e-4
+weight_decay: 0.1
+batch_size: 32
+accum: 1
+total_steps: 8000
+save_every: 500
+log_every: 100
+eval_every: 500
+early_stop_patience: 8

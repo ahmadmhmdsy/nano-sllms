@@ -1,0 +1,94 @@
+# Track H2 Phase 1 (TASKS row 37): copy-behavior LoRA-SFT onto sft_v2_e1.
+# Corpus: subagent-authored needle-QA pairs (research/h2_corpus_spec.md),
+# validated by scripts/h2_validate_corpus.py. Teaches plain-English
+# copy-from-context answers - the behavior the Track H recall gate needs.
+# GATE: never while another training run is live on the GPU.
+name: h2_copy_lora
+
+base_model: runs/sft_v2_e1/final
+
+tokenizer:
+  name: codellama/CodeLlama-7b-hf
+  vocab_size: 32768
+
+model:
+  # dims come from the base checkpoint (sft_v2_e1) - sft.py loads them from
+  # the checkpoint's config.json; sanity_check builds fresh from this block,
+  # so the T dims are mirrored here (16L/1024/16Q/4KV/ffn3072 = 226.5M).
+  ctx: 1024
+  layers: 16
+  hidden: 1024
+  heads: 16
+  kv_heads: 4
+  ffn: 3072
+  dropout: 0.0
+  tie_embeddings: true
+
+peft:
+  # row-10 hook (measured 0.72 GB peak @ 2.5% trainable) - near-zero
+  # forgetting by design; adapter LR 1e-4 per lora_example.yaml.
+  r: 16
+  lora_alpha: 32
+  lora_dropout: 0.05
+  target_modules: [q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj]
+  bias: none
+
+data:
+  dataset: data/sft/h2_copy/pairs.jsonl
+  raw_dir: data/sft/h2_copy
+  dataset_dir: data/sft/h2_copy/ds
+  # CSN val shards for the forgetting-guard regression check (same gate as e1)
+  tokens_dir: data/target/tokens
+  # corpus is 585 validated pairs: rows sets the split TARGET, and sft_data
+  # computes val = round(rows * val_fraction) from the target -> rows 556
+  # gives val 28 / train 556 (5% of the ACTUAL corpus, not 250 of 585).
+  rows: 556
+  val_fraction: 0.05
+  dedupe: true
+  # English copy-behavior pairs: do NOT ast-filter (e1's code-corpus filter
+  # would drop every response). min_chars floors the RESPONSE length
+  # (sft_data.py line-check: len(response) < min_chars) - 30 would kill the
+  # note-completion answers ("Anna.", "port 6379."); 4 keeps every
+  # validator-passing response (validator enforces 1-30 words, no code).
+  ast_filter: false
+  min_chars: 4
+  min_instruction_chars: 10
+  template: "### Instruction:\n{instruction}\n### Response:\n"
+
+sft:
+  ctx: 512
+  pilot_rows: 300
+
+train:
+  output_dir: runs/h2_copy_lora
+  final_dir: runs/h2_copy_lora/final
+  # 2 epochs on a ~600-pair narrow behavior corpus = ~75 steps total; the
+  # 1-epoch standing gate targets 19k-pair corpora, deviation argued + gated
+  # by the forgetting guard.
+  epochs: 2
+  batch: 1
+  eval_batch: 4
+  accum: 16
+  lr: 1.0e-4
+  scheduler: cosine
+  warmup_steps: 10
+  weight_decay: 0.1
+  max_grad_norm: 1.0
+  logging_steps: 10
+  eval_steps: 25
+  save_steps: 25
+  save_total_limit: 2
+  fp16: true
+  grad_ckpt: true
+  optim: adamw_torch
+  dataloader_num_workers: 0
+  seed: 42
+
+eval:
+  max_new_tokens: 256
+  instructions_file: data/sft/minimax3/val_instructions.jsonl
+  n_instructions: 50
+  sample_temperature: 0.8
+  prompts:
+    - "### Instruction:\nWrite a Python function that returns the nth Fibonacci number.\n### Response:\n"
+    - "### Instruction:\nWrite a Python function that checks whether a string is a palindrome.\n### Response:\n"

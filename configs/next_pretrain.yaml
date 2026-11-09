@@ -1,0 +1,104 @@
+# wiring only — the RUN is user-gated until the user opens the next pretrain
+# window (TASKS row 13; research/pretrain_mix_proposal.md §5)
+#
+# Milestone D next-pretrain config: model dims from configs/pilot.yaml
+# (12L/d768/12kv4/ffn2048, tied embeddings) at ctx 1024; data = the §2.2 mix
+# as four dataset_candidates, each with a per-candidate target_rows so
+# prepare_data.py runs in MIX mode (all four fetched, each capped, ONE
+# shared SHA1 exact-dup set across sources -> raw/source_stats.json).
+#
+# SIZING DECISION (2026-09-09, user delegated via "decide after re-measure"):
+# all four sources MEASURED at 2k-row samples (research/milestone_d_measurement.md
+# rev 2): smol 2717.2, starcoder 2345.7, csn 271.8, evol 474.4 tok/row. The
+# proposal's row targets were 3.75x the 134M budget on those rates. Applied:
+# token-proportional redistribution with smol capped at its 10k-row source max
+# -> kept-token shares ~ smol 20.3% / starcoder 62.5% / csn 11.5% / evol 5.7%,
+# total ~133.65M KEPT tokens (target_rows carry ~+5% request padding for the
+# 0.92-0.96 kept/seen yield). max_steps 4100 consumes ~98% of packed tokens.
+name: next_pretrain
+
+tokenizer:
+  name: codellama/CodeLlama-7b-hf
+  vocab_size: 32768
+
+model:
+  layers: 12               # pilot dims from here down, ctx raised 512 -> 1024
+  hidden: 768
+  heads: 12
+  kv_heads: 4
+  ffn: 2048
+  ctx: 1024
+  dropout: 0.0
+  tie_embeddings: true
+
+data:
+  # Mix mode: every candidate carries target_rows -> ALL are fetched (no
+  # first-hit fallback), each capped at target_rows, cross-source SHA1 dedupe.
+  # rows: is kept schema-complete with target.yaml but is IGNORED in mix mode
+  # (123400 = 10000 + 37500 + 59000 + 16900).
+  dataset_candidates:
+    - name: bigcode/the-stack-smol             # 30 langs x 10k rows; ungated now
+      data_dir: data/python                    # its 'python' builder config is GONE
+      target_rows: 10000                       # SOURCE MAX (10k rows exist); kept ~10,000
+                                                # x 2717.2 tok/row = 27.17M (20.3% of mix)
+    - name: bigcode/starcoderdata              # workhorse; terms accepted 2026-09-09
+      data_dir: python                         # VERIFIED form: 'config: python' does
+                                               # not exist on the Hub for this repo either (only
+                                               # 'default'; same as the-stack-smol; live row probe
+                                               # 2026-09-09 after the user accepted the terms;
+                                               # gate audit in research/milestone_d_measurement.md §3)
+      target_rows: 37500                       # measured 2,345.7 tok/row; sized below
+      # SIZING (measured 2,345.7 tok/row, 2k-row sample 2026-09-09): the
+      # proposal's 200,000 rows = 469.1M tokens = 3.75x the 134M budget, so
+      # per the user-delegated "decide after re-measure" call this config
+      # carries 37,500 rows (~+5% padding over the 35,600 kept that make an
+      # ~83.5M = 62.5% token share at the 134M budget). Full arithmetic:
+      # research/milestone_d_measurement.md §2 / milestone_d_actual.json.
+    - name: code-search-net/code_search_net    # ungated NL bridge (M3 source)
+      config: python
+      target_rows: 59000                       # kept ~56,500 x 271.8 = 15.36M (11.5%)
+    - name: nickrosh/Evol-Instruct-Code-80k-v1 # ungated instruct sliver
+      target_rows: 16900                       # kept ~16,070 x 474.4 = 7.62M (5.7%)
+  rows: 123400               # ignored in mix mode; sum of target_rows
+  val_fraction: 0.02
+  dedupe: true
+  min_chars: 200
+  shard_tokens: 8000000
+  raw_dir: data/next_pretrain/raw
+  tokens_dir: data/next_pretrain/tokens
+
+train:
+  output_dir: runs/next_pretrain
+  final_dir: runs/next_pretrain/final
+  # Projected mix ~133.65M kept tokens / 32,768 tok-per-step = 4,079 ->
+  # max_steps 4100 (~98% of packed tokens consumed; 32,768 = ctx 1024 x
+  # batch 1 x accum 32; 4100 x 32,768 = 134,348,800)
+  max_steps: 4100
+  batch: 1
+  eval_batch: 2             # same 2x1024 eval tile as target.yaml (6/8 GB VRAM)
+  accum: 32
+  lr: 4.0e-4
+  scheduler: cosine
+  warmup_steps: 150
+  weight_decay: 0.1
+  max_grad_norm: 1.0
+  logging_steps: 50
+  # target.yaml cadence: save_steps a clean multiple of eval_steps (HF rule
+  # with load_best_model_at_end); 100/100 = best + 2 latest rotation.
+  eval_steps: 100
+  save_steps: 100
+  save_total_limit: 3
+  fp16: true
+  grad_ckpt: true
+  # Milestone B recorded default for the NEXT pretrain (TASKS row 11):
+  # adamw_bnb_8bit + batch 1/accum 32 (loss parity, 1.02x pace, -563 MiB).
+  optim: adamw_bnb_8bit
+  dataloader_num_workers: 0
+  seed: 42
+
+eval:
+  max_new_tokens: 64
+  prompts:
+    - "def fibonacci(n):"
+    - "import numpy as np\n\ndef mean_absolute_error(y_true, y_pred):"
+    - "class Stack:"

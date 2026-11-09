@@ -1,0 +1,54 @@
+# Track C (TASKS row 31, adoption_plan §C): fair A/B baseline for T->P KD -
+# from-scratch P-arch run on the SAME data/steps/seed as configs/kd_t2p_kd.yaml
+# - plain train.py, no KD code involved (row 20 pattern scaled up: teacher
+# 226.5M runs/target/final, student P-arch 12L/768 ~110M, packed CSN tokens
+# at ctx 1024). Optimizer = the recorded next-pretrain default (TASKS row 11:
+# adamw_bnb_8bit, parity vs fp32 measured -0.0041 @500 steps); both C1 arms
+# share it, so the A/B stays internally fair. GATE: never while another
+# training run is live on the GPU.
+name: kd-t2p-baseline
+
+tokenizer:
+  name: codellama/CodeLlama-7b-hf
+  vocab_size: 32768
+
+model:
+  layers: 12
+  hidden: 768
+  heads: 12
+  kv_heads: 4
+  ffn: 2048
+  ctx: 1024
+  dropout: 0.0
+  tie_embeddings: true
+
+data:
+  raw_dir: data/target/raw
+  tokens_dir: data/target/tokens
+
+train:
+  output_dir: runs/kd-t2p-baseline
+  final_dir: runs/kd-t2p-baseline/final
+  max_steps: 2000          # identical to the KD arm
+  batch: 4                 # micro 4 x accum 2 = effective 8; VRAM ladder measured: b8 7897/8192 (96 pct, OOM-risk) -> b4/a2 FULL probe cycle peak 7010 (86 pct) = chosen; b2/a4 train was 4926 but its b8-eval transient spiked 7486 -> eval stays at 4; row-11 b/a precedent
+  eval_batch: 4
+  accum: 2
+  lr: 4.0e-4
+  scheduler: cosine
+  warmup_steps: 100
+  weight_decay: 0.1
+  max_grad_norm: 1.0
+  logging_steps: 25
+  eval_steps: 100
+  save_steps: 100
+  save_total_limit: 3
+  fp16: true
+  grad_ckpt: true
+  optim: adamw_bnb_8bit
+  dataloader_num_workers: 0
+  seed: 42
+
+eval:
+  max_new_tokens: 64
+  prompts:
+    - "def fibonacci(n):"

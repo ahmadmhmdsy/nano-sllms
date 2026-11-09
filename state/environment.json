@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "_comment": "Stable software facts only (from ENVIRONMENT.md). Current machine, GPU availability, disk state, process IDs, and live ownership are deliberately UNKNOWN; verify live state at session start before any launch.",
+  "verified_at": "UNKNOWN",
+  "runtime": {
+    "venv_path": ".venv",
+    "venv_manager": "uv",
+    "python": "CPython 3.12.9",
+    "package_policy": "never bare python, never pip; uv-managed venv only"
+  },
+  "software_versions": {
+    "torch": "2.14.0+cu126",
+    "transformers": "5.16.1",
+    "datasets": "5.0.1",
+    "accelerate": "1.14.0",
+    "bitsandbytes": "0.50.2",
+    "tensorboard": "2.21.0",
+    "git_lfs": "3.6.0",
+    "pyflakes": "4.0.0",
+    "pyyaml": "installed"
+  },
+  "hardware_constraints": {
+    "gpu_arch": "Turing sm_75",
+    "precision_policy": "fp16 only; no bf16; no flash-attn (PyTorch SDPA instead)",
+    "source": "ENVIRONMENT.md (historical)"
+  },
+  "live_state": {
+    "machine": "UNKNOWN",
+    "gpu": "UNKNOWN",
+    "driver": "UNKNOWN",
+    "disk_free": "UNKNOWN",
+    "gpu_free_mib": "UNKNOWN"
+  }
+}

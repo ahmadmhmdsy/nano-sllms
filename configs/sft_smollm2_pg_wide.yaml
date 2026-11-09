@@ -1,0 +1,49 @@
+# SmolLM2-135M LoRA SFT on the re-packed playground reference corpus
+# (E-122h analogue: same task corpus, borrowed base, SmolLM2's OWN tokenizer).
+name: sft_smollm2_pg_wide
+
+base_model: models/hf/SmolLM2-135M
+
+tokenizer:
+  name: models/hf/SmolLM2-135M   # KEEP SmolLM2's tokenizer (vocab 49152, eos <|endoftext|>=0)
+  vocab_size: 49152
+
+model:
+  ctx: 8192
+
+data:
+  dataset_dir: data/reference/smollm2_pg_eos/ds
+  source_bin_dir: data/reference/smollm2_pg_eos
+
+sft:
+  ctx: 1024
+  pilot_rows: 500
+
+peft:
+  r: 16
+  lora_alpha: 32
+  lora_dropout: 0.0
+  target_modules: [q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj]
+  bias: none
+
+train:
+  output_dir: runs/sft_smollm2_pg_wide
+  final_dir: runs/sft_smollm2_pg_wide/final
+  epochs: 12
+  batch: 4
+  eval_batch: 4
+  accum: 8
+  lr: 1.0e-4
+  scheduler: cosine
+  warmup_steps: 20
+  weight_decay: 0.0
+  max_grad_norm: 1.0
+  logging_steps: 10
+  eval_steps: 200
+  save_steps: 200
+  save_total_limit: 3
+  fp16: true
+  grad_ckpt: true
+  optim: adamw_torch
+  dataloader_num_workers: 2
+  seed: 42

@@ -1,0 +1,47 @@
+# Line-level Arabic OCR - matches the ISIPPT/KHATT benchmark domain
+name: lines
+
+model:
+  type: vit_decoder
+  patch_size: 16
+  image_height: 48
+  image_width: 512
+  vit_layers: 4
+  vit_hidden: 256
+  vit_heads: 4
+  vit_ffn: 1024
+  decoder_layers: 4
+  decoder_hidden: 256
+  decoder_heads: 4
+  vocab_size: 54          # overridden from the dataset
+  max_seq_len: 256        # overridden from the dataset
+  dropout: 0.1
+
+data:
+  train_dir: data/lines/train
+  val_dir: data/lines/val
+  batch_size: 64
+  num_workers: 6
+  image_height: 48
+  image_width: 512
+  augment: true
+  vocab_path: data/focused_vocab.json
+  max_len: 256
+  min_text_len: 4
+  max_text_len: 256
+  max_image_height: 120
+  keep_aspect: true
+
+train:
+  model_type: vit_decoder
+  epochs: 40
+  lr: 0.0003
+  weight_decay: 0.01
+  max_grad_norm: 1.0
+  save_dir: runs/lines
+  log_interval: 50
+  eval_interval: 1
+
+eval:
+  batch_size: 128
+  max_new_tokens: 256

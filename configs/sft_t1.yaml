@@ -1,0 +1,76 @@
+# C12 Tier 1: teacher-trace SFT of the M3 target model on Evol-Instruct
+# (research/c12_distillation_plan.md §3; rationale in c12_distillation_report.md).
+# GATE: runs only after M3 completes (runs/target/final exists, HANDOFF §8.2) and
+# never while another training run is live on the GPU. Data prep (sft_data.py)
+# is CPU+network only and may run earlier.
+name: sft_t1
+
+# Strong-to-weak distillation, off-policy half: T (226M, pretrained on
+# CodeSearchNet - never saw Evol) learns from strong-model traces.
+base_model: runs/target/final
+
+tokenizer:
+  name: codellama/CodeLlama-7b-hf
+  vocab_size: 32768
+  # CodeLlama ships no pad token -> sft.py sets pad = eos (plan §2 prereq).
+
+model:
+  # T's dims live in the checkpoint's config.json; ctx here is T's TRAINED
+  # context (1024) - eval.py uses it to pack the CSN val shards for the
+  # forgetting-guard regression check. SFT itself trains at sft.ctx = 512.
+  ctx: 1024
+
+data:
+  dataset: nickrosh/Evol-Instruct-Code-80k-v1   # ungated; teacher trace pairs
+  raw_dir: data/sft/evol                        # source.txt, meta.json, prepare.log, val_instructions.jsonl
+  dataset_dir: data/sft/evol/ds
+  # CSN val shards for the forgetting-guard regression check (plan §3.3):
+  # eval.py --config configs/sft_t1.yaml packs these at model.ctx (1024) and the
+  # runbook compares runs/target/final vs runs/sft_t1/final val loss (<= +10-15%).
+  # Without this key eval.py raises KeyError - fixed 2026-09-06 (launch prep).
+  tokens_dir: data/target/tokens                 # tokenized HF dataset (train/ + val/)
+  rows: 20000              # full-run accepted pairs; pilot uses sft.pilot_rows subset
+  val_fraction: 0.02
+  min_chars: 200           # on the response (mirrors prepare_data.py convention)
+  min_instruction_chars: 20
+  dedupe: true
+  ast_filter: true         # keep responses that parse as Python (fenced blocks stripped first)
+  # Fixed plain template (CodeLlama ships no chat template; plan §7 mitigation).
+  # The trailing \n after "### Response:" is where prompt masking ends.
+  template: "### Instruction:\n{instruction}\n### Response:\n"
+
+sft:
+  ctx: 512
+  pilot_rows: 5000
+
+train:
+  output_dir: runs/sft_t1
+  final_dir: runs/sft_t1/final
+  epochs: 2                # full run: 19.6k x 2 / 16 accum = ~2.45k steps
+  batch: 1
+  eval_batch: 4
+  accum: 16
+  # SFT LR << pretraining 4e-4 (plan §3.1); final value confirmed at execution.
+  lr: 3.0e-5
+  scheduler: cosine
+  warmup_steps: 100
+  weight_decay: 0.1
+  max_grad_norm: 1.0
+  logging_steps: 50
+  eval_steps: 250
+  save_steps: 250
+  save_total_limit: 3
+  fp16: true
+  grad_ckpt: true
+  optim: adamw_torch
+  dataloader_num_workers: 2
+  seed: 42
+
+eval:
+  max_new_tokens: 256      # instruction answers need longer completions than 64
+  instructions_file: data/sft/evol/val_instructions.jsonl   # held-out; written by sft_data.py
+  n_instructions: 50
+  sample_temperature: 0.8
+  prompts:                 # qualitative spot checks (printed by eval.py)
+    - "### Instruction:\nWrite a Python function that returns the nth Fibonacci number.\n### Response:\n"
+    - "### Instruction:\nWrite a Python class that implements a stack with push, pop and peek.\n### Response:\n"

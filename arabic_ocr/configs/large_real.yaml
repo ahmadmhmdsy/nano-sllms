@@ -1,0 +1,26 @@
+name: large_real
+model:
+  type: vit_decoder
+  patch_size: 16
+  embed_dim: 256
+  num_heads: 8
+  num_layers: 4
+  max_seq_len: 128
+  dropout: 0.1
+
+data:
+  train_dir: data/large/train
+  val_dir: data/large/val
+  image_height: 48
+  image_width: 256
+  batch_size: 32
+  num_workers: 4
+
+train:
+  learning_rate: 0.001
+  weight_decay: 0.01
+  warmup_steps: 500
+  max_epochs: 30
+  grad_clip: 1.0
+  save_every: 1
+  eval_every: 1

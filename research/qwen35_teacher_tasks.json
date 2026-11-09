@@ -1,0 +1,5 @@
+[
+  {"kind": "search", "slug": "teacher_qwen35_08b", "query": "Qwen3.5-0.8B", "num": 8, "type": "auto"},
+  {"kind": "search", "slug": "teacher_qwen35_release", "query": "Qwen3.5 Alibaba release 0.8B 24 layers March 2026", "num": 8, "type": "auto"},
+  {"kind": "answer", "slug": "teacher_qwen35_answer", "query": "What is Qwen3.5-0.8B (Qwen/Qwen3.5-0.8B on Hugging Face)? When was it released, how many layers and parameters, what tokenizer and vocab size, is it a base or instruct model, and does it support tool calling?"}
+]

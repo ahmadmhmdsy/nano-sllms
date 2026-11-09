@@ -1,0 +1,48 @@
+# ME-line mu2 rung G1: char-LM pretrain on raw vocalized Arabic (E-30).
+# ME-mex_control: param-matched dense control (0.98x of 4x expert) config (DESIGN ME-D1; schema = configs/smoke.yaml).
+name: mu2_g1
+
+tokenizer:
+  name: data/mex/tokenizer     # local dir saved by Task 1 (AutoTokenizer-compatible)
+  vocab_size: 97
+
+model:
+  layers: 2
+  hidden: 160
+  heads: 4
+  kv_heads: 2
+  ffn: 640
+  ctx: 96
+  dropout: 0.0
+  tie_embeddings: true
+
+data:
+  dataset_candidates:
+    - name: local-mu2-g1   # unused by train.py: shards are pre-packed
+  rows: 0
+  val_fraction: 0.02
+  shard_tokens: 2000000
+  raw_dir: data/mex/mu2/g1
+  tokens_dir: data/mex/mu2/g1/tokens
+
+train:
+  output_dir: runs/mex/mu2_g1
+  final_dir: runs/mex/mu2_g1/final
+  max_steps: 120000
+  batch: 8
+  eval_batch: 16
+  accum: 4
+  lr: 1.0e-3
+  scheduler: cosine
+  warmup_steps: 20
+  weight_decay: 0.1
+  max_grad_norm: 1.0
+  logging_steps: 50
+  eval_steps: 250
+  save_steps: 250
+  save_total_limit: 3
+  fp16: true
+  grad_ckpt: false
+  optim: adamw_bnb_8bit
+  dataloader_num_workers: 0
+  seed: 42

@@ -1,0 +1,24 @@
+# E-21 arm B — micro SFT WARM-STARTED from the shape-matched micro stage-1 LM
+# (runs/diac/micro_a_lm/final/model.pt). Same 12-128-512 stack, ctx 128,
+# identical schedule to arm A for a controlled init comparison.
+phase: micro_b
+tokens_phase: v3
+pretrained_init: runs/diac/micro_a_lm/final/model.pt
+reset_last_n_layers: 2      # top blocks re-learn bidirectional use of the warm stack
+batch_size: 32
+accum: 1
+lr: 0.0004
+weight_decay: 0.1
+total_steps: 2500
+save_every: 500
+eval_every: 500
+gate_eval_every: 500
+early_stop_patience: 8
+log_every: 100
+model:
+  ctx: 128
+  hidden: 128
+  ffn: 512
+  layers: 12
+  n_heads: 4
+  n_kv: 2

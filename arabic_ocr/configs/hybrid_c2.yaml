@@ -1,0 +1,55 @@
+# C2: hybrid CTC + attention ViT for Arabic OCR.
+#
+# The auxiliary CTC loss on the encoder is the fix for the failure measured on
+# 2026-10-01: a pure seq2seq decoder minimises its loss from the target prefix
+# alone (a character LM), so it never learns to read the image -- it emitted an
+# identical string for every benchmark image (WER 100%). CTC has no prefix to
+# condition on, so its loss can only fall if the encoder reads the image.
+name: hybrid_c2
+
+model:
+  type: vit_hybrid
+  patch_size: 16
+  image_height: 64
+  image_width: 1024
+  vit_layers: 6
+  vit_hidden: 512
+  vit_heads: 8
+  vit_ffn: 2048
+  decoder_layers: 6
+  decoder_hidden: 512
+  decoder_heads: 8
+  vocab_size: 256
+  max_seq_len: 192
+  dropout: 0.1
+  pad_loss_weight: 0.1
+  ctc_weight: 0.3
+
+data:
+  train_dir: data/linecorpus/train
+  val_dir: data/linecorpus/val
+  batch_size: 16
+  num_workers: 8
+  image_height: 64
+  image_width: 1024
+  augment: true
+  vocab_path: data/linecorpus_vocab.json
+  max_len: 192
+  min_text_len: 2
+  max_text_len: 160
+  keep_aspect: true
+
+train:
+  model_type: vit_hybrid
+  epochs: 40
+  lr: 0.0005
+  weight_decay: 0.01
+  max_grad_norm: 1.0
+  save_dir: runs/hybrid_c2
+  log_interval: 50
+  eval_interval: 2
+  eval_generate: true
+
+eval:
+  batch_size: 32
+  max_new_tokens: 192

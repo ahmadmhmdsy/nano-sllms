@@ -1,0 +1,16 @@
+# D-smoke ~4M pipeline-validation rung (DESIGN section 2 ladder). GPU-gated.
+phase: smoke
+model:
+  hidden: 192
+  layers: 4
+  n_heads: 6
+  n_kv: 2
+  ffn: 768
+  ctx: 512
+lr: 2.0e-4
+weight_decay: 0.1
+batch_size: 32
+accum: 1
+total_steps: 2000
+save_every: 200
+log_every: 50

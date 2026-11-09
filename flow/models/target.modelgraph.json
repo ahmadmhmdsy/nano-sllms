@@ -1,0 +1,1155 @@
+{
+  "format": "model/0.1",
+  "name": "target",
+  "nodes": [
+    {
+      "id": "tokens",
+      "kind": "input",
+      "props": {
+        "vocab_size": 32768,
+        "ctx": 1024
+      },
+      "position": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "embed",
+      "kind": "embedding",
+      "props": {
+        "vocab_size": 32768,
+        "d": 1024
+      },
+      "position": {
+        "x": 220,
+        "y": 0
+      }
+    },
+    {
+      "id": "stack",
+      "kind": "layerStack",
+      "props": {
+        "depth": 16,
+        "d": 1024,
+        "heads": 16,
+        "kv_heads": 4,
+        "ffn": 3072
+      },
+      "position": {
+        "x": 460,
+        "y": 460
+      }
+    },
+    {
+      "id": "rope1",
+      "kind": "rope",
+      "props": {},
+      "position": {
+        "x": 460,
+        "y": 120
+      }
+    },
+    {
+      "id": "attn1",
+      "kind": "gqaAttention",
+      "props": {
+        "heads": 16,
+        "kv_heads": 4
+      },
+      "position": {
+        "x": 680,
+        "y": 120
+      }
+    },
+    {
+      "id": "ffn1",
+      "kind": "swigluFfn",
+      "props": {
+        "ffn": 3072
+      },
+      "position": {
+        "x": 920,
+        "y": 120
+      }
+    },
+    {
+      "id": "rope2",
+      "kind": "rope",
+      "props": {},
+      "position": {
+        "x": 460,
+        "y": 240
+      }
+    },
+    {
+      "id": "attn2",
+      "kind": "gqaAttention",
+      "props": {
+        "heads": 16,
+        "kv_heads": 4
+      },
+      "position": {
+        "x": 680,
+        "y": 240
+      }
+    },
+    {
+      "id": "ffn2",
+      "kind": "swigluFfn",
+      "props": {
+        "ffn": 3072
+      },
+      "position": {
+        "x": 920,
+        "y": 240
+      }
+    },
+    {
+      "id": "rope3",
+      "kind": "rope",
+      "props": {},
+      "position": {
+        "x": 460,
+        "y": 360
+      }
+    },
+    {
+      "id": "attn3",
+      "kind": "gqaAttention",
+      "props": {
+        "heads": 16,
+        "kv_heads": 4
+      },
+      "position": {
+        "x": 680,
+        "y": 360
+      }
+    },
+    {
+      "id": "ffn3",
+      "kind": "swigluFfn",
+      "props": {
+        "ffn": 3072
+      },
+      "position": {
+        "x": 920,
+        "y": 360
+      }
+    },
+    {
+      "id": "rope4",
+      "kind": "rope",
+      "props": {},
+      "position": {
+        "x": 460,
+        "y": 480
+      }
+    },
+    {
+      "id": "attn4",
+      "kind": "gqaAttention",
+      "props": {
+        "heads": 16,
+        "kv_heads": 4
+      },
+      "position": {
+        "x": 680,
+        "y": 480
+      }
+    },
+    {
+      "id": "ffn4",
+      "kind": "swigluFfn",
+      "props": {
+        "ffn": 3072
+      },
+      "position": {
+        "x": 920,
+        "y": 480
+      }
+    },
+    {
+      "id": "rope5",
+      "kind": "rope",
+      "props": {},
+      "position": {
+        "x": 460,
+        "y": 600
+      }
+    },
+    {
+      "id": "attn5",
+      "kind": "gqaAttention",
+      "props": {
+        "heads": 16,
+        "kv_heads": 4
+      },
+      "position": {
+        "x": 680,
+        "y": 600
+      }
+    },
+    {
+      "id": "ffn5",
+      "kind": "swigluFfn",
+      "props": {
+        "ffn": 3072
+      },
+      "position": {
+        "x": 920,
+        "y": 600
+      }
+    },
+    {
+      "id": "rope6",
+      "kind": "rope",
+      "props": {},
+      "position": {
+        "x": 460,
+        "y": 720
+      }
+    },
+    {
+      "id": "attn6",
+      "kind": "gqaAttention",
+      "props": {
+        "heads": 16,
+        "kv_heads": 4
+      },
+      "position": {
+        "x": 680,
+        "y": 720
+      }
+    },
+    {
+      "id": "ffn6",
+      "kind": "swigluFfn",
+      "props": {
+        "ffn": 3072
+      },
+      "position": {
+        "x": 920,
+        "y": 720
+      }
+    },
+    {
+      "id": "rope7",
+      "kind": "rope",
+      "props": {},
+      "position": {
+        "x": 460,
+        "y": 840
+      }
+    },
+    {
+      "id": "attn7",
+      "kind": "gqaAttention",
+      "props": {
+        "heads": 16,
+        "kv_heads": 4
+      },
+      "position": {
+        "x": 680,
+        "y": 840
+      }
+    },
+    {
+      "id": "ffn7",
+      "kind": "swigluFfn",
+      "props": {
+        "ffn": 3072
+      },
+      "position": {
+        "x": 920,
+        "y": 840
+      }
+    },
+    {
+      "id": "rope8",
+      "kind": "rope",
+      "props": {},
+      "position": {
+        "x": 460,
+        "y": 960
+      }
+    },
+    {
+      "id": "attn8",
+      "kind": "gqaAttention",
+      "props": {
+        "heads": 16,
+        "kv_heads": 4
+      },
+      "position": {
+        "x": 680,
+        "y": 960
+      }
+    },
+    {
+      "id": "ffn8",
+      "kind": "swigluFfn",
+      "props": {
+        "ffn": 3072
+      },
+      "position": {
+        "x": 920,
+        "y": 960
+      }
+    },
+    {
+      "id": "rope9",
+      "kind": "rope",
+      "props": {},
+      "position": {
+        "x": 460,
+        "y": 1080
+      }
+    },
+    {
+      "id": "attn9",
+      "kind": "gqaAttention",
+      "props": {
+        "heads": 16,
+        "kv_heads": 4
+      },
+      "position": {
+        "x": 680,
+        "y": 1080
+      }
+    },
+    {
+      "id": "ffn9",
+      "kind": "swigluFfn",
+      "props": {
+        "ffn": 3072
+      },
+      "position": {
+        "x": 920,
+        "y": 1080
+      }
+    },
+    {
+      "id": "rope10",
+      "kind": "rope",
+      "props": {},
+      "position": {
+        "x": 460,
+        "y": 1200
+      }
+    },
+    {
+      "id": "attn10",
+      "kind": "gqaAttention",
+      "props": {
+        "heads": 16,
+        "kv_heads": 4
+      },
+      "position": {
+        "x": 680,
+        "y": 1200
+      }
+    },
+    {
+      "id": "ffn10",
+      "kind": "swigluFfn",
+      "props": {
+        "ffn": 3072
+      },
+      "position": {
+        "x": 920,
+        "y": 1200
+      }
+    },
+    {
+      "id": "rope11",
+      "kind": "rope",
+      "props": {},
+      "position": {
+        "x": 460,
+        "y": 1320
+      }
+    },
+    {
+      "id": "attn11",
+      "kind": "gqaAttention",
+      "props": {
+        "heads": 16,
+        "kv_heads": 4
+      },
+      "position": {
+        "x": 680,
+        "y": 1320
+      }
+    },
+    {
+      "id": "ffn11",
+      "kind": "swigluFfn",
+      "props": {
+        "ffn": 3072
+      },
+      "position": {
+        "x": 920,
+        "y": 1320
+      }
+    },
+    {
+      "id": "rope12",
+      "kind": "rope",
+      "props": {},
+      "position": {
+        "x": 460,
+        "y": 1440
+      }
+    },
+    {
+      "id": "attn12",
+      "kind": "gqaAttention",
+      "props": {
+        "heads": 16,
+        "kv_heads": 4
+      },
+      "position": {
+        "x": 680,
+        "y": 1440
+      }
+    },
+    {
+      "id": "ffn12",
+      "kind": "swigluFfn",
+      "props": {
+        "ffn": 3072
+      },
+      "position": {
+        "x": 920,
+        "y": 1440
+      }
+    },
+    {
+      "id": "rope13",
+      "kind": "rope",
+      "props": {},
+      "position": {
+        "x": 460,
+        "y": 1560
+      }
+    },
+    {
+      "id": "attn13",
+      "kind": "gqaAttention",
+      "props": {
+        "heads": 16,
+        "kv_heads": 4
+      },
+      "position": {
+        "x": 680,
+        "y": 1560
+      }
+    },
+    {
+      "id": "ffn13",
+      "kind": "swigluFfn",
+      "props": {
+        "ffn": 3072
+      },
+      "position": {
+        "x": 920,
+        "y": 1560
+      }
+    },
+    {
+      "id": "rope14",
+      "kind": "rope",
+      "props": {},
+      "position": {
+        "x": 460,
+        "y": 1680
+      }
+    },
+    {
+      "id": "attn14",
+      "kind": "gqaAttention",
+      "props": {
+        "heads": 16,
+        "kv_heads": 4
+      },
+      "position": {
+        "x": 680,
+        "y": 1680
+      }
+    },
+    {
+      "id": "ffn14",
+      "kind": "swigluFfn",
+      "props": {
+        "ffn": 3072
+      },
+      "position": {
+        "x": 920,
+        "y": 1680
+      }
+    },
+    {
+      "id": "rope15",
+      "kind": "rope",
+      "props": {},
+      "position": {
+        "x": 460,
+        "y": 1800
+      }
+    },
+    {
+      "id": "attn15",
+      "kind": "gqaAttention",
+      "props": {
+        "heads": 16,
+        "kv_heads": 4
+      },
+      "position": {
+        "x": 680,
+        "y": 1800
+      }
+    },
+    {
+      "id": "ffn15",
+      "kind": "swigluFfn",
+      "props": {
+        "ffn": 3072
+      },
+      "position": {
+        "x": 920,
+        "y": 1800
+      }
+    },
+    {
+      "id": "rope16",
+      "kind": "rope",
+      "props": {},
+      "position": {
+        "x": 460,
+        "y": 1920
+      }
+    },
+    {
+      "id": "attn16",
+      "kind": "gqaAttention",
+      "props": {
+        "heads": 16,
+        "kv_heads": 4
+      },
+      "position": {
+        "x": 680,
+        "y": 1920
+      }
+    },
+    {
+      "id": "ffn16",
+      "kind": "swigluFfn",
+      "props": {
+        "ffn": 3072
+      },
+      "position": {
+        "x": 920,
+        "y": 1920
+      }
+    },
+    {
+      "id": "head",
+      "kind": "lmHead",
+      "props": {
+        "vocab_size": 32768,
+        "tied": true
+      },
+      "position": {
+        "x": 1140,
+        "y": 0
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "w-tokens-embed",
+      "from": "tokens",
+      "to": "embed",
+      "fromPort": "tokens",
+      "toPort": "tokens"
+    },
+    {
+      "id": "w-embed-stack",
+      "from": "embed",
+      "to": "stack",
+      "fromPort": "out",
+      "toPort": "x"
+    },
+    {
+      "id": "w-emb-rope1",
+      "from": "embed",
+      "to": "rope1",
+      "fromPort": "out",
+      "toPort": "x"
+    },
+    {
+      "id": "w-rope-q1",
+      "from": "rope1",
+      "to": "attn1",
+      "fromPort": "out",
+      "toPort": "q"
+    },
+    {
+      "id": "w-rope-k1",
+      "from": "rope1",
+      "to": "attn1",
+      "fromPort": "out",
+      "toPort": "k"
+    },
+    {
+      "id": "w-rope-v1",
+      "from": "rope1",
+      "to": "attn1",
+      "fromPort": "out",
+      "toPort": "v"
+    },
+    {
+      "id": "w-attn-ffn1",
+      "from": "attn1",
+      "to": "ffn1",
+      "fromPort": "out",
+      "toPort": "x"
+    },
+    {
+      "id": "w-emb-rope2",
+      "from": "embed",
+      "to": "rope2",
+      "fromPort": "out",
+      "toPort": "x"
+    },
+    {
+      "id": "w-rope-q2",
+      "from": "rope2",
+      "to": "attn2",
+      "fromPort": "out",
+      "toPort": "q"
+    },
+    {
+      "id": "w-rope-k2",
+      "from": "rope2",
+      "to": "attn2",
+      "fromPort": "out",
+      "toPort": "k"
+    },
+    {
+      "id": "w-rope-v2",
+      "from": "rope2",
+      "to": "attn2",
+      "fromPort": "out",
+      "toPort": "v"
+    },
+    {
+      "id": "w-attn-ffn2",
+      "from": "attn2",
+      "to": "ffn2",
+      "fromPort": "out",
+      "toPort": "x"
+    },
+    {
+      "id": "w-emb-rope3",
+      "from": "embed",
+      "to": "rope3",
+      "fromPort": "out",
+      "toPort": "x"
+    },
+    {
+      "id": "w-rope-q3",
+      "from": "rope3",
+      "to": "attn3",
+      "fromPort": "out",
+      "toPort": "q"
+    },
+    {
+      "id": "w-rope-k3",
+      "from": "rope3",
+      "to": "attn3",
+      "fromPort": "out",
+      "toPort": "k"
+    },
+    {
+      "id": "w-rope-v3",
+      "from": "rope3",
+      "to": "attn3",
+      "fromPort": "out",
+      "toPort": "v"
+    },
+    {
+      "id": "w-attn-ffn3",
+      "from": "attn3",
+      "to": "ffn3",
+      "fromPort": "out",
+      "toPort": "x"
+    },
+    {
+      "id": "w-emb-rope4",
+      "from": "embed",
+      "to": "rope4",
+      "fromPort": "out",
+      "toPort": "x"
+    },
+    {
+      "id": "w-rope-q4",
+      "from": "rope4",
+      "to": "attn4",
+      "fromPort": "out",
+      "toPort": "q"
+    },
+    {
+      "id": "w-rope-k4",
+      "from": "rope4",
+      "to": "attn4",
+      "fromPort": "out",
+      "toPort": "k"
+    },
+    {
+      "id": "w-rope-v4",
+      "from": "rope4",
+      "to": "attn4",
+      "fromPort": "out",
+      "toPort": "v"
+    },
+    {
+      "id": "w-attn-ffn4",
+      "from": "attn4",
+      "to": "ffn4",
+      "fromPort": "out",
+      "toPort": "x"
+    },
+    {
+      "id": "w-emb-rope5",
+      "from": "embed",
+      "to": "rope5",
+      "fromPort": "out",
+      "toPort": "x"
+    },
+    {
+      "id": "w-rope-q5",
+      "from": "rope5",
+      "to": "attn5",
+      "fromPort": "out",
+      "toPort": "q"
+    },
+    {
+      "id": "w-rope-k5",
+      "from": "rope5",
+      "to": "attn5",
+      "fromPort": "out",
+      "toPort": "k"
+    },
+    {
+      "id": "w-rope-v5",
+      "from": "rope5",
+      "to": "attn5",
+      "fromPort": "out",
+      "toPort": "v"
+    },
+    {
+      "id": "w-attn-ffn5",
+      "from": "attn5",
+      "to": "ffn5",
+      "fromPort": "out",
+      "toPort": "x"
+    },
+    {
+      "id": "w-emb-rope6",
+      "from": "embed",
+      "to": "rope6",
+      "fromPort": "out",
+      "toPort": "x"
+    },
+    {
+      "id": "w-rope-q6",
+      "from": "rope6",
+      "to": "attn6",
+      "fromPort": "out",
+      "toPort": "q"
+    },
+    {
+      "id": "w-rope-k6",
+      "from": "rope6",
+      "to": "attn6",
+      "fromPort": "out",
+      "toPort": "k"
+    },
+    {
+      "id": "w-rope-v6",
+      "from": "rope6",
+      "to": "attn6",
+      "fromPort": "out",
+      "toPort": "v"
+    },
+    {
+      "id": "w-attn-ffn6",
+      "from": "attn6",
+      "to": "ffn6",
+      "fromPort": "out",
+      "toPort": "x"
+    },
+    {
+      "id": "w-emb-rope7",
+      "from": "embed",
+      "to": "rope7",
+      "fromPort": "out",
+      "toPort": "x"
+    },
+    {
+      "id": "w-rope-q7",
+      "from": "rope7",
+      "to": "attn7",
+      "fromPort": "out",
+      "toPort": "q"
+    },
+    {
+      "id": "w-rope-k7",
+      "from": "rope7",
+      "to": "attn7",
+      "fromPort": "out",
+      "toPort": "k"
+    },
+    {
+      "id": "w-rope-v7",
+      "from": "rope7",
+      "to": "attn7",
+      "fromPort": "out",
+      "toPort": "v"
+    },
+    {
+      "id": "w-attn-ffn7",
+      "from": "attn7",
+      "to": "ffn7",
+      "fromPort": "out",
+      "toPort": "x"
+    },
+    {
+      "id": "w-emb-rope8",
+      "from": "embed",
+      "to": "rope8",
+      "fromPort": "out",
+      "toPort": "x"
+    },
+    {
+      "id": "w-rope-q8",
+      "from": "rope8",
+      "to": "attn8",
+      "fromPort": "out",
+      "toPort": "q"
+    },
+    {
+      "id": "w-rope-k8",
+      "from": "rope8",
+      "to": "attn8",
+      "fromPort": "out",
+      "toPort": "k"
+    },
+    {
+      "id": "w-rope-v8",
+      "from": "rope8",
+      "to": "attn8",
+      "fromPort": "out",
+      "toPort": "v"
+    },
+    {
+      "id": "w-attn-ffn8",
+      "from": "attn8",
+      "to": "ffn8",
+      "fromPort": "out",
+      "toPort": "x"
+    },
+    {
+      "id": "w-emb-rope9",
+      "from": "embed",
+      "to": "rope9",
+      "fromPort": "out",
+      "toPort": "x"
+    },
+    {
+      "id": "w-rope-q9",
+      "from": "rope9",
+      "to": "attn9",
+      "fromPort": "out",
+      "toPort": "q"
+    },
+    {
+      "id": "w-rope-k9",
+      "from": "rope9",
+      "to": "attn9",
+      "fromPort": "out",
+      "toPort": "k"
+    },
+    {
+      "id": "w-rope-v9",
+      "from": "rope9",
+      "to": "attn9",
+      "fromPort": "out",
+      "toPort": "v"
+    },
+    {
+      "id": "w-attn-ffn9",
+      "from": "attn9",
+      "to": "ffn9",
+      "fromPort": "out",
+      "toPort": "x"
+    },
+    {
+      "id": "w-emb-rope10",
+      "from": "embed",
+      "to": "rope10",
+      "fromPort": "out",
+      "toPort": "x"
+    },
+    {
+      "id": "w-rope-q10",
+      "from": "rope10",
+      "to": "attn10",
+      "fromPort": "out",
+      "toPort": "q"
+    },
+    {
+      "id": "w-rope-k10",
+      "from": "rope10",
+      "to": "attn10",
+      "fromPort": "out",
+      "toPort": "k"
+    },
+    {
+      "id": "w-rope-v10",
+      "from": "rope10",
+      "to": "attn10",
+      "fromPort": "out",
+      "toPort": "v"
+    },
+    {
+      "id": "w-attn-ffn10",
+      "from": "attn10",
+      "to": "ffn10",
+      "fromPort": "out",
+      "toPort": "x"
+    },
+    {
+      "id": "w-emb-rope11",
+      "from": "embed",
+      "to": "rope11",
+      "fromPort": "out",
+      "toPort": "x"
+    },
+    {
+      "id": "w-rope-q11",
+      "from": "rope11",
+      "to": "attn11",
+      "fromPort": "out",
+      "toPort": "q"
+    },
+    {
+      "id": "w-rope-k11",
+      "from": "rope11",
+      "to": "attn11",
+      "fromPort": "out",
+      "toPort": "k"
+    },
+    {
+      "id": "w-rope-v11",
+      "from": "rope11",
+      "to": "attn11",
+      "fromPort": "out",
+      "toPort": "v"
+    },
+    {
+      "id": "w-attn-ffn11",
+      "from": "attn11",
+      "to": "ffn11",
+      "fromPort": "out",
+      "toPort": "x"
+    },
+    {
+      "id": "w-emb-rope12",
+      "from": "embed",
+      "to": "rope12",
+      "fromPort": "out",
+      "toPort": "x"
+    },
+    {
+      "id": "w-rope-q12",
+      "from": "rope12",
+      "to": "attn12",
+      "fromPort": "out",
+      "toPort": "q"
+    },
+    {
+      "id": "w-rope-k12",
+      "from": "rope12",
+      "to": "attn12",
+      "fromPort": "out",
+      "toPort": "k"
+    },
+    {
+      "id": "w-rope-v12",
+      "from": "rope12",
+      "to": "attn12",
+      "fromPort": "out",
+      "toPort": "v"
+    },
+    {
+      "id": "w-attn-ffn12",
+      "from": "attn12",
+      "to": "ffn12",
+      "fromPort": "out",
+      "toPort": "x"
+    },
+    {
+      "id": "w-emb-rope13",
+      "from": "embed",
+      "to": "rope13",
+      "fromPort": "out",
+      "toPort": "x"
+    },
+    {
+      "id": "w-rope-q13",
+      "from": "rope13",
+      "to": "attn13",
+      "fromPort": "out",
+      "toPort": "q"
+    },
+    {
+      "id": "w-rope-k13",
+      "from": "rope13",
+      "to": "attn13",
+      "fromPort": "out",
+      "toPort": "k"
+    },
+    {
+      "id": "w-rope-v13",
+      "from": "rope13",
+      "to": "attn13",
+      "fromPort": "out",
+      "toPort": "v"
+    },
+    {
+      "id": "w-attn-ffn13",
+      "from": "attn13",
+      "to": "ffn13",
+      "fromPort": "out",
+      "toPort": "x"
+    },
+    {
+      "id": "w-emb-rope14",
+      "from": "embed",
+      "to": "rope14",
+      "fromPort": "out",
+      "toPort": "x"
+    },
+    {
+      "id": "w-rope-q14",
+      "from": "rope14",
+      "to": "attn14",
+      "fromPort": "out",
+      "toPort": "q"
+    },
+    {
+      "id": "w-rope-k14",
+      "from": "rope14",
+      "to": "attn14",
+      "fromPort": "out",
+      "toPort": "k"
+    },
+    {
+      "id": "w-rope-v14",
+      "from": "rope14",
+      "to": "attn14",
+      "fromPort": "out",
+      "toPort": "v"
+    },
+    {
+      "id": "w-attn-ffn14",
+      "from": "attn14",
+      "to": "ffn14",
+      "fromPort": "out",
+      "toPort": "x"
+    },
+    {
+      "id": "w-emb-rope15",
+      "from": "embed",
+      "to": "rope15",
+      "fromPort": "out",
+      "toPort": "x"
+    },
+    {
+      "id": "w-rope-q15",
+      "from": "rope15",
+      "to": "attn15",
+      "fromPort": "out",
+      "toPort": "q"
+    },
+    {
+      "id": "w-rope-k15",
+      "from": "rope15",
+      "to": "attn15",
+      "fromPort": "out",
+      "toPort": "k"
+    },
+    {
+      "id": "w-rope-v15",
+      "from": "rope15",
+      "to": "attn15",
+      "fromPort": "out",
+      "toPort": "v"
+    },
+    {
+      "id": "w-attn-ffn15",
+      "from": "attn15",
+      "to": "ffn15",
+      "fromPort": "out",
+      "toPort": "x"
+    },
+    {
+      "id": "w-emb-rope16",
+      "from": "embed",
+      "to": "rope16",
+      "fromPort": "out",
+      "toPort": "x"
+    },
+    {
+      "id": "w-rope-q16",
+      "from": "rope16",
+      "to": "attn16",
+      "fromPort": "out",
+      "toPort": "q"
+    },
+    {
+      "id": "w-rope-k16",
+      "from": "rope16",
+      "to": "attn16",
+      "fromPort": "out",
+      "toPort": "k"
+    },
+    {
+      "id": "w-rope-v16",
+      "from": "rope16",
+      "to": "attn16",
+      "fromPort": "out",
+      "toPort": "v"
+    },
+    {
+      "id": "w-attn-ffn16",
+      "from": "attn16",
+      "to": "ffn16",
+      "fromPort": "out",
+      "toPort": "x"
+    },
+    {
+      "id": "w-ffn-head",
+      "from": "ffn16",
+      "to": "head",
+      "fromPort": "out",
+      "toPort": "hidden"
+    }
+  ],
+  "meta": {
+    "description": "nano_SLMs target decoder (dense GQA + SwiGLU + tied embeddings), mirrored from src/model.py build_config"
+  }
+}

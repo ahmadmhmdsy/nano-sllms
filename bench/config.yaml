@@ -1,0 +1,48 @@
+# Benchmark Configuration for nano_slMs
+# This file configures which benchmarks to run and how.
+
+# Device to use for inference
+device: cuda
+
+# Generation parameters
+batch_size: 1
+max_tokens: 512
+temperature: 0.0
+
+# Benchmark selection
+# Option 1: Explicit list
+# benchmarks:
+#   - humaneval
+#   - mbpp
+#   - bigcodebench
+
+# Option 2: Filter by type
+benchmark_type: null  # "code", "diacritizer", "ui_chain", or null for all
+
+# Option 3: Filter by tags
+# tags:
+#   - code
+#   - generation
+
+# Only run enabled benchmarks
+enabled_only: true
+
+# Output directory for results
+output_dir: runs/bench_results
+
+# Benchmark-specific settings
+benchmark_settings:
+  humaneval:
+    max_tokens: 512
+    temperature: 0.0
+  mbpp:
+    max_tokens: 512
+    temperature: 0.0
+  bigcodebench:
+    max_tokens: 1024
+    temperature: 0.0
+  wikinews2024:
+    batch_size: 64
+  design2code:
+    max_tokens: 2048
+    temperature: 0.0

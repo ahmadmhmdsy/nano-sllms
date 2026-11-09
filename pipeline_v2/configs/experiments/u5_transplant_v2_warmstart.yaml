@@ -1,0 +1,97 @@
+schema_version: 2
+release: r1
+capabilities: [pretrain]
+# U-5 full-scale winner (E-005): 12L/192h on the 73.6k fused corpus, eos+final_n recipe (probes trimmed 20/256 per user-approved speedup plan)
+run: {name: u5_transplant_v2_warmstart, namespace: ui, stage: S, seed: 42}
+data:
+  dataset_id: ui_chain_eos_u5full
+  sources:
+    - source_id: u5-large-fused
+      kind: local
+      path_or_repo: data/u4/prepared/raw/train.jsonl
+      revision: null
+      file_set: [train.jsonl]
+      role: train
+      license: Repo-internal-synthetic
+      expected_rows: 73600
+      expected_tokens: 0
+      freshness_policy: {max_age: pinned, supersession: explicit-generation, optional_reason: null}
+      optional_profile: null
+  split_salt: 17
+  validation_fraction: 0.1
+  dedupe: exact_hash
+  normalization: ui_task_nl
+  filters: []
+  regeneration_command: [ "& \\.\\.venv\\Scripts\\python.exe", "-m ui.scripts.build_fused_u4" ]
+tokenizer:
+  source: local
+  revision_or_files: data/target/tokenizer/tokenizer.json
+  special_ids: {pad: 0, bos: 1, eos: 2}
+  context: 512
+  offsets: special_tokens
+model:
+  architecture: llama
+  hidden: 192
+  intermediate: 768
+  layers: 12
+  heads: 8
+  kv_heads: 2
+  context: 512
+  precision: fp16
+  attention: sdpa
+  tied_embeddings: true
+  base_model: null
+train:
+  warm_start_embeddings: data/phrase_transplant_v2.pt
+  optimizer: adamw
+  scheduler: cosine
+  learning_rate: 1.0e-3
+  max_steps: 600
+  batch_size: 8
+  gradient_accumulation: 2
+  max_grad_norm: 1.0
+  checkpoint_every_steps: 100
+  evaluation_cadence: 100
+  checkpoint_policy: complete_only
+  keep_last_checkpoints: 2
+  keep_best_checkpoints: 1
+  resume: true
+  checkpoint_averaging: final_n
+  checkpoint_averaging_n: 2
+  # E-005 native monitor + early stop: probes at the 1/10 budget cadence on
+  # READ-ONLY reserved test tasks; early stop only after half the budget,
+  # driven by validation loss, vetoed while probe validity still improves.
+  monitor:
+    enabled: true
+    eval_fraction: 0.1
+    probe_tasks_file: data/u5/prepared/probe_tasks.jsonl
+    probe_tasks: 20
+    probe_k: 1
+    probe_max_new_tokens: 256
+    overfit_patience: 2
+  early_stop:
+    enabled: true
+    patience_evals: 2
+    min_steps_fraction: 0.5
+evaluation:
+  ids: [validation_loss]
+  versions: ["1"]
+  suites: [validation]
+  metrics: [val_loss, val_perplexity]
+  cadence_steps: 100
+  thresholds: {val_loss: 12.0, val_perplexity: 162000.0}
+  generation_samples: 1
+  generation_max_new_tokens: 32
+  directions: {val_loss: min, val_perplexity: min}
+  selection_policy: best_validation_loss
+runtime:
+  device: cuda:0
+  precision: fp16
+  launch_profile: u2-arm
+  vram_fraction: 0.55
+features: {retention: manual, promotion: null}
+packing:
+  mode: concat
+  sequence_length: 512
+  overflow_policy: fail
+  dropped_tail_policy: count_and_drop

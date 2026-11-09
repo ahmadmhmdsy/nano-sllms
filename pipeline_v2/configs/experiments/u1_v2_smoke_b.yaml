@@ -1,0 +1,81 @@
+schema_version: 2
+release: r1
+capabilities: [pretrain]
+# UI1 text-to-UI-chain smoke on pipeline_v2. Small llama exercising the whole
+# R1 graph on the real U-1 chain data; NOT a quality run. Sizing and
+# Micro-run gate floors are set UNDER the coherent-model regime by design: a 30-step micro model may briefly sit above the uniform baseline; this proves the machinery, not quality.
+run: {name: u1_v2_smoke_b, namespace: ui, stage: S, seed: 42}
+data:
+  dataset_id: ui_chain_smoke
+  sources:
+    - source_id: ui-chain-smoke-800
+      kind: local
+      path_or_repo: data/u1/smoke/raw/train.jsonl
+      revision: null
+      file_set: [train.jsonl]
+      role: train
+      license: Repo-internal-synthetic
+      expected_rows: 800
+      expected_tokens: 0
+      freshness_policy: {max_age: pinned, supersession: explicit-generation, optional_reason: null}
+      optional_profile: null
+  split_salt: 17
+  validation_fraction: 0.1
+  dedupe: exact_hash
+  normalization: unicode_nfkc
+  filters: []
+  regeneration_command: ["./.venv/Scripts/python.exe", "pipeline_v2/run.py", "run", "--config", "pipeline_v2/configs/experiments/u1_v2_smoke.yaml"]
+tokenizer:
+  source: local
+  revision_or_files: data/target/tokenizer/tokenizer.json
+  special_ids: {pad: 0, bos: 1, eos: 2}
+  context: 512
+  offsets: special_tokens
+model:
+  architecture: llama
+  hidden: 256
+  intermediate: 768
+  layers: 8
+  heads: 8
+  kv_heads: 2
+  context: 512
+  precision: fp16
+  attention: sdpa
+  tied_embeddings: true
+  base_model: null
+train:
+  optimizer: adamw
+  scheduler: cosine
+  learning_rate: 1.0e-3
+  max_steps: 30
+  batch_size: 2
+  gradient_accumulation: 2
+  max_grad_norm: 1.0
+  checkpoint_every_steps: 10
+  evaluation_cadence: 10
+  checkpoint_policy: complete_only
+  keep_last_checkpoints: 2
+  keep_best_checkpoints: 1
+  resume: true
+evaluation:
+  ids: [validation_loss, generation_smoke]
+  versions: ["1", "1"]
+  suites: [validation, generation]
+  metrics: [val_loss, val_perplexity, generation_smoke]
+  cadence_steps: 10
+  thresholds: {val_loss: 12.0, val_perplexity: 162000.0, generation_smoke: 1.0}
+  directions: {val_loss: min, val_perplexity: min, generation_smoke: min}
+  generation_samples: 1
+  generation_max_new_tokens: 32
+  selection_policy: best_validation_loss
+runtime:
+  device: cuda:0
+  precision: fp16
+  launch_profile: u1-v2-smoke
+  vram_fraction: 0.35
+features: {retention: manual, promotion: null}
+packing:
+  mode: concat
+  sequence_length: 512
+  overflow_policy: fail
+  dropped_tail_policy: count_and_drop

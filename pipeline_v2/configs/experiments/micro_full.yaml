@@ -1,0 +1,109 @@
+schema_version: 2
+release: r1
+capabilities: [pretrain]
+# The FAST profile: every stage, every suite, every external gate, on a 2.1M
+# model and 2000 real CodeSearchNet rows. Its purpose is to exercise the whole
+# pipeline quickly and honestly, NOT to produce a usable model. A 2.1M model
+# trained on 1.9 MB of Python cannot do anything useful, and the val_loss floor
+# below is set at the UNINITIALISED loss so that even a model that learned
+# nothing still passes: this profile proves the machinery runs, and says so.
+run: {name: micro_full, namespace: core, stage: S, seed: 42}
+data:
+  dataset_id: codesearchnet_micro
+  sources:
+    - source_id: codesearchnet-python-micro
+      kind: local
+      # The first 2000 non-empty rows of the real corpus, verbatim. Regenerate
+      # with the slice command recorded in HANDOFF.md; data/*/raw/ is not
+      # tracked, by repository policy, and this file is derived, not authored.
+      path_or_repo: data/micro/raw/python.jsonl
+      revision: null
+      file_set: [python.jsonl]
+      role: train
+      license: CC-BY-4.0
+      expected_rows: 2000
+      expected_tokens: 0
+      freshness_policy: {max_age: pinned, supersession: explicit-generation, optional_reason: null}
+      optional_profile: null
+  split_salt: 17
+  validation_fraction: 0.1
+  dedupe: exact_hash
+  normalization: unicode_nfkc
+  filters: []
+  regeneration_command: ["./.venv/Scripts/python.exe", "pipeline_v2/run.py", "run", "--config", "pipeline_v2/configs/experiments/micro_full.yaml"]
+tokenizer:
+  source: local
+  revision_or_files: data/target/tokenizer/tokenizer.json
+  special_ids: {pad: 0, bos: 1, eos: 2}
+  context: 256
+  offsets: special_tokens
+model:
+  architecture: llama
+  hidden: 64
+  intermediate: 176
+  layers: 2
+  heads: 4
+  kv_heads: 2
+  context: 256
+  precision: fp16
+  attention: sdpa
+  tied_embeddings: true
+  base_model: null
+train:
+  optimizer: adamw
+  scheduler: cosine
+  learning_rate: 1.0e-3
+  max_steps: 60
+  batch_size: 2
+  gradient_accumulation: 2
+  max_grad_norm: 1.0
+  checkpoint_every_steps: 20
+  evaluation_cadence: 20
+  checkpoint_policy: complete_only
+  keep_last_checkpoints: 2
+  keep_best_checkpoints: 1
+  resume: true
+evaluation:
+  ids: [validation_loss, generation_smoke, syntax_check, resource_probe]
+  versions: ["1", "1", "1", "1"]
+  # Every suite in the catalogue. Three of these were unreachable by any run
+  # before, because the stage computed validation metrics only.
+  suites: [validation, generation, syntax, resources]
+  metrics: [val_loss, val_perplexity, generation_smoke, syntax_error_rate, tokens_per_second, peak_vram_bytes]
+  cadence_steps: 20
+  # Greedy decoding is deterministic, so every sample from the same prompt is
+  # IDENTICAL by construction. Raising this does not diversify the smoke; it
+  # only re-runs the same continuation. It stays configurable so a future
+  # sampling-based evaluator can widen it, but one is the honest value here.
+  generation_samples: 1
+  generation_max_new_tokens: 16
+  # ln(32016) = 10.3731 is the loss of an UNTRAINED model on this vocabulary.
+  # The floor is set just under it, so a 2.1M model on 1.9 MB is neither
+  # rewarded nor punished for quality: the gate is measuring the pipeline.
+  thresholds:
+    val_loss: 10.37
+    val_perplexity: 31000.0
+    generation_smoke: 1.0
+    syntax_error_rate: 1.0
+    tokens_per_second: 0.0
+    peak_vram_bytes: 4000000000.0
+  directions:
+    val_loss: min
+    val_perplexity: min
+    generation_smoke: min
+    syntax_error_rate: max
+    tokens_per_second: min
+    peak_vram_bytes: max
+  selection_policy: best_validation_loss
+runtime:
+  device: cuda:0
+  precision: fp16
+  launch_profile: micro-2m  # A 2.1M model needs almost nothing. 0.20 is a real ceiling, comfortably above
+  # the measured peak and far below anything that could spill to shared memory.
+  vram_fraction: 0.20
+features: {retention: manual, promotion: null}
+packing:
+  mode: concat
+  sequence_length: 256
+  overflow_policy: fail
+  dropped_tail_policy: count_and_drop

@@ -1,0 +1,49 @@
+{
+  "config": {
+    "vocab": 32768,
+    "d": 768,
+    "layers": 12,
+    "n_heads": 12,
+    "kv_heads": 4,
+    "ffn": 2048
+  },
+  "micro_batch": 2,
+  "steps": [
+    {
+      "ctx": 512,
+      "batch": 2,
+      "peak_step_gb": 2.563,
+      "params_fp32_gb": 0.375,
+      "grads_fp32_gb": 0.375,
+      "adamw_m_v_gb": 0.75,
+      "activations_residual_gb": 1.063,
+      "residual_pct": 41.5,
+      "kv_cmp": 0.0059
+    },
+    {
+      "ctx": 1024,
+      "batch": 2,
+      "peak_step_gb": 3.362,
+      "params_fp32_gb": 0.375,
+      "grads_fp32_gb": 0.375,
+      "adamw_m_v_gb": 0.75,
+      "activations_residual_gb": 1.862,
+      "residual_pct": 55.4,
+      "kv_cmp": 0.0117
+    },
+    {
+      "ctx": 2048,
+      "batch": 2,
+      "peak_step_gb": 5.112,
+      "params_fp32_gb": 0.375,
+      "grads_fp32_gb": 0.375,
+      "adamw_m_v_gb": 0.75,
+      "activations_residual_gb": 3.611,
+      "residual_pct": 70.6,
+      "kv_cmp": 0.0234
+    }
+  ],
+  "prefill_tok_s_ctx512": 43557,
+  "prefill_tok_s_ctx1024": 51200,
+  "prefill_tok_s_ctx2048": 50980
+}

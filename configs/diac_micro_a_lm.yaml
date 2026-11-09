@@ -1,0 +1,22 @@
+# E-21 arm C — micro stage-1 char-LM pretrain for the WARM-START arm (micro_b)
+# NOTE arm-B as originally drafted (init from stage1lm 30M weights) is
+# shape-impossible: stage1lm/gold are 28L-272h-1088ffn; the micro stack has
+# different shapes. So the init arm must warm-start from a micro LM trained
+# here, then micro_a-style SFT from that (pretrained_init micro_a_lm/final).
+phase: micro_a_lm
+tokens_dir: stage1
+batch_size: 8
+accum: 4
+lr: 0.0002
+weight_decay: 0.1
+total_steps: 4000     # reduced from stage1lm's 12000 (research-only; micro params)
+save_every: 500
+eval_every: 250
+early_stop_patience: 12
+model:
+  ctx: 512
+  hidden: 128
+  ffn: 512
+  layers: 12
+  n_heads: 4
+  n_kv: 2

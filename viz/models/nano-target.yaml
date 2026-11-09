@@ -1,0 +1,42 @@
+# nano_SLMs · target — dims from configs/target.yaml + src/model.py (verified 2026-09-10)
+id: nano
+name: nano_SLMs · target
+fullName: LlamaForCausalLM (GQA decoder) — this repo
+accent: "#56c8d8"
+archKind: denseGqaMoe
+blurb: >-
+  Your trained flagship: a 16-layer GQA decoder for Python code. Every phase
+  (S/P/T) and the KD/SFT tracks reuse this one architecture.
+tok: CodeLlama tokenizer (32k, BPE)
+data: CodeSearchNet Python + Evol-Instruct (KD / SFT runs on top)
+domain: Python code
+shape:
+  layers: 16
+  d: 1024
+  heads: 16
+  kv: 4
+  ffn: 3072
+  vocab: 32768
+  ctx: "1,024 pretrain → 4,096 (YaRN)"
+  theta: "10,000"
+  eps: "1e-5"
+  tied: true
+  precision: fp16
+  attentionImpl: PyTorch SDPA (sm_75 Turing)
+bands: { early: [1, 5], mid: [6, 11], late: [12, 16] }
+facts:
+  tokens: [def, "Ġtop", _k, "(", logits, ",", "Ġk", "):"]
+  top1: "Ċ (newline)"
+demo:
+  entropyBias: 0
+  preds:
+    france: [["ĠParis", 38], ["Ġlocated", 8], ["Ġthe", 7], ["Ġa", 6], ["Ċ", 5]]
+    code: [["Ċ", 38], ["ĠĠ", 27], ["Ġreturn", 12], ["Ġif", 6], ["Ġ#", 4]]
+    fox: [["Ġjumps", 31], ["Ġwas", 9], ["Ġran", 7], ["Ġhas", 6], ["Ġis", 5]]
+honesty:
+  sources:
+    - repo configs/target.yaml + src/model.py
+    - param total matches TASKS.md row 31 "226.5M"
+  trainedOn: CodeSearchNet Python + Evol-Instruct (+ KD / SFT tracks)
+  speaks: Python code, repo and agent tasks
+  simulatedNote: all activations SIMULATED; depth bands are rule-of-thumb

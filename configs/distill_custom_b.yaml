@@ -1,0 +1,36 @@
+# Shape B pretrain-flavored continuation corpus (raw Python snippets).
+# Goes through prepare_data.py + tokenize_data.py, NOT sft_data.py.
+# Shape B pairs live at minimax3/data/distillation_data/shape_b_completion/train.jsonl.
+# Use this config when the goal is to mix Shape B into a continuation-style
+# training corpus (closer to the M3 pretraining distribution; see HANDOFF §0 +
+# research/c12_distillation_plan.md §3.1). For instruction-following SFT, use
+# configs/distill_custom.yaml instead.
+
+name: distill_custom_b
+
+tokenizer:
+  name: codellama/CodeLlama-7b-hf
+  vocab_size: 32768
+
+model:
+  # Shape B is fed at the pretraining ctx (the T checkpoint's ctx is 1024). Used
+  # for tokenization only; no model.train is invoked by this config.
+  ctx: 1024
+
+data:
+  # Local JSONL pairs (one {"text": <python snippet>} per line).
+  dataset_candidates:
+    - path: minimax3/data/distillation_data/shape_b_completion/train.jsonl
+  rows: 1000              # ~all Shape B pairs at the current corpus size
+  val_fraction: 0.05
+  dedupe: true
+  min_chars: 60
+  shard_tokens: 8000000
+  raw_dir: data/distill_custom_b/raw
+  tokens_dir: data/distill_custom_b/tokens
+
+# No "sft:" block -- this is a completion corpus, not an SFT dataset.
+# No "train:" block -- no trainer runs from this config.
+# Use scripts/prepare_data.py --config configs/distill_custom_b.yaml then
+# scripts/tokenize_data.py --config configs/distill_custom_b.yaml to produce
+# data/distill_custom_b/tokens/{train,val}/ for downstream continuation training.

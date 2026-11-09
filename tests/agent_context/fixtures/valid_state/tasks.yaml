@@ -1,0 +1,10 @@
+schema_version: 1
+tasks:
+  - id: ui/task-u1
+    scope: ui
+    status: done
+    evidence: []
+  - id: diacritizer/task-e63
+    scope: diacritizer
+    status: done
+    evidence: []

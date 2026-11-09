@@ -1,0 +1,54 @@
+# U-1 full launch config (pre-registered arm U-1, EXPERIMENTS.md; settings from
+# the 2026-09-24 batch/ckpt/workers matrix: batch 16, grad_ckpt OFF at ctx 512,
+# workers 0 (data pipeline NOT the bottleneck; older spawn-guard quirk with w>2 in manual loop),
+# effective batch 32 via accum 2). 30M mid arm = pico ladder center point (E-12 depth-over-width:
+# depth favored at fixed params).
+name: u1_full
+
+tokenizer:
+  name: codellama/CodeLlama-7b-hf
+  vocab_size: 32768
+
+model:
+  layers: 16
+  hidden: 320
+  heads: 8
+  kv_heads: 2
+  ffn: 1024
+  ctx: 512
+  dropout: 0.0
+  tie_embeddings: true
+
+data:
+  rows: 50000
+  val_fraction: 0.02
+  dedupe: false
+  shard_tokens: 8000000
+  raw_dir: data/u1/full/raw
+  tokens_dir: data/u1/full/tokens
+
+train:
+  output_dir: runs/u1_full
+  final_dir: runs/u1_full/final
+  max_steps: 3800                 # 4 epochs over 15.6M packed train tokens (953 steps/epoch at eff 16384 tok/step)
+  batch: 16
+  eval_batch: 16
+  accum: 2
+  lr: 6.0e-4
+  scheduler: cosine
+  warmup_steps: 20
+  weight_decay: 0.1
+  max_grad_norm: 1.0
+  logging_steps: 25
+  eval_steps: 200
+  save_steps: 200
+  save_total_limit: 3
+  fp16: true
+  grad_ckpt: false                # MEASURED: hurts at ctx512 12M (43-104k tok/s); off wins 108-116k
+  optim: adamw_bnb_8bit
+  dataloader_num_workers: 0       # MEASURED: no bottleneck in data at this scale
+  seed: 42
+
+eval:
+  max_new_tokens: 96
+  prompts: []

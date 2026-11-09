@@ -1,0 +1,262 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<title>flow/ — MVP layout candidates P0–P5</title><style>
+:root { --bg:#12141a; --panel:#1a1d26; --panel2:#222633; --edge:#3a4152; --txt:#dfe3ee; --mut:#8b93a7; --acc:#5b8cf5; --ok:#3fbf7f; }
+*{box-sizing:border-box;margin:0}
+body{font:13px/1.45 'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--txt);height:100vh;display:flex;flex-direction:column}
+header{padding:8px 14px;background:var(--panel);border-bottom:1px solid var(--edge);display:flex;gap:14px;align-items:center}
+.logo{font-weight:700;color:var(--acc)}.tag{color:var(--mut);font-size:11px}
+.right{margin-left:auto;display:flex;gap:8px}
+.btn{background:var(--panel2);border:1px solid var(--edge);color:var(--txt);padding:5px 12px;border-radius:6px}
+.btn.primary{background:var(--acc);border-color:var(--acc);color:#fff}
+main{flex:1;display:flex;min-height:0}
+aside{background:var(--panel);padding:10px;overflow:auto}
+.palette{width:200px;border-right:1px solid var(--edge)}
+.inspector{width:250px;border-left:1px solid var(--edge)}
+aside h3{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--mut);margin:4px 0 8px}
+.card{background:var(--panel2);border:1px solid var(--edge);border-radius:8px;padding:8px 10px;margin:6px 0}
+.card small{color:var(--mut);display:block;margin-top:2px}
+.stage{flex:1;position:relative;background:radial-gradient(circle,#23273a 1px,transparent 1px) 0 0/22px 22px}
+.hint{position:absolute;bottom:10px;left:12px;color:var(--mut);font-size:11px}
+.node{position:absolute;width:170px;background:var(--panel2);border:1px solid var(--edge);border-radius:9px;padding:8px 10px;box-shadow:0 6px 18px rgba(0,0,0,.35)}
+.node.run{border-color:var(--ok)}
+.node h4{font-size:12px;display:flex;justify-content:space-between}
+.dot{width:8px;height:8px;border-radius:50%;background:var(orange)} .node.run .dot{background:var(--ok)}
+.props{margin-top:6px;color:var(--mut);font-size:11px}
+.port{position:absolute;width:11px;height:11px;border-radius:50%;background:var(--bg);border:2px solid var(--acc);top:50%;margin-top:-6px}
+.port.in{left:-7px}.port.out{right:-7px}
+label{display:block;color:var(--mut);font-size:11px;margin:8px 0 3px}
+input,select{width:100%;background:var(--bg);border:1px solid var(--edge);color:var(--txt);border-radius:6px;padding:5px 8px}
+.note{margin-top:12px;padding:8px;border:1px dashed var(--edge);border-radius:8px;color:var(--mut);font-size:11px}
+.switcher{display:flex;gap:6px;padding:8px 14px;background:#0c0e13;border-bottom:1px solid var(--edge)}
+.sw{padding:5px 12px;border-radius:6px;border:1px solid var(--edge);background:var(--panel2);color:var(--mut);cursor:pointer}
+.sw.on{color:#fff;background:var(--acc);border-color:var(--acc)}
+
+section{flex:1;display:none;flex-direction:column;min-height:0}
+section.on{display:flex}
+/* P0 */ section.p0 main aside{position:relative}
+/* P1 */ .side.can-collapse{transition:none}.chev{cursor:pointer;padding:2px 6px;color:var(--mut);font-size:11px;display:inline-block}
+.tabs{display:flex;gap:4px;margin-bottom:8px}.tab{flex:1;text-align:center;font-size:11px;padding:4px 6px;border:1px solid var(--edge);border-radius:6px;color:var(--mut)}
+.tab.on{background:var(--panel2);color:var(--txt)}
+.logpre{background:var(--bg);border:1px solid var(--edge);border-radius:6px;padding:6px;font:10px/1.5 monospace;color:#9fd39f;height:90px;overflow:hidden;margin-top:10px}
+/* P2 */ .drawer-note{position:absolute;left:55%;top:14px;transform:translateX(-50%);background:var(--panel2);border:1px solid var(--acc);border-radius:8px;padding:8px 12px;font-size:11px;color:var(--txt);box-shadow:0 8px 22px rgba(0,0,0,.5)}
+.kbd{background:var(--bg);border:1px solid var(--edge);border-radius:4px;padding:0 5px;font:11px monospace}
+/* P3 */ .dock{height:150px;border-top:1px solid var(--edge);background:var(--panel);display:flex}
+.dock .dtabs{width:130px;border-right:1px solid var(--edge);padding:8px}
+.dock .dview{flex:1;padding:8px;overflow:auto}
+.dock .dtab{font-size:12px;padding:6px 8px;border-radius:6px;color:var(--mut)}.dtab.on{background:var(--panel2);color:var(--txt)}
+.inspop{position:absolute;right:14px;top:14px;width:250px;background:var(--panel2);border:1px solid var(--acc);border-radius:10px;padding:10px;box-shadow:0 10px 28px rgba(0,0,0,.5)}
+/* P4 */ .radial{position:absolute;width:210px;background:var(--panel2);border:1px solid var(--acc);border-radius:10px;padding:8px;box-shadow:0 10px 28px rgba(0,0,0,.55);font-size:12px}
+.radial div{padding:4px 8px;border-radius:6px}.radial div:hover{background:var(--panel);cursor:alias}
+.win{position:absolute;background:var(--panel);border:1px solid var(--edge);border-radius:10px;box-shadow:0 10px 28px rgba(0,0,0,.5);width:230px}
+.win h5{font-size:11px;padding:6px 8px;border-bottom:1px solid var(--edge)}
+.win .body{padding:8px;font:10px/1.5 monospace;color:#9fd39f;height:70px;overflow:hidden}
+/* P5 */ .ribbon{display:flex;gap:8px;padding:8px 14px;background:var(--panel);border-bottom:1px solid var(--edge);align-items:center}
+.stagechip{display:flex;align-items:center;gap:6px;background:var(--panel2);border:1px solid var(--edge);border-radius:18px;padding:4px 12px;font-size:12px}
+.stagechip.done{border-color:var(--ok)} .stagechip.live{border-color:var(--acc)}
+.arr{color:var(--mut)}
+.label-inline{color:var(--mut);font-size:11px;margin-right:auto}
+</style></head>
+<body>
+<div class="switcher" style="gap:8px">
+  <span style="color:var(--mut);font-size:11px;align-self:center;margin-right:6px">Layout:</span>
+  <div class="sw on" data-t="p0">P0</div><div class="sw " data-t="p1">P1</div><div class="sw " data-t="p2">P2</div><div class="sw " data-t="p3">P3</div><div class="sw " data-t="p4">P4</div><div class="sw " data-t="p5">P5</div>
+  <span id="desc" style="margin-left:10px;color:var(--mut);font-size:11px;align-self:center"></span>
+</div>
+<section class="p0 on" id="p0"><header><span class="logo">flow/</span><span class="tag">layout candidates for the MVP editor · pick one</span>
+  <div class="right"><span class="btn">Open</span><span class="btn">Save</span><span class="btn">Validate</span><span class="btn primary">Run ▶</span></div></header>
+<main>
+<aside class="palette">
+  <h3>Nodes — pipeline</h3>
+  <div class="card">📄 Dataset <small>HF name or local file</small></div>
+  <div class="card">🧹 Prepare <small>stream, filter, dedupe</small></div>
+  <div class="card">🔤 Tokenize <small>writes *.bin shards</small></div>
+  <div class="card">🏋 Train <small>→ run_custom.py</small></div>
+  <div class="card">📊 Eval <small>eval_report.json</small></div>
+  <div class="card">💬 Infer <small>REPL / batch</small></div>
+</aside>
+<div class="stage">
+  <svg class="edge" width="100%" height="100%">
+    <line x1="235" y1="105" x2="330" y2="105" stroke="#3a4152" stroke-width="2"/>
+    <line x1="500" y1="105" x2="595" y2="105" stroke="#3a4152" stroke-width="2"/>
+    <line x1="780" y1="105" x2="875" y2="105" stroke="#3a4152" stroke-width="2"/>
+  </svg>
+  <div class="node" style="left:60px;top:75px"><div class="port out"></div><h4>Dataset <span class="dot"></span></h4><div class="props">TinyCode · rows 3000</div></div>
+  <div class="node" style="left:330px;top:75px"><div class="port in"></div><div class="port out"></div><h4>Prepare <span class="dot"></span></h4><div class="props">stream · min 80 chars</div></div>
+  <div class="node" style="left:595px;top:75px"><div class="port in"></div><div class="port out"></div><h4>Tokenize <span class="dot"></span></h4><div class="props">32k · seq 512</div></div>
+  <div class="node run" style="left:875px;top:75px"><div class="port in"></div><h4>Train <span class="dot"></span></h4><div class="props">smoke · auto-resume</div></div>
+  
+  <div class="hint">static mockup · layout candidate</div>
+</div>
+<aside class="inspector">
+  <h3>Inspector — Train node</h3>
+  <label>Preset</label><select><option>smoke</option></select>
+  <label>Rows</label><input value="3000">
+  <label>Steps</label><input value="200">
+  <div class="note">Run = run_custom.py · single-GPU lock · no kill button.</div>
+  
+</aside></main></section><section class="p1" id="p1"><header><span class="logo">flow/</span><span class="tag">layout candidates for the MVP editor · pick one</span>
+  <div class="right"><span class="btn">Open</span><span class="btn">Save</span><span class="btn">Validate</span><span class="btn primary">Run ▶</span></div></header>
+<main>
+
+<aside class="palette can-collapse">
+  <h3>Nodes — pipeline</h3>
+  <div class="card">📄 Dataset <small>HF name or local file</small></div>
+  <div class="card">🧹 Prepare <small>stream, filter, dedupe</small></div>
+  <div class="card">🔤 Tokenize <small>writes *.bin shards</small></div>
+  <div class="card">🏋 Train <small>→ run_custom.py</small></div>
+  <div class="card">📊 Eval <small>eval_report.json</small></div>
+  <div class="card">💬 Infer <small>REPL / batch</small></div>
+</aside>
+
+<div class="stage">
+  <svg class="edge" width="100%" height="100%">
+    <line x1="235" y1="105" x2="330" y2="105" stroke="#3a4152" stroke-width="2"/>
+    <line x1="500" y1="105" x2="595" y2="105" stroke="#3a4152" stroke-width="2"/>
+    <line x1="780" y1="105" x2="875" y2="105" stroke="#3a4152" stroke-width="2"/>
+  </svg>
+  <div class="node" style="left:60px;top:75px"><div class="port out"></div><h4>Dataset <span class="dot"></span></h4><div class="props">TinyCode · rows 3000</div></div>
+  <div class="node" style="left:330px;top:75px"><div class="port in"></div><div class="port out"></div><h4>Prepare <span class="dot"></span></h4><div class="props">stream · min 80 chars</div></div>
+  <div class="node" style="left:595px;top:75px"><div class="port in"></div><div class="port out"></div><h4>Tokenize <span class="dot"></span></h4><div class="props">32k · seq 512</div></div>
+  <div class="node run" style="left:875px;top:75px"><div class="port in"></div><h4>Train <span class="dot"></span></h4><div class="props">smoke · auto-resume</div></div>
+  
+  <div class="hint">static mockup · layout candidate</div>
+</div>
+<aside class="inspector">
+  <div class="tabs"><div class="tab on">Properties</div><div class="tab">Run log</div><div class="tab">Preview</div></div>
+  <h3>Train node</h3>
+  <label>Preset</label><select><option>smoke</option></select>
+  <label>Rows</label><input value="3000">
+  <label>Steps</label><input value="200">
+  <div class="logpre">[step 118/200] eval_loss 4.02 ▾<br>[step 120] loss 4.31<br>… auto-resume on · no kill button</div>
+</aside>
+</main>
+<div class="switcher-note" style="padding:4px 14px;color:var(--mut);font-size:11px">◄ P1: same as P0 but both side panels collapsible &amp; inspector is tabbed (Properties / Run log / Data preview). Click the «» labels to imagine collapse.</div>
+</section><section class="p2" id="p2"><header><span class="logo">flow/</span><span class="tag">layout candidates for the MVP editor · pick one</span>
+  <div class="right"><span class="btn">Open</span><span class="btn">Save</span><span class="btn">Validate</span><span class="btn primary">Run ▶</span></div></header>
+<main>
+
+<div class="stage">
+  <svg class="edge" width="100%" height="100%">
+    <line x1="235" y1="105" x2="330" y2="105" stroke="#3a4152" stroke-width="2"/>
+    <line x1="500" y1="105" x2="595" y2="105" stroke="#3a4152" stroke-width="2"/>
+    <line x1="780" y1="105" x2="875" y2="105" stroke="#3a4152" stroke-width="2"/>
+  </svg>
+  <div class="node" style="left:60px;top:75px"><div class="port out"></div><h4>Dataset <span class="dot"></span></h4><div class="props">TinyCode · rows 3000</div></div>
+  <div class="node" style="left:330px;top:75px"><div class="port in"></div><div class="port out"></div><h4>Prepare <span class="dot"></span></h4><div class="props">stream · min 80 chars</div></div>
+  <div class="node" style="left:595px;top:75px"><div class="port in"></div><div class="port out"></div><h4>Tokenize <span class="dot"></span></h4><div class="props">32k · seq 512</div></div>
+  <div class="node run" style="left:875px;top:75px"><div class="port in"></div><h4>Train <span class="dot"></span></h4><div class="props">smoke · auto-resume</div></div>
+  <div class="drawer-note">🗂 <b>Palette drawer</b> — opens from left edge or <span class="kbd">Ctrl+K</span> (6 pipeline nodes listed). Closed by default → max canvas.</div>
+  <div class="hint">static mockup · layout candidate</div>
+</div>
+<aside class="inspector">
+  <h3>Inspector — Train node</h3>
+  <label>Preset</label><select><option>smoke</option></select>
+  <label>Rows</label><input value="3000"><label>Steps</label><input value="200">
+  <div class="note">Palette = overlay drawer (the only change vs P0) + <span class="kbd">Ctrl+K</span> fuzzy search to add any node.</div>
+</aside>
+</main></section><section class="p3" id="p3"><header><span class="logo">flow/</span><span class="tag">layout candidates for the MVP editor · pick one</span>
+  <div class="right"><span class="btn">Open</span><span class="btn">Save</span><span class="btn">Validate</span><span class="btn primary">Run ▶</span></div></header>
+<main style="flex-direction:column">
+<main-small style="flex:1;display:flex;min-height:0">
+
+<div class="stage">
+  <svg class="edge" width="100%" height="100%">
+    <line x1="235" y1="105" x2="330" y2="105" stroke="#3a4152" stroke-width="2"/>
+    <line x1="500" y1="105" x2="595" y2="105" stroke="#3a4152" stroke-width="2"/>
+    <line x1="780" y1="105" x2="875" y2="105" stroke="#3a4152" stroke-width="2"/>
+  </svg>
+  <div class="node" style="left:60px;top:75px"><div class="port out"></div><h4>Dataset <span class="dot"></span></h4><div class="props">TinyCode · rows 3000</div></div>
+  <div class="node" style="left:330px;top:75px"><div class="port in"></div><div class="port out"></div><h4>Prepare <span class="dot"></span></h4><div class="props">stream · min 80 chars</div></div>
+  <div class="node" style="left:595px;top:75px"><div class="port in"></div><div class="port out"></div><h4>Tokenize <span class="dot"></span></h4><div class="props">32k · seq 512</div></div>
+  <div class="node run" style="left:875px;top:75px"><div class="port in"></div><h4>Train <span class="dot"></span></h4><div class="props">smoke · auto-resume</div></div>
+  
+  <div class="hint">static mockup · layout candidate</div>
+</div>
+<inspector-inline>
+<aside class="inspector"><h3>Train</h3><label>Preset</label><select><option>smoke</option></select><label>Rows</label><input value="3000"><div class="note">Inspector opens as right drawer on select; default view = dock.</div></aside>
+</inspector-inline>
+</main-small>
+<div class="dock">
+  <div class="dtabs">
+    <div class="dtab on">Log</div><div class="dtab">Run status</div><div class="dtab">Inspector</div>
+  </div>
+  <div class="dview">
+    <pre style="font:10px/1.6 monospace;color:#9fd39f;margin:0">[train] step 118/200 · loss 4.31 · eval 4.02 · ETA 3m12s · GPU 6.4/8.0 GB
+[train] checkpoint saved (rotation: keep 3) · resume contract untouched
+[webui] single-GPU lock: train owns GPU — chat/infer will CPU-fallback</pre>
+  </div>
+</div>
+</main></section><section class="p4" id="p4"><header><span class="logo">flow/</span><span class="tag">layout candidates for the MVP editor · pick one</span>
+  <div class="right"><span class="btn">Open</span><span class="btn">Save</span><span class="btn">Validate</span><span class="btn primary">Run ▶</span></div></header>
+<main>
+<div class="stage">
+  <svg class="edge" width="100%" height="100%">
+    <line x1="235" y1="105" x2="330" y2="105" stroke="#3a4152" stroke-width="2"/>
+    <line x1="500" y1="105" x2="595" y2="105" stroke="#3a4152" stroke-width="2"/>
+    <line x1="780" y1="105" x2="875" y2="105" stroke="#3a4152" stroke-width="2"/>
+  </svg>
+  <div class="node" style="left:60px;top:75px"><div class="port out"></div><h4>Dataset <span class="dot"></span></h4><div class="props">TinyCode · rows 3000</div></div>
+  <div class="node" style="left:330px;top:75px"><div class="port in"></div><div class="port out"></div><h4>Prepare <span class="dot"></span></h4><div class="props">stream · min 80 chars</div></div>
+  <div class="node" style="left:595px;top:75px"><div class="port in"></div><div class="port out"></div><h4>Tokenize <span class="dot"></span></h4><div class="props">32k · seq 512</div></div>
+  <div class="node run" style="left:875px;top:75px"><div class="port in"></div><h4>Train <span class="dot"></span></h4><div class="props">smoke · auto-resume</div></div>
+  
+<div class="radial" style="right:120px;top:60px"><b style="font-size:11px;color:var(--mut)">＋ right-click menu</b>
+<div>📄 Dataset</div><div>🧹 Prepare</div><div>🔤 Tokenize</div><div>🏋 Train</div><div>📊 Eval</div><div>💬 Infer</div>
+<div style="border-top:1px dashed var(--edge);margin-top:4px">⌕ search… <span class="kbd">Ctrl+K</span></div></div>
+<div class="win" style="right:30px;top:240px"><h5>Inspector — Train (floating)</h5><div class="body">preset smoke<br>rows 3000<br>steps 200 · attach drag anywhere</div></div>
+<div class="win" style="left:60px;top:230px;width:260px"><h5>Run log (floating window)</h5><div class="body">step 118/200 loss 4.31 · ETA 3m12s</div></div>
+  <div class="hint">static mockup · layout candidate</div>
+</div>
+</main></section><section class="p5" id="p5"><header><span class="logo">flow/</span><span class="tag">layout candidates for the MVP editor · pick one</span>
+  <div class="right"><span class="btn">Open</span><span class="btn">Save</span><span class="btn">Validate</span><span class="btn primary">Run ▶</span></div></header>
+<div class="ribbon"><span class="label-inline">pipeline ribbon:</span>
+<span class="stagechip done">📄 Dataset</span><span class="arr">→</span>
+<span class="stagechip done">🧹 Prepare</span><span class="arr">→</span>
+<span class="stagechip done">🔤 Tokenize</span><span class="arr">→</span>
+<span class="stagechip live">🏋 Train</span><span class="arr">→</span>
+<span class="stagechip">📊 Eval</span><span class="arr">→</span>
+<span class="stagechip">💬 Infer</span></div>
+<main>
+<aside class="palette">
+  <h3>drop onto the stage ↓</h3>
+  <div class="card">📄 Dataset <small>HF name or local file</small></div>
+  <div class="card">🧹 Prepare <small>stream, filter, dedupe</small></div>
+  <div class="card">🔤 Tokenize <small>writes *.bin shards</small></div>
+  <div class="card">🏋 Train <small>→ run_custom.py</small></div>
+  <div class="card">📊 Eval <small>eval_report.json</small></div>
+  <div class="card">💬 Infer <small>REPL / batch</small></div>
+</aside> 
+<div class="stage">
+  <svg class="edge" width="100%" height="100%">
+    <line x1="235" y1="105" x2="330" y2="105" stroke="#3a4152" stroke-width="2"/>
+    <line x1="500" y1="105" x2="595" y2="105" stroke="#3a4152" stroke-width="2"/>
+    <line x1="780" y1="105" x2="875" y2="105" stroke="#3a4152" stroke-width="2"/>
+  </svg>
+  <div class="node" style="left:60px;top:75px"><div class="port out"></div><h4>Dataset <span class="dot"></span></h4><div class="props">TinyCode · rows 3000</div></div>
+  <div class="node" style="left:330px;top:75px"><div class="port in"></div><div class="port out"></div><h4>Prepare <span class="dot"></span></h4><div class="props">stream · min 80 chars</div></div>
+  <div class="node" style="left:595px;top:75px"><div class="port in"></div><div class="port out"></div><h4>Tokenize <span class="dot"></span></h4><div class="props">32k · seq 512</div></div>
+  <div class="node run" style="left:875px;top:75px"><div class="port in"></div><h4>Train <span class="dot"></span></h4><div class="props">smoke · auto-resume</div></div>
+  
+  <div class="hint">static mockup · layout candidate</div>
+</div> 
+<aside class="inspector">
+  <h3>Inspector — Train node</h3>
+  <label>Preset</label><select><option>smoke</option></select>
+  <label>Rows</label><input value="3000">
+  <label>Steps</label><input value="200">
+  <div class="note">Run = run_custom.py · single-GPU lock · no kill button.</div>
+  
+</aside></main>
+<div style="padding:4px 14px;color:var(--mut);font-size:11px">◄ P5: click or drag a ribbon stage to drop it on the canvas; ribbon is disposable scaffolding (retired when the model-graph phase arrives).</div>
+</section>
+<script>
+const descs = ["Two fixed side panels (your approved mockup).","Same, plus collapsible panels and a tabbed inspector: Properties / Run log / Preview.","Max canvas: palette is an overlay drawer + Ctrl+K fuzzy search; persistent right inspector.","Canvas on top, bottom dock with Log / Run status / Inspector tabs — best fit for a training app.","No fixed panels: right-click radial + Ctrl+K add nodes, floating inspector & log windows (most code).","Top ribbon of the 6 stages in order; click/drag drops a stage. Beginner-proof; ribbon retires in the model phase."];
+const btns=[...document.querySelectorAll('.sw')];
+const secs=[...document.querySelectorAll('section')];
+function pick(id){secs.forEach(s=>s.classList.toggle('on',s.id===id));
+btns.forEach(b=>b.classList.toggle('on',b.dataset.t===id));
+const i=btns.indexOf(btns.find(b=>b.dataset.t===id));document.getElementById('desc').textContent=descs[i];}
+btns.forEach(b=>b.onclick=()=>pick(b.dataset.t));
+pick('p0');
+</script>
+</body></html>

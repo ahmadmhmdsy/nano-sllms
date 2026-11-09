@@ -1,0 +1,20 @@
+# pilot_small: pipeline-validation run on deliberately small data settings.
+# rules/experiments.md: same stage graph, short max_steps, fast result. The
+# ctx-512 OOM shrink from pilot_r3 is kept; this is for validating the
+# pipeline end to end, not a promotion run, so max_steps is 20 and
+# checkpointing is compact.
+extends: [../base/r1.yaml]
+run: {name: pilot_small, namespace: core, stage: P, seed: 42}
+tokenizer:
+  context: 512
+model:
+  context: 512
+packing:
+  sequence_length: 512
+runtime:
+  vram_fraction: 0.85
+train:
+  max_steps: 20
+  checkpoint_every_steps: 10
+  evaluation_cadence: 10
+features: {retention: manual, promotion: null}

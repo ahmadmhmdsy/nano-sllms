@@ -1,0 +1,32 @@
+# E-60b Rung B: grow Rung-A trunk by +4 deep-narrow layers (zero-insert), first 4 frozen; B1 grow-alone arm
+name: dia2j_e60b_b1
+model:
+  layers: 8
+  hidden: 320
+  heads: 8
+  kv_heads: 2
+  ctx: 96
+  ffn: 1280
+  tie_embeddings: false
+  frozen_layers: 4
+  zero_insert_layers: 4
+data:
+  tokens_dir: data/diac/v3q/tokens
+train:
+  output_dir: runs/mex/dia2j_e60b_b1
+  seed: 42
+  batch: 512
+  accum: 1
+  eval_batch: 256
+  max_steps: 3000
+  eval_steps: 500
+  save_steps: 1000
+  logging_steps: 50
+  lr: 0.0002
+  head_lr: 0.0002
+  warmup_steps: 300
+  weight_decay: 0.1
+  mark_loss_weight: 1.0
+  logit_adjust_tau: 1.0
+  init_from: runs/mex/dia2j_e60a_a3/final
+  head_init: runs/mex/dia2j_e60a_a3/final

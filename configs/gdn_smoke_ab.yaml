@@ -1,0 +1,73 @@
+# G1 control arm: plain GQA decoder, parameter-matched to the gdn_hybrid
+# sandbox (configs/gdn_smoke.yaml, 13_331_952 params). Same M0 corpus, same
+# hyperparameters, same tokenizer -- only model.arch and ffn differ.
+#
+# Exact parameter count (verified by instantiation, LlamaForCausalLM, tied):
+#   embedding (tied)   32_768 x 256            =  8_388_608
+#   4 x GQA layer      1_235_456 each          =  4_941_824
+#     (q 65_536 + k 32_768 + v 32_768 + o 65_536 + 2 norms 512
+#      + SwiGLU 3x256x1352 = 1_038_336)
+#   final norm 256
+#   TOTAL = 13_330_688 (13.33M)
+# Delta vs hybrid = +1_264 params = +0.0095% (<= 2% match requirement; the
+# only tuned knob is ffn: 1024 -> 1352, per TASKS row 16 "tune ONLY ffn").
+name: gdn_smoke_ab
+
+tokenizer:
+  name: codellama/CodeLlama-7b-hf   # 32k sentencepiece; public, ungated; ~2 MB
+  vocab_size: 32768
+
+model:
+  arch: gqa                   # control arm: the unchanged M0 architecture
+  layers: 4
+  hidden: 256
+  heads: 4
+  kv_heads: 2
+  ffn: 1352                   # tuned ONLY here to param-match the hybrid
+  ctx: 256
+  dropout: 0.0
+  tie_embeddings: true
+
+data:
+  dataset_candidates:                # first one that yields enough rows wins
+    - name: TheGamingMahi/TinyCode
+    - name: nickrosh/Evol-Instruct-Code-80k-v1
+    - name: code_search_net
+      config: python
+    - name: sahil2801/CodeAlpaca-20k
+  rows: 2000
+  val_fraction: 0.02
+  dedupe: true
+  min_chars: 60
+  shard_tokens: 8000000
+  raw_dir: data/smoke/raw            # identical M0 corpus (no re-download)
+  tokens_dir: data/smoke/tokens
+
+train:
+  output_dir: runs/gdn_smoke_ab
+  final_dir: runs/gdn_smoke_ab/final
+  max_steps: 200
+  batch: 1
+  eval_batch: 4
+  accum: 32
+  lr: 4.0e-4
+  scheduler: cosine
+  warmup_steps: 10
+  weight_decay: 0.1
+  max_grad_norm: 1.0
+  logging_steps: 10
+  eval_steps: 50
+  save_steps: 50
+  save_total_limit: 3
+  fp16: true
+  grad_ckpt: true
+  optim: adamw_torch
+  dataloader_num_workers: 0
+  seed: 42
+
+eval:
+  max_new_tokens: 64
+  prompts:
+    - "def fibonacci(n):"
+    - "import numpy as np\n\ndef mean_absolute_error(y_true, y_pred):"
+    - "class Stack:"

@@ -1,0 +1,9 @@
+extends: [../base/r1.yaml]
+run: {name: pilot, namespace: core, stage: P, seed: 42}
+# OOM protocol, 2026-09-26: the 0.75 ceiling clipped this profile on this
+# card's current desktop load (WDDM context overhead over the measured
+# 4.38 GiB peak); 0.85 keeps the desktop side clear and rules out a
+# shared-memory spill. Batch, accumulation, context, precision unchanged.
+runtime:
+  vram_fraction: 0.85
+features: {retention: manual, promotion: null}

@@ -1,0 +1,114 @@
+{
+  "schema": "flow/0.1",
+  "meta": {
+    "name": "example-infer-handoff",
+    "description": "train feeds eval AND infer; branching means config mapping refuses (future F5) but the infer node handoff dialog works"
+  },
+  "graph": {
+    "nodes": [
+      {
+        "id": "n1",
+        "kind": "dataset",
+        "label": "RowTour-360",
+        "props": {},
+        "position": {
+          "x": 500,
+          "y": 200
+        }
+      },
+      {
+        "id": "n2",
+        "kind": "prepare",
+        "props": {
+          "min_chars": 40,
+          "rows": 480000,
+          "val_fraction": 0.05
+        },
+        "position": {
+          "x": 720,
+          "y": 200
+        }
+      },
+      {
+        "id": "n3",
+        "kind": "tokenize",
+        "props": {
+          "seq_len": 512,
+          "vocab": 32000
+        },
+        "position": {
+          "x": 940,
+          "y": 200
+        }
+      },
+      {
+        "id": "n4",
+        "kind": "train",
+        "props": {
+          "steps": 200,
+          "lr_preset": "Pretrain 4e-4",
+          "preset": "Small (~12M, smoke)"
+        },
+        "position": {
+          "x": 720,
+          "y": 470
+        }
+      },
+      {
+        "id": "n5",
+        "kind": "eval",
+        "props": {},
+        "position": {
+          "x": 940,
+          "y": 470
+        }
+      },
+      {
+        "id": "n6",
+        "kind": "infer",
+        "props": {},
+        "position": {
+          "x": 500,
+          "y": 470
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "e1",
+        "from": "n1",
+        "to": "n2",
+        "fromPort": "cleaned",
+        "toPort": "raw-dir"
+      },
+      {
+        "id": "e2",
+        "from": "n2",
+        "to": "n3",
+        "fromPort": "cleaned-dir",
+        "toPort": "cleaned-dir"
+      },
+      {
+        "id": "e3",
+        "from": "n3",
+        "to": "n4",
+        "fromPort": "shard-dir",
+        "toPort": "shard-dir"
+      },
+      {
+        "id": "e4",
+        "from": "n4",
+        "to": "n5",
+        "fromPort": "ckpt-dir",
+        "toPort": "ckpt-dir"
+      },
+      {
+        "id": "e5",
+        "from": "n4",
+        "to": "n6",
+        "fromPort": "ckpt-dir",
+        "toPort": "ckpt-dir"
+      }
+    ]
+  }
+}

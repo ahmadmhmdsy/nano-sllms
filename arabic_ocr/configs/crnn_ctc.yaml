@@ -1,0 +1,32 @@
+name: crnn_ctc
+model:
+  type: crnn
+  image_height: 64
+  image_width: 1024
+  hidden_dim: 384
+  num_layers: 3
+  dropout: 0.1
+data:
+  train_dir: data/hflines/train
+  val_dir: data/hflines/val
+  batch_size: 32
+  num_workers: 8
+  image_height: 64
+  image_width: 1024
+  augment: true
+  vocab_path: data/focused_vocab.json
+  max_len: 200
+  min_text_len: 2
+  max_text_len: 120
+  keep_aspect: true
+train:
+  model_type: crnn
+  epochs: 40
+  lr: 0.002
+  weight_decay: 0.01
+  max_grad_norm: 5.0
+  save_dir: runs/crnn_ctc
+  log_interval: 50
+  eval_interval: 2
+eval:
+  batch_size: 32

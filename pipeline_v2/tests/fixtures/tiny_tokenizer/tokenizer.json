@@ -1,0 +1,51 @@
+{
+  "version": "1.0",
+  "truncation": null,
+  "padding": null,
+  "added_tokens": [],
+  "normalizer": null,
+  "pre_tokenizer": {
+    "type": "Whitespace"
+  },
+  "post_processor": null,
+  "decoder": {
+    "type": "WordPiece",
+    "prefix": "##",
+    "cleanup": true
+  },
+  "model": {
+    "type": "WordLevel",
+    "vocab": {
+      "<pad>": 0,
+      "<bos>": 1,
+      "<eos>": 2,
+      "<unk>": 3,
+      "the": 4,
+      "quick": 5,
+      "brown": 6,
+      "fox": 7,
+      "jumps": 8,
+      "over": 9,
+      "a": 10,
+      "lazy": 11,
+      "dog": 12,
+      "while": 13,
+      "small": 14,
+      "models": 15,
+      "learn": 16,
+      "token": 17,
+      "patterns": 18,
+      "from": 19,
+      "plain": 20,
+      "text": 21,
+      "data": 22,
+      "and": 23,
+      "train": 24,
+      "on": 25,
+      "cpu": 26,
+      "without": 27,
+      "device": 28
+    },
+    "unk_token": "<unk>"
+  }
+}

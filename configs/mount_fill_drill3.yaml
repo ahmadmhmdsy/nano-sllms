@@ -1,0 +1,32 @@
+# Mounting experiment (TASKS row 49) - arm "fill": NO bridge modules. The
+# student's own post-layer stream is pulled toward teacher anchored hidden
+# states through trained Linear(576, 768) probes (discarded at the
+# independence save). The gate schedule is consumed INVERTED as the feature
+# anneal: anneal = 1 - gate_strength(eff_step, ...) (scripts/mount.py).
+# Delta vs mount_gate per .superpowers/sdd/mounting/task-5-brief.md Step 5.2.
+name: mount-fill-drill3
+
+tokenizer: {name: codellama/CodeLlama-7b-hf, vocab_size: 32768}
+
+model: {layers: 12, hidden: 768, heads: 12, kv_heads: 4, ffn: 2048, ctx: 512, dropout: 0.0, tie_embeddings: true}
+
+data: {tokens_dir: data/pilot/tokens}
+
+mount:
+  # SmolLM2-135M HF snapshot pin (frozen teacher; weights never trained).
+  teacher_path: C:/Users/AhmadMhmoud/.cache/huggingface/hub/models--HuggingFaceTB--SmolLM2-135M/snapshots/93efa2f097d58c2a74874c7e644dbc9b0cee75a2
+  teacher_stream: data/pilot/tokens_teacher_smol135
+  mode: fill
+  teacher_hidden: 576
+  teacher_layers: 30
+  # Schema-completeness key only: fill has NO bridges; inert here
+  # (attach_mounts never runs in fill mode; hidden//128 = 6 would apply).
+  heads_bridge: 6
+  # Task 3 review I1 (MANDATORY for fill): the gate block is consumed at the
+  # first training micro-batch as the inverted anneal - without it the run
+  # dies with a generic TypeError (no defaults on gate_strength).
+  gate: {warmup: 150, hold: 300, anneal_end: 900}
+  cliff_delta: 0.15
+  recovery_steps: 150
+
+train: {output_dir: runs/mount_fill_drill3, final_dir: runs/mount_fill_drill3/final, max_steps: 3, batch: 1, accum: 32, lr: 4.0e-4, warmup_steps: 150, logging_steps: 25, eval_steps: 100, save_steps: 100, save_total_limit: 3, fp16: true, grad_ckpt: true, optim: adamw_bnb_8bit, seed: 42}

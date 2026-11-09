@@ -1,0 +1,27 @@
+# D-line Stage 2, arm B (user-gated 2026-09-14: reset-last-2 counterfactual).
+# Identical to stage2a EXCEPT: warm init's last 2 encoder blocks re-initialized
+# fresh (CATT reset-last-layer trick) before the fine-tune, plus IN-TRAINING
+# real-gate watchdog: gate_eval_every 2500 -> 4 external gates scored with the
+# live weights, rows append gate_eval.csv (overfit watchdog user request).
+# All else matched to stage2a for fairness (same corpus v3, lr, steps, patience).
+phase: stage2b
+tokens_phase: v3
+pretrained_init: runs/diac/stage1lm/final/model.pt
+reset_last_n_layers: 2
+gate_eval_every: 2500
+model:
+  hidden: 272
+  layers: 28
+  n_heads: 8
+  n_kv: 2
+  ffn: 1088
+  ctx: 128
+lr: 2.0e-4
+weight_decay: 0.1
+batch_size: 32
+accum: 1
+total_steps: 8000
+save_every: 500
+log_every: 100
+eval_every: 500
+early_stop_patience: 8

@@ -1,0 +1,17 @@
+[
+  {
+    "kind": "contents",
+    "slug": "c8_qwen38_repo",
+    "urls": [
+      "https://github.com/QwenLM/Qwen3.8"
+    ],
+    "max_characters": 12000
+  },
+  {
+    "kind": "search",
+    "slug": "s8_qwen3_post_training",
+    "query": "Qwen3 post-training four stages thinking budget RL strong-to-weak distillation",
+    "num": 6,
+    "type": "auto"
+  }
+]

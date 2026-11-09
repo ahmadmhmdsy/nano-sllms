@@ -1,0 +1,67 @@
+# Python / tooling
+.venv/
+.venv-*/
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.ruff_cache/
+.env
+
+# ---- Root-level local-only data and artifacts (never commit) ----
+/data/
+/runs/
+/models/
+/resources/
+/scratch/
+/checkpoint_backup/
+/space/
+/publish/
+/ui/data/
+/research/raw/
+
+# ---- Component-local generated artifacts ----
+/arabic_ocr/runs/
+/arabic_ocr/models/
+/langid/vendor/
+/webui/job_state.json
+
+# Node / frontend
+node_modules/
+**/node_modules/
+dist/
+.vite/
+coverage/
+playwright-report/
+test-results/
+
+# Weights, checkpoints, binary data
+*.safetensors
+*.pt
+*.pth
+*.ckpt
+*.npz
+*.onnx
+*.parquet
+*.arrow
+*.pdparams
+*.pdopt
+
+# Logs at the repository root only (research evidence logs stay tracked)
+/*.log
+
+# Agent / session scratch
+.superpowers/
+.agents/
+.skillopt-sleep/
+.tmp-pack/
+
+# Accidental Windows-shell artifacts
+%SystemDrive%/
+--full-page
+test_verify.txt
+test_suites*.txt
+pipeline_v2_test_results.txt
+smoke_vram_test.py
+run_smoke_vram_test.py
+smoke_vram_results.json

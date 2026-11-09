@@ -1,0 +1,69 @@
+name: sft_u10
+base_model: runs/smoke/final
+tokenizer:
+  name: codellama/CodeLlama-7b-hf
+  vocab_size: 32768
+model:
+  ctx: 256
+data:
+  dataset: nickrosh/Evol-Instruct-Code-80k-v1
+  raw_dir: data/sft_u10/raw
+  dataset_dir: data/sft_u10/ds
+  tokens_dir: data/smoke/tokens
+  rows: 20000
+  val_fraction: 0.02
+  min_chars: 200
+  min_instruction_chars: 20
+  dedupe: true
+  ast_filter: true
+  template: '### Instruction:
+
+    {instruction}
+
+    ### Response:
+
+    '
+sft:
+  ctx: 512
+  pilot_rows: 5000
+train:
+  output_dir: runs/sft_u10
+  final_dir: runs/sft_u10/final
+  epochs: 2
+  batch: 1
+  eval_batch: 4
+  accum: 16
+  lr: 3.0e-05
+  scheduler: cosine
+  warmup_steps: 100
+  weight_decay: 0.1
+  max_grad_norm: 1.0
+  logging_steps: 50
+  eval_steps: 250
+  save_steps: 250
+  save_total_limit: 3
+  fp16: true
+  grad_ckpt: true
+  optim: adamw_torch
+  dataloader_num_workers: 0
+  seed: 42
+eval:
+  max_new_tokens: 256
+  instructions_file: data/sft_u10/raw/val_instructions.jsonl
+  n_instructions: 50
+  sample_temperature: 0.8
+  prompts:
+  - '### Instruction:
+
+    Write a Python function that returns the nth Fibonacci number.
+
+    ### Response:
+
+    '
+  - '### Instruction:
+
+    Write a Python class that implements a stack with push, pop and peek.
+
+    ### Response:
+
+    '

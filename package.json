@@ -1,0 +1,16 @@
+{
+  "name": "nano-slms",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "nano_SLMs monorepo root - E2E test infrastructure (@playwright/test)",
+  "scripts": {
+    "test:e2e": "playwright test",
+    "test:e2e:flow": "playwright test --project=flow",
+    "test:e2e:viz": "playwright test --project=viz",
+    "test:e2e:webui": "playwright test --project=webui"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.55.0"
+  }
+}

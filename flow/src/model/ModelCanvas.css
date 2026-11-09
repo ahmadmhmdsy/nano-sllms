@@ -1,0 +1,106 @@
+/* Model mode layout (F2). Fixes the T5 gap: these classes were used by
+ * ModelCanvas/ModelHeader/ModelInspector but never defined, so the canvas
+ * collapsed out of flex flow and ReactFlow got no usable pane (nothing
+ * selectable/draggable/droppable). */
+
+.model-mode {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.model-main {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+/* Header strip: name input, live totals, Open/Save. */
+.model-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-bottom: 1px solid #ccc;
+  background: #fafafa;
+}
+
+.model-name-input {
+  padding: 4px 8px;
+  border: 1px solid #bbb;
+  border-radius: 4px;
+  font: inherit;
+  width: 220px;
+}
+
+.model-total,
+.model-error-count {
+  font-family: Consolas, monospace;
+  font-size: 12px;
+  background: #eef3fb;
+  border: 1px solid #ccd;
+  border-radius: 4px;
+  padding: 2px 8px;
+  white-space: nowrap;
+}
+
+.model-error-count-bad {
+  background: #fdeaea;
+  border-color: #d99;
+  color: #b30;
+}
+
+.model-header button {
+  padding: 4px 12px;
+  cursor: pointer;
+}
+
+/* Empty state overlays the canvas — must never eat canvas events. */
+.model-empty-state {
+  position: absolute;
+  inset: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-align: center;
+  color: #668;
+  pointer-events: none;
+}
+
+.model-empty-state p {
+  margin: 0;
+}
+
+/* Palette cards reuse .palette-card; the model card reads left-aligned. */
+.model-palette-card {
+  text-align: left;
+}
+
+/* Inspector extras (shared .inspector/.prop-row/.preview-section come
+ * from App.css). */
+.model-prop-kind {
+  font-weight: 400;
+  color: #888;
+}
+
+.model-readout {
+  margin-top: 8px;
+}
+
+.model-readout-line {
+  margin: 2px 0;
+  font-size: 13px;
+}
+
+.model-error-list {
+  margin: 4px 0;
+  padding-left: 18px;
+}
+
+.model-error-item {
+  color: #b30;
+  font-size: 12px;
+}

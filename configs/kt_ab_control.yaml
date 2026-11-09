@@ -1,0 +1,52 @@
+# KT ladder Phase 1 (TASKS row 43): single-variable A/B arm on OUR architecture.
+# Copied from target.yaml (226.5M dims, data/target/tokens) with max_steps 1000
+# and fresh output dirs. The two kt_ab_* configs are identical EXCEPT
+# train.init_embeddings, so any eval-loss delta at matched steps is
+# attributable to the transplant alone. The control arm doubles as rig
+# validation vs T's own early curve (@500 = 2.8567, @1000 = 2.2650).
+# docs/plans/2026-09-10_kt_ladder_plan.md section 4.
+name: kt_ab_control
+
+tokenizer:
+  name: codellama/CodeLlama-7b-hf
+  vocab_size: 32768
+
+model:
+  layers: 16
+  hidden: 1024
+  heads: 16
+  kv_heads: 4
+  ffn: 3072
+  ctx: 1024
+  dropout: 0.0
+  tie_embeddings: true
+
+data:
+  tokens_dir: data/target/tokens   # CSN python, already on disk - no prep
+
+train:
+  output_dir: runs/kt_ab_control
+  final_dir: runs/kt_ab_control/final
+  max_steps: 1000
+  batch: 1
+  eval_batch: 2
+  accum: 32                 # 32,768 tok/step - same budget class as target
+  lr: 4.0e-4
+  scheduler: cosine
+  warmup_steps: 150
+  weight_decay: 0.1
+  max_grad_norm: 1.0
+  logging_steps: 50
+  eval_steps: 100
+  save_steps: 100
+  save_total_limit: 3
+  fp16: true
+  grad_ckpt: true
+  optim: adamw_torch
+  dataloader_num_workers: 0
+  seed: 42
+
+eval:
+  max_new_tokens: 64
+  prompts:
+    - "def fibonacci(n):"

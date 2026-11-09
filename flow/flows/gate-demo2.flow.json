@@ -1,0 +1,72 @@
+{
+  "schema": "flow/0.1",
+  "meta": {
+    "name": "gate-demo2"
+  },
+  "graph": {
+    "nodes": [
+      {
+        "id": "n1",
+        "kind": "dataset",
+        "props": {},
+        "position": {
+          "x": 255,
+          "y": 158
+        }
+      },
+      {
+        "id": "n2",
+        "kind": "prepare",
+        "props": {},
+        "position": {
+          "x": 455,
+          "y": 158
+        }
+      },
+      {
+        "id": "n3",
+        "kind": "tokenize",
+        "props": {},
+        "position": {
+          "x": 675,
+          "y": 158
+        }
+      },
+      {
+        "id": "n4",
+        "kind": "train",
+        "props": {
+          "steps": 200,
+          "lr_preset": "Pretrain 4e-4"
+        },
+        "position": {
+          "x": 455,
+          "y": 458
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "e1",
+        "from": "n1",
+        "to": "n2",
+        "fromPort": "cleaned",
+        "toPort": "raw-dir"
+      },
+      {
+        "id": "e2",
+        "from": "n2",
+        "to": "n3",
+        "fromPort": "cleaned-dir",
+        "toPort": "cleaned-dir"
+      },
+      {
+        "id": "e3",
+        "from": "n3",
+        "to": "n4",
+        "fromPort": "shard-dir",
+        "toPort": "shard-dir"
+      }
+    ]
+  }
+}

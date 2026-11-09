@@ -1,0 +1,40 @@
+# Optimized training config with all data
+name: optimized
+
+model:
+  type: vit_decoder
+  patch_size: 16
+  image_height: 48
+  image_width: 256
+  vit_layers: 6
+  vit_hidden: 384
+  vit_heads: 6
+  vit_ffn: 1536
+  decoder_layers: 6
+  decoder_hidden: 384
+  decoder_heads: 6
+  vocab_size: 355  # Updated to match unified vocabulary
+  max_seq_len: 64
+  dropout: 0.15
+
+data:
+  train_dir: data/all_data/train
+  val_dir: data/all_data/val
+  batch_size: 64
+  num_workers: 4
+  image_height: 48
+  image_width: 256
+  augment: true
+
+train:
+  epochs: 30
+  lr: 0.0001
+  weight_decay: 0.01
+  max_grad_norm: 1.0
+  save_dir: runs/optimized
+  log_interval: 50
+  eval_interval: 1
+
+eval:
+  batch_size: 128
+  max_new_tokens: 64

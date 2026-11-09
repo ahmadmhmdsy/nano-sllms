@@ -1,0 +1,46 @@
+# KT-2 judge ROUND 2 (scaled; TASKS row 48): same frozen row-14 protocol and
+# instruments as round 1 (configs/kt2_judge.yaml), bigger pool. Reuses round
+# 1's 30 held-out probes for comparability and excludes all round-1 consumed
+# ids. 1500 prompts x 5 candidates = 7500 candidates (~5.5 h GPU batched).
+# Winners combine with round-1's 248 pairs for the round-2 SFT.
+name: kt2_judge_r2
+
+student:
+  base: runs/yarn_lora_sft_v1/final_a60
+  tokenizer: codellama/CodeLlama-7b-hf
+  template: "### Instruction:\n{instruction}\n### Response:\n"
+  gen_ctx: 1024
+  max_new_tokens: 256
+  temperature: 0.8
+  top_p: 0.95
+  eos_token_id: 2
+  pad_token_id: 2
+
+teacher:
+  snapshot: "C:/Users/AhmadMhmoud/.cache/huggingface/hub/models--HuggingFaceTB--SmolLM2-360M/snapshots/f8027fd0eaeea54caa13c31d31b9fdc459c38b49"
+  temperature: 0.2
+  top_p: 0.9
+  max_new_tokens: 120
+
+prompts:
+  sources:
+    - data/distillation_data/omen_alpha/combined/all_train.jsonl
+    - data/distillation_data/minimax3/combined/all_train.jsonl
+  n_prompts: 1500
+  n_probe: 30
+  k_candidates: 5
+  synth_share: 0.25
+  min_instruction_chars: 10
+  max_instruction_chars: 1200
+  seed: 42
+  exclude_ids_files:
+    - runs/kt2_judge/prompts.jsonl
+    - runs/kt2_judge/probe_instructions.jsonl
+  probe_from: runs/kt2_judge/probe_instructions.jsonl
+
+gates:
+  unparseable_max: 0.10
+
+output:
+  dir: runs/kt2_judge_r2
+  pairs_out: data/sft/kt2_judge_r2/pairs.jsonl

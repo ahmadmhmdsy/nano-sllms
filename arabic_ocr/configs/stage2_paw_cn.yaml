@@ -1,0 +1,51 @@
+# Stage 2 - PAW detector, CenterNet-style variant (plan V2).
+# Gate: PAW Hmean >= 90% on held-out synthetic pages.
+#
+# Why: the CRAFT region score reads each PAW's box off a level set of a Gaussian,
+# which couples the box to the blob's SHAPE. Measured 2026-10-04 (HANDOFF (k)):
+# decoded singletons came out 25.5 x 25.5 (square) against tall GT PAWs
+# (20.4 x 22.1), and 36.8% of PAWs merged into a neighbour at the decode
+# threshold. PAW centres are 99.97% unique, so one peak per PAW removes both
+# failure modes by construction. Stride 2 isolates the representation change
+# from the resolution change (run stage2_paw_s1).
+name: stage2_paw_cn
+data:
+  train_dir: runs/stage2_synth/train
+  val_dir: runs/stage2_synth/val
+  image_height: 720
+  image_width: 960
+  min_side: 6
+  output_stride: 2
+  shrink_ratio: 0.4
+  target_mode: centernet
+  sigma_k: 0.30          # centre Gaussian sigma = sigma_k * min(w,h) / stride.
+                          # Ceiling is flat in sigma_k (99.16% @0.10 -> 98.90% @0.50),
+                          # so the broader target is strictly easier to fit
+  batch_size: 8
+  num_workers: 4
+model:
+  type: paw_detector
+  widths: [32, 64, 128, 224]
+  blocks: [1, 1, 2, 1]
+  fpn: 80
+  out_stride: 2
+  head: centernet
+train:
+  epochs: 30
+  lr: 0.001
+  weight_decay: 0.0001
+  max_grad_norm: 5.0
+  accum: 2
+  pos_weight: 10.0
+  size_weight: 1.0
+  off_weight: 1.0
+  amp: true
+  save_dir: runs/stage2_paw_cn
+  eval_interval: 2
+  log_interval: 20
+  gate: 90.0
+eval:
+  iou_thr: 0.5
+  min_side: 6
+  peak_thresh: 0.3
+  topk: 200

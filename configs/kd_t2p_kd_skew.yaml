@@ -1,0 +1,61 @@
+# Track C2 (TASKS row 31, adoption_plan §C): the C1 KD arm with the KD term
+# replaced by DistiLLM alpha-SKL (Ko et al. 2024 sec. 3.1, paper ablation
+# optimum skew = 0.1): KL(t || m), m = 0.1*t + 0.9*s. Same forward-KL
+# direction as configs/kd_t2p_kd.yaml; ONE variable changes vs C1 (the KD
+# target floor), so C1-KD is the direct control. Data/steps/seed/optimizer/
+# micro-batching identical to BOTH C1 arms (kd_t2p_baseline / kd_t2p_kd).
+# CPU math validation: exact vs brute-force mixture-KL, skew in {0.1,0.3,0.9}
+# (diff <= 2.4e-7), monotone in skew, finite student grads (2026-09-09).
+# GATE: never while another training run is live on the GPU.
+name: kd-t2p-kd-skew
+
+tokenizer:
+  name: codellama/CodeLlama-7b-hf
+  vocab_size: 32768
+
+model:
+  layers: 12
+  hidden: 768
+  heads: 12
+  kv_heads: 4
+  ffn: 2048
+  ctx: 1024
+  dropout: 0.0
+  tie_embeddings: true
+
+kd:
+  teacher: runs/target/final
+  tau: 1.0
+  alpha: 0.5
+  skew_lambda: 0.1         # DistiLLM alpha-SKL floor (paper optimum)
+
+data:
+  raw_dir: data/target/raw
+  tokens_dir: data/target/tokens
+
+train:
+  output_dir: runs/kd-t2p-kd-skew
+  final_dir: runs/kd-t2p-kd-skew/final
+  max_steps: 2000          # identical to both C1 arms
+  batch: 4                 # micro 4 x accum 2 = effective 8 (identical to C1)
+  eval_batch: 4
+  accum: 2
+  lr: 4.0e-4
+  scheduler: cosine
+  warmup_steps: 100
+  weight_decay: 0.1
+  max_grad_norm: 1.0
+  logging_steps: 25
+  eval_steps: 100
+  save_steps: 100
+  save_total_limit: 3
+  fp16: true
+  grad_ckpt: true
+  optim: adamw_bnb_8bit
+  dataloader_num_workers: 0
+  seed: 42
+
+eval:
+  max_new_tokens: 64
+  prompts:
+    - "def fibonacci(n):"

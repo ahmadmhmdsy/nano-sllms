@@ -1,0 +1,37 @@
+# Real data training config for Arabic OCR
+name: real
+
+model:
+  type: crnn
+  vocab_size: 256
+  image_height: 48
+  image_width: 256
+  cnn_channels: [32, 64, 128, 256]
+  cnn_kernel: 3
+  cnn_stride: 2
+  cnn_padding: 1
+  lstm_hidden: 256
+  lstm_layers: 2
+  lstm_dropout: 0.1
+  dropout: 0.1
+
+data:
+  train_dir: data/real/train
+  val_dir: data/real/val
+  batch_size: 16
+  num_workers: 2
+  image_height: 48
+  image_width: 256
+
+train:
+  epochs: 20
+  lr: 0.001
+  weight_decay: 0.01
+  max_grad_norm: 1.0
+  save_dir: runs/real
+  log_interval: 20
+  eval_interval: 1
+
+eval:
+  batch_size: 32
+  max_new_tokens: 64

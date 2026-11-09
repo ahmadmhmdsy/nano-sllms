@@ -1,0 +1,40 @@
+name: smoke_lines
+model:
+  type: vit_decoder
+  patch_size: 16
+  image_height: 48
+  image_width: 512
+  vit_layers: 4
+  vit_hidden: 256
+  vit_heads: 4
+  vit_ffn: 1024
+  decoder_layers: 4
+  decoder_hidden: 256
+  decoder_heads: 4
+  vocab_size: 54
+  max_seq_len: 128
+  dropout: 0.1
+data:
+  train_dir: data/smoke_lines/train
+  val_dir: data/smoke_lines/val
+  batch_size: 16
+  num_workers: 0
+  image_height: 48
+  image_width: 512
+  augment: false
+  vocab_path: data/focused_vocab.json
+  max_len: 128
+  min_text_len: 1
+  keep_aspect: true
+train:
+  model_type: vit_decoder
+  epochs: 60
+  lr: 0.0005
+  weight_decay: 0.0
+  max_grad_norm: 1.0
+  save_dir: runs/smoke_lines
+  log_interval: 5
+  eval_interval: 5
+eval:
+  batch_size: 32
+  max_new_tokens: 128

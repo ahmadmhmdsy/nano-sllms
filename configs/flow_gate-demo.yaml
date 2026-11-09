@@ -1,0 +1,49 @@
+name: gate-demo
+tokenizer:
+  name: codellama/CodeLlama-7b-hf
+  vocab_size: 32000
+model:
+  layers: 4
+  hidden: 256
+  heads: 4
+  kv_heads: 2
+  ffn: 1024
+  ctx: 256
+  dropout: 0.0
+  tie_embeddings: true
+data:
+  dataset_candidates:
+  - name: TheGamingMahi/TinyCode
+  rows: 3000
+  val_fraction: 0.02
+  dedupe: true
+  min_chars: 80
+  shard_tokens: 8000000
+  raw_dir: data/gate-demo/raw
+  tokens_dir: data/gate-demo/tokens
+train:
+  output_dir: runs/gate-demo
+  final_dir: runs/gate-demo/final
+  max_steps: 200
+  batch: 1
+  eval_batch: 4
+  accum: 32
+  lr: 0.0004
+  scheduler: cosine
+  warmup_steps: 10
+  weight_decay: 0.1
+  max_grad_norm: 1.0
+  logging_steps: 50
+  eval_steps: 500
+  save_steps: 500
+  save_total_limit: 3
+  fp16: true
+  grad_ckpt: true
+  optim: adamw_torch
+  dataloader_num_workers: 0
+  seed: 42
+eval:
+  max_new_tokens: 64
+  prompts:
+  - 'def fibonacci(n):'
+  - 'class Stack:'

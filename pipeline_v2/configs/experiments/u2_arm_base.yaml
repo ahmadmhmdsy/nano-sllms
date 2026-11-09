@@ -1,0 +1,79 @@
+schema_version: 2
+release: r1
+capabilities: [pretrain]
+# U-2 paired arm {ARM}: see state/tasks.yaml discount registration and research/ui_u2_full_train_plan.md.
+run: {name: u2g_arm_base, namespace: ui, stage: S, seed: 42}
+data:
+  dataset_id: ui_chain_base
+  sources:
+    - source_id: u2-arm-base
+      kind: local
+      path_or_repo: data/u1/arms/raw/base.jsonl
+      revision: null
+      file_set: [base.jsonl]
+      role: train
+      license: Repo-internal-synthetic
+      expected_rows: 4000
+      expected_tokens: 0
+      freshness_policy: {max_age: pinned, supersession: explicit-generation, optional_reason: null}
+      optional_profile: null
+  split_salt: 17
+  validation_fraction: 0.1
+  dedupe: exact_hash
+  normalization: ui_task_nl
+  filters: []
+  regeneration_command: ["./.venv/Scripts/python.exe", "scratch/build_arm_corpus.py"]
+tokenizer:
+  source: local
+  revision_or_files: data/target/tokenizer/tokenizer.json
+  special_ids: {pad: 0, bos: 1, eos: 2}
+  context: 512
+  offsets: special_tokens
+model:
+  architecture: llama
+  hidden: 256
+  intermediate: 768
+  layers: 8
+  heads: 8
+  kv_heads: 2
+  context: 512
+  precision: fp16
+  attention: sdpa
+  tied_embeddings: true
+  base_model: null
+train:
+  optimizer: adamw
+  scheduler: cosine
+  learning_rate: 1.0e-3
+  max_steps: 600
+  batch_size: 8
+  gradient_accumulation: 2
+  max_grad_norm: 1.0
+  checkpoint_every_steps: 100
+  evaluation_cadence: 100
+  checkpoint_policy: complete_only
+  keep_last_checkpoints: 2
+  keep_best_checkpoints: 1
+  resume: true
+evaluation:
+  ids: [validation_loss]
+  versions: ["1"]
+  suites: [validation]
+  metrics: [val_loss, val_perplexity]
+  cadence_steps: 100
+  thresholds: {val_loss: 12.0, val_perplexity: 162000.0}
+  generation_samples: 1
+  generation_max_new_tokens: 32
+  directions: {val_loss: min, val_perplexity: min}
+  selection_policy: best_validation_loss
+runtime:
+  device: cuda:0
+  precision: fp16
+  launch_profile: u2-arm
+  vram_fraction: 0.55
+features: {retention: manual, promotion: null}
+packing:
+  mode: concat
+  sequence_length: 512
+  overflow_policy: fail
+  dropped_tail_policy: count_and_drop

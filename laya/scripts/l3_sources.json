@@ -1,0 +1,245 @@
+[
+ {
+  "name": "localllama_comments",
+  "id": "pszemraj/LocalLLaMA-comments",
+  "split": "train",
+  "n_items": 1100000,
+  "render": "field",
+  "fields": [
+   "body"
+  ],
+  "drop_prefixes": [
+   "[deleted]",
+   "[removed]"
+  ],
+  "drop_contains": [
+   "I am a bot"
+  ]
+ },
+ {
+  "name": "localllama_posts",
+  "id": "pszemraj/LocalLLaMA-posts",
+  "split": "train",
+  "n_items": 100000,
+  "render": "field",
+  "fields": [
+   "title",
+   "selftext"
+  ],
+  "drop_prefixes": [
+   "[deleted]",
+   "[removed]"
+  ],
+  "drop_contains": [
+   "AutoModerator"
+  ]
+ },
+ {
+  "name": "support_twitter",
+  "id": "gorkemsevinc/Customer_Support_on_Twitter",
+  "split": "train",
+  "n_items": 800000,
+  "render": "field",
+  "fields": [
+   "cleaned_text"
+  ]
+ },
+ {
+  "name": "support_tickets",
+  "id": "Tobi-Bueck/customer-support-tickets",
+  "split": "train",
+  "n_items": 60000,
+  "render": "field",
+  "fields": [
+   "subject",
+   "body",
+   "answer"
+  ]
+ },
+ {
+  "name": "bitext_support",
+  "id": "bitext/Bitext-customer-support-llm-chatbot-training-dataset",
+  "split": "train",
+  "n_items": 26875,
+  "render": "field",
+  "fields": [
+   "instruction",
+   "response"
+  ]
+ },
+ {
+  "name": "enron_email",
+  "id": "LLM-PBE/enron-email",
+  "split": "train",
+  "n_items": 160000,
+  "render": "field",
+  "fields": [
+   "text"
+  ]
+ },
+ {
+  "name": "enron_spam",
+  "id": "SetFit/enron_spam",
+  "split": "train",
+  "n_items": 31716,
+  "render": "field",
+  "fields": [
+   "subject",
+   "message"
+  ]
+ },
+ {
+  "name": "phishing_kaggle",
+  "id": "zefang-liu/phishing-email-dataset",
+  "split": "train",
+  "n_items": 18650,
+  "render": "field",
+  "fields": [
+   "Email Text"
+  ]
+ },
+ {
+  "name": "spamassassin_REMOVED_script_dataset_unsupported",
+  "id": "talby/spamassassin",
+  "config": "text",
+  "split": "train",
+  "n_items": 10749,
+  "render": "field",
+  "fields": [
+   "text"
+  ]
+ },
+ {
+  "name": "clair_fraud",
+  "id": "tasksource/CLAIR_email_fraud",
+  "split": "train",
+  "n_items": 8980,
+  "render": "field",
+  "fields": [
+   "text"
+  ]
+ },
+ {
+  "name": "jailbreak_wild_2023_05",
+  "id": "TrustAIRLab/in-the-wild-jailbreak-prompts",
+  "config": "jailbreak_2023_05_07",
+  "split": "train",
+  "n_items": 700,
+  "render": "field",
+  "fields": [
+   "prompt"
+  ]
+ },
+ {
+  "name": "jailbreak_wild_2023_12",
+  "id": "TrustAIRLab/in-the-wild-jailbreak-prompts",
+  "config": "jailbreak_2023_12_25",
+  "split": "train",
+  "n_items": 1405,
+  "render": "field",
+  "fields": [
+   "prompt"
+  ]
+ },
+ {
+  "name": "regular_wild_2023_05",
+  "id": "TrustAIRLab/in-the-wild-jailbreak-prompts",
+  "config": "regular_2023_05_07",
+  "split": "train",
+  "n_items": 5721,
+  "render": "field",
+  "fields": [
+   "prompt"
+  ]
+ },
+ {
+  "name": "regular_wild_2023_12",
+  "id": "TrustAIRLab/in-the-wild-jailbreak-prompts",
+  "config": "regular_2023_12_25",
+  "split": "train",
+  "n_items": 13735,
+  "render": "field",
+  "fields": [
+   "prompt"
+  ]
+ },
+ {
+  "name": "prompt_injection",
+  "id": "reshabhs/SPML_Chatbot_Prompt_Injection",
+  "split": "train",
+  "n_items": 50000,
+  "render": "field",
+  "fields": [
+   "System Prompt",
+   "User Prompt"
+  ]
+ },
+ {
+  "name": "jailbreak_class",
+  "id": "jackhhao/jailbreak-classification",
+  "split": "train",
+  "n_items": 1044,
+  "render": "field",
+  "fields": [
+   "prompt"
+  ]
+ },
+ {
+  "name": "glaive_fc",
+  "id": "glaiveai/glaive-function-calling-v2",
+  "split": "train",
+  "n_items": 40000,
+  "render": "field",
+  "fields": [
+   "system",
+   "chat"
+  ]
+ },
+ {
+  "name": "nemotron_agentic",
+  "id": "nvidia/Nemotron-RL-Agentic-Function-Calling-Pivot-v1",
+  "split": "train",
+  "n_items": 3000,
+  "render": "json_row"
+ },
+ {
+  "name": "fatura_invoices",
+  "id": "mathieu1256/FATURA2-invoices",
+  "split": "train",
+  "n_items": 8600,
+  "render": "tokens_join",
+  "fields": [
+   "tokens"
+  ]
+ },
+ {
+  "name": "donut_invoices",
+  "id": "katanaml-org/invoices-donut-data-v1",
+  "split": "train",
+  "n_items": 425,
+  "render": "field",
+  "fields": [
+   "ground_truth"
+  ]
+ },
+ {
+  "name": "sroie_receipts",
+  "id": "darentang/sroie",
+  "split": "train",
+  "n_items": 626,
+  "render": "tokens_join",
+  "fields": [
+   "words"
+  ]
+ },
+ {
+  "name": "simple_wikipedia",
+  "id": "pszemraj/simple_wikipedia",
+  "split": "train",
+  "n_items": 60000,
+  "render": "field",
+  "fields": [
+   "text"
+  ]
+ }
+]

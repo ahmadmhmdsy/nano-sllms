@@ -1,0 +1,22 @@
+# E-23c arm E — micro 12-128-512 on v3qz (v3q pool + 315k ZM-distilled windows)
+# Same recipe as arm C (diac_micro_a_qcri); comparison target = arm C @2500
+# (fadel 36.44 / sadeed 48.67 / wn24 58.13 / wn14 50.11, mean 48.42).
+phase: e23c_zm
+tokens_phase: v3qz
+batch_size: 32
+accum: 1
+lr: 0.0004
+weight_decay: 0.1
+total_steps: 2500
+save_every: 500
+eval_every: 500
+gate_eval_every: 500
+early_stop_patience: 8
+log_every: 100
+model:
+  ctx: 128
+  hidden: 128
+  ffn: 512
+  layers: 12
+  n_heads: 4
+  n_kv: 2

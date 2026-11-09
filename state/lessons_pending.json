@@ -1,0 +1,134 @@
+{
+  "schema_version": 1,
+  "_comment": "Lesson candidates promoted on 2026-10-06 into rules/ by explicit user adoption. Promotion record and bounded diff: .skillopt-sleep/staging/2026-10-06-rule-proposals.md and .diff. Backup of the pre-adoption files: .skillopt-sleep/backups/2026-10-06-rules-adoption/.",
+  "lessons": [
+    {
+      "id": "lesson/evidence/metric-direction",
+      "scope": "evidence",
+      "status": "promoted",
+      "lesson": "A metric's direction is a property of the code that defines it. Before quoting or comparing a metric, read its defining function or registry and record whether higher or lower is better; a direction inherited from prose, a summary, or a resolved config is UNKNOWN until re-derived. An inverted direction flips every later comparison.",
+      "source_reflection": "research/2026-10-06_agent_self_reflection.md",
+      "evidence": [
+        "research/2026-10-06_agent_self_reflection.md",
+        "research/archive/diacritizer_failures.md",
+        "research/experiments.yaml"
+      ],
+      "promoted_to": [
+        "rules/evidence.md"
+      ],
+      "rule_candidate": "## Metric direction comes from the defining code"
+    },
+    {
+      "id": "lesson/evidence/artifactless-verdict",
+      "scope": "evidence",
+      "status": "promoted",
+      "lesson": "A recorded verdict whose supporting artifact cannot be produced is a defect in the record regardless of whether the conclusion was right, and it can be wrong in either direction: false FAILs from a slice or a misread number, false PASSes with no measurement at all. Correct it in place and label it.",
+      "source_reflection": "research/2026-10-06_agent_self_reflection.md",
+      "evidence": [
+        "research/2026-10-06_agent_self_reflection.md",
+        "research/archive/diacritizer_failures.md",
+        "research/experiments.yaml"
+      ],
+      "promoted_to": [
+        "rules/evidence.md"
+      ],
+      "rule_candidate": "## A recorded verdict with no artifact is a defect"
+    },
+    {
+      "id": "lesson/evidence/scope-the-claim",
+      "scope": "evidence",
+      "status": "promoted",
+      "lesson": "State the exact part of a claim the artifact covers, and no more. 'The arm was under-trained' and 'budget was the whole story' are different claims; evidence for the first does not support the second. When a later run refutes part of an earlier conclusion, amend the record in place rather than leaving both standing.",
+      "source_reflection": "research/2026-10-06_agent_self_reflection.md",
+      "evidence": [
+        "research/2026-10-06_agent_self_reflection.md",
+        "research/archive/diacritizer_failures.md",
+        "research/experiments.yaml"
+      ],
+      "promoted_to": [
+        "rules/evidence.md"
+      ],
+      "rule_candidate": "## Scope the conclusion to the evidence"
+    },
+    {
+      "id": "lesson/experiments/config-vs-log",
+      "scope": "experiments",
+      "status": "promoted",
+      "lesson": "A config declares intent; only the run log proves execution. Before reasoning from an arm, confirm its mechanism fired: nonzero warm-start tensor load counts, tokenizer phase, context length, resume step. A run whose declared mechanism silently did not fire is a control, not the arm it claims to be.",
+      "source_reflection": "research/2026-10-06_agent_self_reflection.md",
+      "evidence": [
+        "research/2026-10-06_agent_self_reflection.md",
+        "research/archive/diacritizer_failures.md",
+        "research/experiments.yaml"
+      ],
+      "promoted_to": [
+        "rules/experiments.md"
+      ],
+      "rule_candidate": "## Config declares intent; the log proves execution"
+    },
+    {
+      "id": "lesson/experiments/selection-is-not-measurement",
+      "scope": "experiments",
+      "status": "promoted",
+      "lesson": "Choosing the best of several probes is a selection, not a measurement. Report the matched-step number beside the selected best and, where the claim matters, test the selection on a set that took no part in it; best-of-N over a noise band always yields a favourable number that describes the procedure, not the model.",
+      "source_reflection": "research/2026-10-06_agent_self_reflection.md",
+      "evidence": [
+        "research/2026-10-06_agent_self_reflection.md",
+        "research/archive/diacritizer_failures.md",
+        "research/experiments.yaml"
+      ],
+      "promoted_to": [
+        "rules/experiments.md"
+      ],
+      "rule_candidate": "## Selection is not measurement"
+    },
+    {
+      "id": "lesson/context/authority-banner-before-edit",
+      "scope": "context",
+      "status": "promoted",
+      "lesson": "Read a file's own banner before editing it: a ledger or generated artifact may declare itself frozen, historical, or deliberately redundant, so duplicate ids and malformed rows can be intentional. Correct historical errors through the current registry or an explicit erratum, never by tidying the historical file; regenerate generated files by their recorded command.",
+      "source_reflection": "research/2026-10-06_agent_self_reflection.md",
+      "evidence": [
+        "research/2026-10-06_agent_self_reflection.md",
+        "research/archive/diacritizer_failures.md",
+        "research/experiments.yaml"
+      ],
+      "promoted_to": [
+        "rules/context.md"
+      ],
+      "rule_candidate": "## A file's self-declared authority governs whether it may be edited"
+    },
+    {
+      "id": "lesson/tooling/harness-preconditions",
+      "scope": "tooling",
+      "status": "promoted",
+      "lesson": "Two mechanical harness rules: an edit requires a prior read of that exact file in the current session (batch reads before edits; re-read after compaction), and text passed through a program to a shell or template literal is escaped, not literal (never raw backticks, dollar-brace forms, or unquoted nested quotes).",
+      "source_reflection": "research/2026-10-06_agent_self_reflection.md",
+      "evidence": [
+        "research/2026-10-06_agent_self_reflection.md",
+        "research/archive/diacritizer_failures.md",
+        "research/experiments.yaml"
+      ],
+      "promoted_to": [
+        "rules/tooling.md"
+      ],
+      "rule_candidate": "## Harness preconditions and text-channel hazards"
+    },
+    {
+      "id": "lesson/gpu/measure-before-acting-on-contention",
+      "scope": "gpu",
+      "status": "promoted",
+      "lesson": "A contention theory is a hypothesis, not a diagnosis: measure the rate with and without the suspected cause before acting, and never stop a job on an unmeasured theory. This supplements no-foreign-kills and never-kill-for-pace-alone by forbidding the guess rather than the action.",
+      "source_reflection": "research/2026-10-06_agent_self_reflection.md",
+      "evidence": [
+        "research/2026-10-06_agent_self_reflection.md",
+        "research/archive/diacritizer_failures.md",
+        "research/experiments.yaml"
+      ],
+      "promoted_to": [
+        "rules/gpu.md"
+      ],
+      "rule_candidate": "## Measure a contention theory before acting on it"
+    }
+  ]
+}

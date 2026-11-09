@@ -1,0 +1,22 @@
+# E-23b S2 check arm — micro 12-128-512 on v3t = v3q + 1.2M gate-deduped classical windows.
+# Identical schedule/hparams to arm C (micro_a_qcri) for a controlled data ablation.
+# NO cache at eval (user dropped the cache line).
+phase: e23b_t
+tokens_phase: v3t
+batch_size: 32
+accum: 1
+lr: 0.0004
+weight_decay: 0.1
+total_steps: 2500
+save_every: 500
+eval_every: 500
+gate_eval_every: 500
+early_stop_patience: 8
+log_every: 100
+model:
+  ctx: 128
+  hidden: 128
+  ffn: 512
+  layers: 12
+  n_heads: 4
+  n_kv: 2

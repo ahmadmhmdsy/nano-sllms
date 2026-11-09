@@ -1,0 +1,88 @@
+schema_version: 2
+release: r1
+capabilities: [pretrain]
+run: {name: nano_codesechnet, namespace: core, stage: S, seed: 42}
+data:
+  dataset_id: code_search_net_target
+  sources:
+    - source_id: codesearchnet-python
+      kind: local
+      path_or_repo: data/target/raw/train.jsonl
+      revision: null
+      file_set: [train.jsonl]
+      role: train
+      license: CC-BY-4.0
+      expected_rows: 147000
+      expected_tokens: 47937963
+      freshness_policy: {max_age: pinned, supersession: explicit-generation, optional_reason: null}
+      optional_profile: null
+  split_salt: 17
+  validation_fraction: 0.02
+  dedupe: exact_hash
+  normalization: unicode_nfkc
+  filters: []
+  regeneration_command: ["./.venv/Scripts/python.exe", "pipeline_v2/run.py", "run", "--config", "pipeline_v2/configs/experiments/nano_codesechnet.yaml"]
+tokenizer:
+  source: local
+  revision_or_files: data/target/tokenizer/tokenizer.json
+  special_ids: {pad: 0, bos: 1, eos: 2}
+  context: 1024
+  offsets: special_tokens
+model:
+  architecture: llama
+  hidden: 1024
+  intermediate: 2816
+  layers: 16
+  heads: 16
+  kv_heads: 4
+  context: 1024
+  precision: fp16
+  attention: sdpa
+  tied_embeddings: true
+  base_model: null
+train:
+  optimizer: adamw
+  scheduler: cosine
+  learning_rate: 3.0e-4
+  max_steps: 2000
+  batch_size: 1
+  gradient_accumulation: 8
+  max_grad_norm: 1.0
+  checkpoint_every_steps: 200
+  evaluation_cadence: 200
+  checkpoint_policy: complete_only
+  keep_last_checkpoints: 3
+  keep_best_checkpoints: 1
+  resume: true
+evaluation:
+  ids: [validation_loss]
+  versions: ["1"]
+  suites: [validation]
+  metrics: [val_loss, val_perplexity]
+  cadence_steps: 200
+  # A FLOOR, not a quality bar. A uniformly random model over this vocabulary
+  # scores ln(32016) = 10.37, so 7.0 asserts "substantially better than
+  # untrained" and nothing more. The honest reading of this run is that it is
+  # undertrained on purpose: 2000 steps at batch 1 is about 2M tokens, roughly
+  # 5% of the 39.8M-token corpus. Raising max_steps is what turns this into a
+  # real model, and that is the user decision this profile leaves open.
+  thresholds: {val_loss: 7.0, val_perplexity: 1100.0}
+  directions: {val_loss: min, val_perplexity: min}
+  generation_samples: 1
+  generation_max_new_tokens: 16
+  selection_policy: best_validation_loss
+runtime:
+  device: cuda:0
+  precision: fp16
+  launch_profile: nano-200m  # Measured on this card: batch 1 at seq 1024 peaks at 4.38 GiB reserved for a
+  # 213M model with fp32 master weights and fp32 AdamW state. Usable free memory
+  # measured between 4.14 and 4.99 GiB, so the headroom is real but thin. 0.75
+  # caps the process at 4.5 GiB, which keeps it off the last 1.5 GiB of the card
+  # and therefore rules out a shared-memory spill, as rules/gpu.md requires.
+  vram_fraction: 0.75
+features: {retention: manual, promotion: null}
+packing:
+  mode: concat
+  sequence_length: 1024
+  overflow_policy: fail
+  dropped_tail_policy: count_and_drop

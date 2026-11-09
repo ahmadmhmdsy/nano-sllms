@@ -1,0 +1,70 @@
+{
+  "schema": "flow/0.1",
+  "meta": {
+    "name": "example-linear-untuned",
+    "description": "start-here skeleton: valid topology, no knobs yet — Validate walks you through every missing knob honestly"
+  },
+  "graph": {
+    "nodes": [
+      {
+        "id": "n1",
+        "kind": "dataset",
+        "props": {},
+        "position": {
+          "x": 500,
+          "y": 220
+        }
+      },
+      {
+        "id": "n2",
+        "kind": "prepare",
+        "props": {},
+        "position": {
+          "x": 940,
+          "y": 220
+        }
+      },
+      {
+        "id": "n3",
+        "kind": "tokenize",
+        "props": {},
+        "position": {
+          "x": 700,
+          "y": 440
+        }
+      },
+      {
+        "id": "n4",
+        "kind": "train",
+        "props": {},
+        "position": {
+          "x": 940,
+          "y": 440
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "e1",
+        "from": "n1",
+        "to": "n2",
+        "fromPort": "cleaned",
+        "toPort": "raw-dir"
+      },
+      {
+        "id": "e2",
+        "from": "n2",
+        "to": "n3",
+        "fromPort": "cleaned-dir",
+        "toPort": "cleaned-dir"
+      },
+      {
+        "id": "e3",
+        "from": "n3",
+        "to": "n4",
+        "fromPort": "shard-dir",
+        "toPort": "shard-dir"
+      }
+    ]
+  }
+}

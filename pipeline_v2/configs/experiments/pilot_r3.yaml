@@ -1,0 +1,14 @@
+# pilot_r3 = pilot re-entry after the declared OOM shrink: context 1024 -> 512.
+# rules/gpu.md OOM protocol: batch, accumulation, optimizer, precision, and
+# checkpoint policy are unchanged; only the chunk length shrinks.
+extends: [../base/r1.yaml]
+run: {name: pilot_ctx512, namespace: core, stage: P, seed: 42}
+tokenizer:
+  context: 512
+model:
+  context: 512
+packing:
+  sequence_length: 512
+runtime:
+  vram_fraction: 0.85
+features: {retention: manual, promotion: null}

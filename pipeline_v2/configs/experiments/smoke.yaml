@@ -1,0 +1,3 @@
+extends: [../base/r1.yaml]
+run: {name: smoke, namespace: core, stage: S, seed: 42}
+features: {retention: manual, promotion: null}

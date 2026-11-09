@@ -1,0 +1,44 @@
+name: stage3_pretrain
+model:
+  type: vit_hybrid
+  patch_size: 16
+  image_height: 64
+  image_width: 1024
+  vit_layers: 4
+  vit_hidden: 256
+  vit_heads: 4
+  vit_ffn: 1024
+  decoder_layers: 4
+  decoder_hidden: 256
+  decoder_heads: 4
+  vocab_size: 256
+  max_seq_len: 256
+  dropout: 0.1
+  pad_loss_weight: 0.1
+  ctc_weight: 0.3
+data:
+  train_dir: runs/stage3_synth_lines/train
+  val_dir: runs/stage3_synth_lines/val
+  batch_size: 32
+  num_workers: 8
+  image_height: 64
+  image_width: 1024
+  augment: true
+  vocab_path: data/stage3_vocab.json
+  max_len: 256
+  min_text_len: 2
+  max_text_len: 256
+  keep_aspect: true
+train:
+  model_type: vit_hybrid
+  epochs: 20
+  lr: 0.0003
+  weight_decay: 0.01
+  max_grad_norm: 1.0
+  save_dir: runs/stage3_pretrain
+  log_interval: 50
+  eval_interval: 5
+  eval_generate: true
+eval:
+  batch_size: 32
+  max_new_tokens: 256

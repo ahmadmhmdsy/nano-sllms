@@ -1,0 +1,57 @@
+# Qwen3.8-Flash-Next — dims from the published HF config.json, released 2026-08-26
+# (verified this session; announced approx 125B total / 6B active - the text-stack
+#  math here is computed from shapes, see src/engine/params.ts)
+id: qwen38
+name: Qwen3.8-Flash-Next
+fullName: Qwen4ExpForConditionalGeneration — Qwen · 2026-08-26
+accent: "#e879a0"
+archKind: hybridLinearMoe
+overrides: qwen38
+blurb: >-
+  Alibaba's open preview of Qwen4: 48 layers mixing THREE GDN linear-attention
+  layers with ONE gated full-attention layer (3:1), FFNs replaced by 512-expert
+  sparse MoE (10 routed + 1 shared per token). Approx 125B total, 6B active/token.
+tok: Qwen tokenizer (248k + ngram parts)
+data: Post-trained multimodal preview (text stack charted here)
+domain: General · multimodal · long context
+shape:
+  layers: 48
+  d: 2560
+  heads: 24
+  kv: 2
+  ffn: 640
+  vocab: 248320
+  ctx: "262,144 native (256K)"
+  theta: "10,000,000 · partial 25% · mRoPE"
+  eps: "1e-6"
+  tied: false
+  precision: bf16
+  attentionImpl: HF transformers (qwen4_exp)
+hybrid:
+  fullEvery: 4
+  layerPattern: "3 linear + 1 full"
+  linearMixer: { kHeads: 16, vHeads: 48, qHeads: 16, headDim: 128, conv: 4 }
+  fullMixer: { headDim: 256, partialRotary: "25%", indexer: "lightning indexer · budget 2048" }
+  experts: { total: 512, active: 10, shared: 1, inter: 640 }
+  extras:
+    label: >-
+      Conv/dt gains + norms, 1-layer MTP head, indexer remainder and other
+      shape-invisible loads (hand-accounted remainder; computed anchors verified).
+    params: 60000000
+bands: { early: [1, 12], mid: [13, 36], late: [37, 48] }
+facts:
+  tokens: [The, "Ġcapital", "Ġof", "ĠFrance", "Ġis"]
+  top1: "ĠParis"
+demo:
+  moePeaks: true
+  preds:
+    france: [["ĠParis", 74], ["Ġa", 5], ["Ġlocated", 4], ["Ġnow", 3], ["Ġthe", 2]]
+    code: [["Ċ", 26], ["ĠĠ", 24], ["Ġreturn", 10], ["ĠĠĠĠ", 8], ["Ġif", 5]]
+    fox: [["Ġjumps", 66], ["Ġjumped", 9], ["Ġover", 6], ["Ġran", 4], ["Ġis", 3]]
+honesty:
+  sources:
+    - "published HF config.json (2026-08-26): https://huggingface.co/Qwen/Qwen3.8-Flash-Next/raw/main/config.json"
+    - approx 125B total / 6B active per Qwen announcement; text-stack computed here
+  trainedOn: Post-trained multimodal preview (text stack charted here)
+  speaks: General + multimodal, very long context, sparse routing
+  simulatedNote: all activations SIMULATED (same as the two dense models)

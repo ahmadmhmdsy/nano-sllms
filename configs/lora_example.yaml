@@ -1,0 +1,78 @@
+# LoRA adapter fine-tune TEMPLATE (design: research/lora_peft_design.md;
+# hook implementation = TASKS row 10, user-gated).
+# Instead of full fine-tuning, a small adapter (r=16 ~ 2-3% params) trains on
+# top of an ALREADY-TRAINED base model - est ~2.0-2.5 GB instead of 4.24 GB
+# for the 16L/1024 target on this 8 GB card.
+# Workflow once row 10 lands:
+#   1) train or pick a base model (your custom pipeline, or runs/<phase>/final)
+#   2) uncomment base_model + the peft block, edit dataset paths
+#   3) sanity_check -> prepare_data -> tokenize_data -> train -> eval -> infer
+name: lora_example
+
+tokenizer:
+  name: codellama/CodeLlama-7b-hf
+  vocab_size: 32768
+
+model:
+  # The adapter wraps a BASE model - these dims are the fallback fresh-init and
+  # must MATCH the base model when base_model is set (train.py validates).
+  layers: 12
+  hidden: 768
+  heads: 12
+  kv_heads: 4
+  ffn: 2048
+  ctx: 512
+  dropout: 0.0
+  tie_embeddings: true
+
+# Uncomment and point at YOUR trained model (dir with config.json + safetensors):
+# base_model: data/custom_example/raw/final
+
+# LoRA adapter spec - hook implemented (TASKS row 10, src/model.py:maybe_wrap_peft):
+peft:
+  r: 16
+  lora_alpha: 32
+  lora_dropout: 0.05
+  target_modules: [q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj]
+  bias: none
+
+data:
+  dataset_candidates:
+    - name: code-search-net/code_search_net
+      config: python
+  # - path: data/lora_example/raw/my_pairs.jsonl   # local file support exists
+  rows: 20000
+  val_fraction: 0.02
+  dedupe: true
+  min_chars: 200
+  shard_tokens: 8000000
+  raw_dir: data/lora_example/raw
+  tokens_dir: data/lora_example/tokens
+
+train:
+  output_dir: runs/lora_example
+  final_dir: runs/lora_example/final
+  max_steps: 3000
+  batch: 1
+  eval_batch: 4
+  accum: 32
+  lr: 1.0e-4            # adapter fine-tune uses a lower LR than from-scratch 4e-4
+  scheduler: cosine
+  warmup_steps: 150
+  weight_decay: 0.1
+  max_grad_norm: 1.0
+  logging_steps: 50
+  eval_steps: 500
+  save_steps: 500
+  save_total_limit: 3
+  fp16: true
+  grad_ckpt: true
+  optim: adamw_torch
+  dataloader_num_workers: 0
+  seed: 42
+
+eval:
+  max_new_tokens: 64
+  prompts:
+    - "def fibonacci(n):"
+    - "class Stack:"

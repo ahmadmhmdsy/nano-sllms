@@ -1,0 +1,49 @@
+# SA-3 (research/2026-10-22_sa_plan_v2.md §1): LoRA instruction SFT on the verified SA-2 rows
+# (he + mbpp shapes, scripts/sa3_data.py), from the RL run 4 incumbent ckpt-750.
+# Gate: HE+ pass@1 > 7/164, body median > 1 line, English BPB <= +3 %.
+name: sft_sa3
+
+base_model: runs/rl_mixen_wide_mbpp/checkpoint-750
+
+tokenizer:
+  name: models/hf/SmolLM2-135M   # SmolLM2's own tokenizer (eos <|endoftext|>=0)
+  vocab_size: 49152
+
+model:
+  ctx: 8192
+
+data:
+  dataset_dir: data/sa3/ds
+
+sft:
+  ctx: 1024
+  pilot_rows: 2048
+
+peft:
+  r: 16
+  lora_alpha: 32
+  lora_dropout: 0.0
+  target_modules: [q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj]
+  bias: none
+
+train:
+  output_dir: runs/sft_sa3
+  final_dir: runs/sft_sa3/final
+  epochs: 1
+  batch: 8
+  eval_batch: 8
+  accum: 8
+  lr: 1.0e-4
+  scheduler: cosine
+  warmup_steps: 30
+  weight_decay: 0.0
+  max_grad_norm: 1.0
+  logging_steps: 10
+  eval_steps: 250
+  save_steps: 250
+  save_total_limit: 3
+  fp16: true
+  grad_ckpt: true
+  optim: adamw_torch
+  dataloader_num_workers: 2
+  seed: 42

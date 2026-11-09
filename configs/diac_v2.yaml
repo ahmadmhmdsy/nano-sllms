@@ -1,0 +1,24 @@
+# D-pilot v2 (user-approved 2026-09-12): 128-ctx deep-narrow arch (unchanged from
+# pilot128 = 14L/384h/8h/2kv/ffn1536 = 30.0M params) on the NEW 30x corpus
+# (Abdou 1.44M train + QCRI 32.8k wiki pages + Fadel 50k lines + WikiNews 2024).
+# Early stopping ON (best.pt + patience); final/ exports BEST val_loss weights.
+# External gates (fadel_test, SadeedDiac-25, WikiNews benches) never enter prep.
+phase: v2b
+# v2b = v2 arch retrained on 128-CHAR windows (matched to token ctx; the v2 run
+# silently trained only on the first 128 chars of every 1024-char window).
+model:
+  hidden: 384
+  layers: 14
+  n_heads: 8
+  n_kv: 2
+  ffn: 1536
+  ctx: 128
+lr: 2.0e-4
+weight_decay: 0.1
+batch_size: 32
+accum: 1
+total_steps: 30000
+save_every: 500
+log_every: 100
+eval_every: 500
+early_stop_patience: 12

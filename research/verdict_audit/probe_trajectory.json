@@ -1,0 +1,590 @@
+{
+  "e70_c4b_ctx256": {
+    "steps": [
+      5000,
+      10000,
+      15000,
+      20000,
+      25000,
+      30000,
+      35000,
+      40000,
+      45000,
+      50000,
+      55000,
+      60000
+    ],
+    "rows": {
+      "5000": {
+        "fadel_test": {
+          "der_registered": 0.30050040768037856,
+          "der_canonical": 0.17949927257030487,
+          "macro_f1": 0.7584465871057556
+        },
+        "sadeed25": {
+          "der_registered": 0.4030733754205572,
+          "der_canonical": 0.25499943295656446,
+          "macro_f1": 0.716317264628099
+        },
+        "wikinews2014": {
+          "der_registered": 0.4443836815049765,
+          "der_canonical": 0.31264355244449304,
+          "macro_f1": 0.6964564306439868
+        },
+        "wikinews2024": {
+          "der_registered": 0.54267143933685,
+          "der_canonical": 0.4930293896006029,
+          "macro_f1": 0.656787862006695
+        },
+        "EXT_MEAN_der_registered": 0.3826524882019708
+      },
+      "10000": {
+        "fadel_test": {
+          "der_registered": 0.30196326080353003,
+          "der_canonical": 0.1837279572814913,
+          "macro_f1": 0.7503265598109919
+        },
+        "sadeed25": {
+          "der_registered": 0.4069292707821419,
+          "der_canonical": 0.26409102937284995,
+          "macro_f1": 0.6965803485709681
+        },
+        "wikinews2014": {
+          "der_registered": 0.45800065623974623,
+          "der_canonical": 0.3360494367275511,
+          "macro_f1": 0.683110342163826
+        },
+        "wikinews2024": {
+          "der_registered": 0.5552938960060286,
+          "der_canonical": 0.5135644310474755,
+          "macro_f1": 0.646091205793884
+        },
+        "EXT_MEAN_der_registered": 0.3889643959418061
+      },
+      "15000": {
+        "fadel_test": {
+          "der_registered": 0.2995331659978577,
+          "der_canonical": 0.1837759196789717,
+          "macro_f1": 0.7376907218773909
+        },
+        "sadeed25": {
+          "der_registered": 0.39254526896760294,
+          "der_canonical": 0.2487997580614675,
+          "macro_f1": 0.716339969240762
+        },
+        "wikinews2014": {
+          "der_registered": 0.4322979328447993,
+          "der_canonical": 0.30334682270589525,
+          "macro_f1": 0.7034447673137251
+        },
+        "wikinews2024": {
+          "der_registered": 0.5334400904295403,
+          "der_canonical": 0.48558779201205726,
+          "macro_f1": 0.6647934625649901
+        },
+        "EXT_MEAN_der_registered": 0.37479212260341993
+      },
+      "20000": {
+        "fadel_test": {
+          "der_registered": 0.31125997218180945,
+          "der_canonical": 0.1973732593646581,
+          "macro_f1": 0.7431712239967232
+        },
+        "sadeed25": {
+          "der_registered": 0.4119381544626318,
+          "der_canonical": 0.2712924810040449,
+          "macro_f1": 0.6922408270198012
+        },
+        "wikinews2014": {
+          "der_registered": 0.4497429727660505,
+          "der_canonical": 0.3246746144591491,
+          "macro_f1": 0.6660057982427962
+        },
+        "wikinews2024": {
+          "der_registered": 0.5453089675960814,
+          "der_canonical": 0.5036737000753579,
+          "macro_f1": 0.6327222881945334
+        },
+        "EXT_MEAN_der_registered": 0.39098036647016393
+      },
+      "25000": {
+        "fadel_test": {
+          "der_registered": 0.29797438807974547,
+          "der_canonical": 0.17873986794353228,
+          "macro_f1": 0.7554781011713223
+        },
+        "sadeed25": {
+          "der_registered": 0.40271424791139,
+          "der_canonical": 0.2567761690545496,
+          "macro_f1": 0.7199452943462616
+        },
+        "wikinews2014": {
+          "der_registered": 0.4392431368259871,
+          "der_canonical": 0.3085420540304058,
+          "macro_f1": 0.7041482526647497
+        },
+        "wikinews2024": {
+          "der_registered": 0.5443669932177845,
+          "der_canonical": 0.4945365486058779,
+          "macro_f1": 0.6652564722025592
+        },
+        "EXT_MEAN_der_registered": 0.3799772576057075
+      },
+      "30000": {
+        "fadel_test": {
+          "der_registered": 0.3089737645685782,
+          "der_canonical": 0.19696557898607492,
+          "macro_f1": 0.71056403596747
+        },
+        "sadeed25": {
+          "der_registered": 0.4159830643027256,
+          "der_canonical": 0.279060976070767,
+          "macro_f1": 0.6706467944253868
+        },
+        "wikinews2014": {
+          "der_registered": 0.456906923329323,
+          "der_canonical": 0.3375806628021437,
+          "macro_f1": 0.6458406411544685
+        },
+        "wikinews2024": {
+          "der_registered": 0.5612283345892992,
+          "der_canonical": 0.5180859080633007,
+          "macro_f1": 0.6181398556303846
+        },
+        "EXT_MEAN_der_registered": 0.3939545840668756
+      },
+      "35000": {
+        "fadel_test": {
+          "der_registered": 0.3004924139474652,
+          "der_canonical": 0.18678156325440853,
+          "macro_f1": 0.7550334047683394
+        },
+        "sadeed25": {
+          "der_registered": 0.4078743431746872,
+          "der_canonical": 0.26649151324991494,
+          "macro_f1": 0.703452555229111
+        },
+        "wikinews2014": {
+          "der_registered": 0.4429071420759051,
+          "der_canonical": 0.31647161763097453,
+          "macro_f1": 0.7007688239115731
+        },
+        "wikinews2024": {
+          "der_registered": 0.5424830444611907,
+          "der_canonical": 0.4979276563677468,
+          "macro_f1": 0.6578004682048965
+        },
+        "EXT_MEAN_der_registered": 0.3837579663993525
+      },
+      "40000": {
+        "fadel_test": {
+          "der_registered": 0.29739883930998096,
+          "der_canonical": 0.17609394234919823,
+          "macro_f1": 0.750275230446115
+        },
+        "sadeed25": {
+          "der_registered": 0.4001436510036669,
+          "der_canonical": 0.24995274638037274,
+          "macro_f1": 0.7073821480606701
+        },
+        "wikinews2014": {
+          "der_registered": 0.44033686973641034,
+          "der_canonical": 0.3047686754894455,
+          "macro_f1": 0.6824638587577738
+        },
+        "wikinews2024": {
+          "der_registered": 0.5447437829691032,
+          "der_canonical": 0.49660889223813115,
+          "macro_f1": 0.6464282048393137
+        },
+        "EXT_MEAN_der_registered": 0.379293120016686
+      },
+      "45000": {
+        "fadel_test": {
+          "der_registered": 0.3147532334649635,
+          "der_canonical": 0.19694159778733472,
+          "macro_f1": 0.7521798082240436
+        },
+        "sadeed25": {
+          "der_registered": 0.4167769251124636,
+          "der_canonical": 0.2713491853475976,
+          "macro_f1": 0.7053708847703093
+        },
+        "wikinews2014": {
+          "der_registered": 0.450563272448868,
+          "der_canonical": 0.31718254402274965,
+          "macro_f1": 0.6941294810117543
+        },
+        "wikinews2024": {
+          "der_registered": 0.5479464958553127,
+          "der_canonical": 0.49547852298417483,
+          "macro_f1": 0.6614526501503252
+        },
+        "EXT_MEAN_der_registered": 0.39403114367543174
+      },
+      "50000": {
+        "fadel_test": {
+          "der_registered": 0.30763081743912774,
+          "der_canonical": 0.1905546051895314,
+          "macro_f1": 0.7315964499248143
+        },
+        "sadeed25": {
+          "der_registered": 0.415699542584962,
+          "der_canonical": 0.2705553245378596,
+          "macro_f1": 0.6882372160403903
+        },
+        "wikinews2014": {
+          "der_registered": 0.4586022093404791,
+          "der_canonical": 0.3281198731269824,
+          "macro_f1": 0.6692232296763859
+        },
+        "wikinews2024": {
+          "der_registered": 0.5500188394875659,
+          "der_canonical": 0.5037678975131876,
+          "macro_f1": 0.6267285575671165
+        },
+        "EXT_MEAN_der_registered": 0.39397752312152295
+      },
+      "55000": {
+        "fadel_test": {
+          "der_registered": 0.3216278437704839,
+          "der_canonical": 0.20860445410797934,
+          "macro_f1": 0.71379201981239
+        },
+        "sadeed25": {
+          "der_registered": 0.42530147809322194,
+          "der_canonical": 0.28376743658564246,
+          "macro_f1": 0.6634978062558017
+        },
+        "wikinews2014": {
+          "der_registered": 0.4619927813627912,
+          "der_canonical": 0.3349010171716067,
+          "macro_f1": 0.6688788720727278
+        },
+        "wikinews2024": {
+          "der_registered": 0.5570836473247928,
+          "der_canonical": 0.5122456669178599,
+          "macro_f1": 0.634685874132194
+        },
+        "EXT_MEAN_der_registered": 0.40297403440883234
+      },
+      "60000": {
+        "fadel_test": {
+          "der_registered": 0.30777470463156886,
+          "der_canonical": 0.186669650993621,
+          "macro_f1": 0.7515929842850456
+        },
+        "sadeed25": {
+          "der_registered": 0.42040600309983744,
+          "der_canonical": 0.27278569538426645,
+          "macro_f1": 0.7094833396909471
+        },
+        "wikinews2014": {
+          "der_registered": 0.44908673301979657,
+          "der_canonical": 0.3189325166794269,
+          "macro_f1": 0.6914104671644357
+        },
+        "wikinews2024": {
+          "der_registered": 0.5541635267520724,
+          "der_canonical": 0.49952901281085155,
+          "macro_f1": 0.6698532659604555
+        },
+        "EXT_MEAN_der_registered": 0.392422480250401
+      }
+    }
+  },
+  "e69_c4_ctx256": {
+    "steps": [
+      5000,
+      10000,
+      15000,
+      20000,
+      25000,
+      30000,
+      35000,
+      40000,
+      45000,
+      50000,
+      55000,
+      60000
+    ],
+    "rows": {
+      "5000": {
+        "fadel_test": {
+          "der_registered": 0.3249532366624566,
+          "der_canonical": 0.2102671505539657,
+          "macro_f1": 0.6983754647654208
+        },
+        "sadeed25": {
+          "der_registered": 0.431482251540468,
+          "der_canonical": 0.29287793444977883,
+          "macro_f1": 0.6534912476237043
+        },
+        "wikinews2014": {
+          "der_registered": 0.47473476976922235,
+          "der_canonical": 0.35272886361150607,
+          "macro_f1": 0.6456556564240971
+        },
+        "wikinews2024": {
+          "der_registered": 0.5589675960813866,
+          "der_canonical": 0.5142238131122834,
+          "macro_f1": 0.6375070781640622
+        },
+        "EXT_MEAN_der_registered": 0.41039008599071564
+      },
+      "10000": {
+        "fadel_test": {
+          "der_registered": 0.30740699291755264,
+          "der_canonical": 0.19132999728213082,
+          "macro_f1": 0.7264701514512567
+        },
+        "sadeed25": {
+          "der_registered": 0.41859146410615056,
+          "der_canonical": 0.27883415869655614,
+          "macro_f1": 0.6641680362022149
+        },
+        "wikinews2014": {
+          "der_registered": 0.45964125560538116,
+          "der_canonical": 0.33572131685442413,
+          "macro_f1": 0.6618971557462368
+        },
+        "wikinews2024": {
+          "der_registered": 0.5605689525244913,
+          "der_canonical": 0.515542577241899,
+          "macro_f1": 0.6168820492515986
+        },
+        "EXT_MEAN_der_registered": 0.3952132375430281
+      },
+      "15000": {
+        "fadel_test": {
+          "der_registered": 0.32663991430718314,
+          "der_canonical": 0.21575085133255528,
+          "macro_f1": 0.6657353494168431
+        },
+        "sadeed25": {
+          "der_registered": 0.430877405209239,
+          "der_canonical": 0.2973575775904434,
+          "macro_f1": 0.627343263969831
+        },
+        "wikinews2014": {
+          "der_registered": 0.46975828502679645,
+          "der_canonical": 0.35289292354806956,
+          "macro_f1": 0.6220893479467877
+        },
+        "wikinews2024": {
+          "der_registered": 0.5687641296156745,
+          "der_canonical": 0.526846269781462,
+          "macro_f1": 0.5861858724245333
+        },
+        "EXT_MEAN_der_registered": 0.4090918681810729
+      },
+      "20000": {
+        "fadel_test": {
+          "der_registered": 0.3151289389118931,
+          "der_canonical": 0.20182576859741963,
+          "macro_f1": 0.6965688243017466
+        },
+        "sadeed25": {
+          "der_registered": 0.4255849998109855,
+          "der_canonical": 0.2899293085850376,
+          "macro_f1": 0.6488083503412896
+        },
+        "wikinews2014": {
+          "der_registered": 0.46658645958656897,
+          "der_canonical": 0.3515257574100405,
+          "macro_f1": 0.6247090374721328
+        },
+        "wikinews2024": {
+          "der_registered": 0.5692351168048229,
+          "der_canonical": 0.5245855312735493,
+          "macro_f1": 0.5923695960577209
+        },
+        "EXT_MEAN_der_registered": 0.40243346610314923
+      },
+      "25000": {
+        "fadel_test": {
+          "der_registered": 0.308949783369838,
+          "der_canonical": 0.19336839917504675,
+          "macro_f1": 0.7329616602893833
+        },
+        "sadeed25": {
+          "der_registered": 0.41469776584886403,
+          "der_canonical": 0.27805919933466905,
+          "macro_f1": 0.6990951382946722
+        },
+        "wikinews2014": {
+          "der_registered": 0.4612818549710161,
+          "der_canonical": 0.3415727879251887,
+          "macro_f1": 0.669140789810129
+        },
+        "wikinews2024": {
+          "der_registered": 0.5589675960813866,
+          "der_canonical": 0.5148831951770911,
+          "macro_f1": 0.6299598037713324
+        },
+        "EXT_MEAN_der_registered": 0.3949764680632393
+      },
+      "30000": {
+        "fadel_test": {
+          "der_registered": 0.30834225966841994,
+          "der_canonical": 0.1919295272506355,
+          "macro_f1": 0.7217517058634307
+        },
+        "sadeed25": {
+          "der_registered": 0.41936642346803765,
+          "der_canonical": 0.2797036252976978,
+          "macro_f1": 0.6706035947763903
+        },
+        "wikinews2014": {
+          "der_registered": 0.4541725910532648,
+          "der_canonical": 0.33326041780597176,
+          "macro_f1": 0.6396293928260938
+        },
+        "wikinews2024": {
+          "der_registered": 0.5590617935192163,
+          "der_canonical": 0.5171439336850038,
+          "macro_f1": 0.6068007167109286
+        },
+        "EXT_MEAN_der_registered": 0.3939604247299075
+      },
+      "35000": {
+        "fadel_test": {
+          "der_registered": 0.3020991542630578,
+          "der_canonical": 0.18654974499992005,
+          "macro_f1": 0.7497381930015362
+        },
+        "sadeed25": {
+          "der_registered": 0.41328015726004613,
+          "der_canonical": 0.2749404604392697,
+          "macro_f1": 0.7009303309892655
+        },
+        "wikinews2014": {
+          "der_registered": 0.45012577928469866,
+          "der_canonical": 0.32986984578365963,
+          "macro_f1": 0.6625472741971379
+        },
+        "wikinews2024": {
+          "der_registered": 0.5555764883195177,
+          "der_canonical": 0.5139412207987942,
+          "macro_f1": 0.628545765600889
+        },
+        "EXT_MEAN_der_registered": 0.3885016969359342
+      },
+      "40000": {
+        "fadel_test": {
+          "der_registered": 0.3104366176917297,
+          "der_canonical": 0.19570256918575837,
+          "macro_f1": 0.7375579494471661
+        },
+        "sadeed25": {
+          "der_registered": 0.41539711941934754,
+          "der_canonical": 0.27605564586247305,
+          "macro_f1": 0.6930862017113338
+        },
+        "wikinews2014": {
+          "der_registered": 0.45712566991140763,
+          "der_canonical": 0.3340260308432681,
+          "macro_f1": 0.6670737053442872
+        },
+        "wikinews2024": {
+          "der_registered": 0.5556706857573473,
+          "der_canonical": 0.5150715900527506,
+          "macro_f1": 0.6298444481809291
+        },
+        "EXT_MEAN_der_registered": 0.3943198023408283
+      },
+      "45000": {
+        "fadel_test": {
+          "der_registered": 0.3141217285648052,
+          "der_canonical": 0.19889206861820333,
+          "macro_f1": 0.7313202247055203
+        },
+        "sadeed25": {
+          "der_registered": 0.4238082637130004,
+          "der_canonical": 0.28475031187388955,
+          "macro_f1": 0.6968607608684267
+        },
+        "wikinews2014": {
+          "der_registered": 0.46418024718363776,
+          "der_canonical": 0.34250246089904846,
+          "macro_f1": 0.6604131233603721
+        },
+        "wikinews2024": {
+          "der_registered": 0.5592501883948756,
+          "der_canonical": 0.5135644310474755,
+          "macro_f1": 0.6114073693007056
+        },
+        "EXT_MEAN_der_registered": 0.40070341315381447
+      },
+      "50000": {
+        "fadel_test": {
+          "der_registered": 0.32026091544229324,
+          "der_canonical": 0.21075476826168285,
+          "macro_f1": 0.7180630704414234
+        },
+        "sadeed25": {
+          "der_registered": 0.42719162287831247,
+          "der_canonical": 0.2927267228669716,
+          "macro_f1": 0.6649390998708449
+        },
+        "wikinews2014": {
+          "der_registered": 0.47101607787378325,
+          "der_canonical": 0.35190856392868863,
+          "macro_f1": 0.6550753867081561
+        },
+        "wikinews2024": {
+          "der_registered": 0.5605689525244913,
+          "der_canonical": 0.520723436322532,
+          "macro_f1": 0.6125971011538732
+        },
+        "EXT_MEAN_der_registered": 0.40615620539812963
+      },
+      "55000": {
+        "fadel_test": {
+          "der_registered": 0.30858207165582185,
+          "der_canonical": 0.1946553901741035,
+          "macro_f1": 0.7537556603228314
+        },
+        "sadeed25": {
+          "der_registered": 0.41870487279325597,
+          "der_canonical": 0.2797225267455487,
+          "macro_f1": 0.6754806359651887
+        },
+        "wikinews2014": {
+          "der_registered": 0.45493820409056107,
+          "der_canonical": 0.3364322432461993,
+          "macro_f1": 0.6593800305701022
+        },
+        "wikinews2024": {
+          "der_registered": 0.5557648831951771,
+          "der_canonical": 0.5098907309721176,
+          "macro_f1": 0.6174119901808027
+        },
+        "EXT_MEAN_der_registered": 0.394075049513213
+      },
+      "60000": {
+        "fadel_test": {
+          "der_registered": 0.30841420326464053,
+          "der_canonical": 0.19231322643047852,
+          "macro_f1": 0.7408603596989888
+        },
+        "sadeed25": {
+          "der_registered": 0.41157902695346466,
+          "der_canonical": 0.2695346463539107,
+          "macro_f1": 0.7055253448390879
+        },
+        "wikinews2014": {
+          "der_registered": 0.44170403587443946,
+          "der_canonical": 0.3154325713660724,
+          "macro_f1": 0.6854332873540383
+        },
+        "wikinews2024": {
+          "der_registered": 0.546345139412208,
+          "der_canonical": 0.5021665410700829,
+          "macro_f1": 0.6539931653017143
+        },
+        "EXT_MEAN_der_registered": 0.38723242203084823
+      }
+    }
+  }
+}

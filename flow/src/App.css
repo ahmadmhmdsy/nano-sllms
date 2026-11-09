@@ -1,0 +1,523 @@
+.app-root {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* Header toolbar (Task 9 File Open/Save; Run/Validate land in Task 10). */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-bottom: 1px solid #ccc;
+  background: #fafafa;
+}
+
+.toolbar-title {
+  font-weight: 600;
+}
+
+/* Task M6.3: palette/inspector overlay toggles. display:none at >=1200px
+ * (the panels are flex columns there); the media query below reveals them
+ * once the panels become overlays. */
+.toolbar-panel-toggle {
+  display: none;
+}
+
+/* Task M2.2 node search box (magnifying glass + filter input). */
+.toolbar-search {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 2px 6px;
+  background: #fff;
+  color: #888;
+}
+
+.toolbar-search input {
+  border: 0;
+  outline: none;
+  font: inherit;
+  width: 130px;
+  background: transparent;
+  color: #333;
+}
+
+/* Editor mode switch (F2 Task 5): Pipeline | Model tabs. */
+.mode-switch {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid #ccc;
+  background: #fafafa;
+}
+
+.mode-tab {
+  padding: 6px 16px;
+  border: none;
+  border-right: 1px solid #ccc;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+}
+
+.mode-tab-active {
+  background: #e8eef7;
+  font-weight: 600;
+}
+
+.shell {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+/* File modals (Open picker / Save name prompt). */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.modal {
+  position: fixed;
+  left: 50%;
+  top: 18%;
+  transform: translateX(-50%);
+  width: 300px;
+  background: #fff;
+  border: 1px solid #999;
+  border-radius: 6px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+  padding: 10px;
+}
+
+.modal-title {
+  margin: 0 0 6px;
+  font-weight: 600;
+}
+
+.modal input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 5px 7px;
+  font: inherit;
+}
+
+.modal-list {
+  list-style: none;
+  margin: 6px 0;
+  padding: 0;
+  max-height: 240px;
+  overflow: auto;
+}
+
+.modal-list button {
+  display: block;
+  width: 100%;
+  border: 0;
+  background: none;
+  text-align: left;
+  padding: 5px 7px;
+  font: inherit;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.modal-list button:hover {
+  background: #e6eefb;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.modal-note {
+  color: #999;
+  font-size: 12px;
+}
+
+.palette {
+  width: 220px;
+  min-width: 32px;
+  border-right: 1px solid #ccc;
+  padding: 8px;
+}
+
+.palette-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.palette-card {
+  border: 1px solid #999;
+  border-radius: 4px;
+  padding: 6px;
+  background: #f6f6f6;
+  cursor: grab;
+}
+
+.canvas {
+  flex: 1;
+  position: relative;
+}
+
+/* Minimap panel (Task M2.1): light theme matching the toolbar. */
+.minimap {
+  background: #fafafa;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* Node search (Task M2.2): the classes land on the React Flow node
+ * wrapper (node.className), so the glow/dim paints around the whole
+ * node. Highlight = glowing border; dim = reduced opacity. */
+.react-flow__node.node-highlight {
+  z-index: 5;
+  box-shadow: 0 0 0 2px #369, 0 0 14px 4px rgba(51, 102, 153, 0.55);
+  transition: box-shadow 0.15s ease;
+}
+
+.react-flow__node.node-dim {
+  opacity: 0.35;
+  transition: opacity 0.15s ease;
+}
+
+.palette-status {
+  font-size: 11px;
+  color: #666;
+}
+
+.palette-error {
+  color: #b30;
+}
+
+/* Right-click / add-node menu anchored at the mouse position. */
+.add-menu-wrap {
+  position: absolute;
+  /* Above the M6.3 palette/inspector overlays (z-index 25) so a menu
+   * opened near a right-edge overlay is not painted underneath it. */
+  z-index: 26;
+}
+
+.add-menu {
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: 1px solid #999;
+  border-radius: 6px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+  min-width: 170px;
+  padding: 2px;
+}
+
+.add-menu-btn,
+.add-menu button {
+  border: 0;
+  background: none;
+  text-align: left;
+  padding: 5px 9px;
+  font: inherit;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.add-menu button:hover,
+.add-menu button.active {
+  background: #e6eefb;
+}
+
+.add-menu-search {
+  border-top: 1px solid #ddd;
+  margin-top: 2px;
+  color: #456;
+}
+
+.search-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.search-modal {
+  position: fixed;
+  left: 50%;
+  top: 18%;
+  transform: translateX(-50%);
+  width: 260px;
+  background: #fff;
+  border: 1px solid #999;
+  border-radius: 6px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+  padding: 6px;
+}
+
+.search-modal input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 5px 7px;
+  font: inherit;
+}
+
+.search-list {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+  max-height: 220px;
+  overflow: auto;
+}
+
+.search-list button {
+  display: block;
+  width: 100%;
+  border: 0;
+  background: none;
+  text-align: left;
+  padding: 5px 7px;
+  font: inherit;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.search-list button.active,
+.search-list button:hover {
+  background: #e6eefb;
+}
+
+.search-empty {
+  color: #999;
+  padding: 5px 7px;
+}
+
+.toast {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  z-index: 40;
+  background: #c62828;
+  color: #fff;
+  padding: 7px 11px;
+  border-radius: 5px;
+  font-size: 12px;
+  max-width: 360px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+.inspector {
+  width: 280px;
+  border-left: 1px solid #ccc;
+  padding: 8px;
+}
+
+.inspector-tabs {
+  display: flex;
+  gap: 4px;
+}
+
+.inspector-panel {
+  margin-top: 8px;
+}
+
+/* Inspector properties tab widgets (Task 9). */
+.inspector-empty {
+  color: #666;
+  font-size: 13px;
+}
+
+.prop-kind {
+  font-size: 12px;
+  color: #555;
+  margin: 0 0 6px;
+}
+
+.prop-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 8px;
+  font-size: 13px;
+}
+
+.prop-row input,
+.prop-row select {
+  font: inherit;
+  padding: 4px 6px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.advanced-props textarea {
+  width: 100%;
+  box-sizing: border-box;
+  font: 12px/1.4 monospace;
+}
+
+.honesty-label {
+  font-size: 11px;
+  color: #8a6d1a;
+  margin: 6px 0;
+}
+
+/* Run log tab. */
+.run-state {
+  font-size: 12px;
+  margin: 0 0 6px;
+}
+
+.run-state-error {
+  color: #b30;
+}
+
+.run-tail {
+  height: 180px;
+  overflow: auto;
+  background: #14171c;
+  color: #d6e2f0;
+  font-size: 12px;
+  line-height: 1.4;
+  padding: 8px;
+  margin: 0;
+  border-radius: 4px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* Toolbar Save in-flight state (Task 10 carry-over fix a). */
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Run log Stop button + Preview summary card (Task 10). */
+.run-stop {
+  align-self: flex-start;
+  margin: 0 0 6px;
+}
+
+/* Task M2.5 loading spinner: pure CSS rotation (no JS timers), drawn
+ * with currentColor so it inherits the surface text color - muted in
+ * the toolbar, light-on-dark inside the run log. */
+.spinner {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  box-sizing: border-box;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spinner-rotate 0.8s linear infinite;
+  vertical-align: -2px;
+}
+
+/* Toolbar buttons / Save modal submit: small gap before the label. */
+.spinner-btn {
+  margin-right: 4px;
+}
+
+/* Run log: sits on its own line between the state line and the tail
+ * while the first output line is still pending. */
+.run-log-spinner {
+  display: block;
+  margin: 2px 0 6px;
+}
+
+@keyframes spinner-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.preview-summary {
+  font-size: 12px;
+}
+
+.preview-label {
+  font-weight: 600;
+  margin: 0 0 4px;
+}
+
+.preview-meta {
+  margin: 0 0 6px;
+}
+
+.preview-section {
+  font-weight: 600;
+  margin: 8px 0 2px;
+}
+
+.preview-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.preview-one-liner {
+  padding: 1px 0;
+  word-break: break-word;
+}
+
+/* Task M6.3 responsive layout. Below 1200px the palette and inspector
+ * leave the flex row and become toggleable overlays over the canvas.
+ * The store collapse flags double as the overlay open/closed state:
+ * collapsed = display:none, expanded = the panel covers the canvas edge.
+ * The overlays are absolutely positioned inside .shell (which becomes a
+ * positioning context) so they track the canvas area exactly — including
+ * when the toolbar wraps to two rows below 768px. The in-panel «/»
+ * buttons and the toolbar .toolbar-panel-toggle buttons share the same
+ * flags, so both open paths stay in sync. */
+@media (max-width: 1200px) {
+  .shell {
+    position: relative;
+  }
+
+  .palette {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 25;
+    display: none;
+    background: #fff;
+    box-shadow: 2px 0 12px rgba(0, 0, 0, 0.18);
+    overflow-y: auto;
+  }
+
+  .palette:not(.palette-collapsed) {
+    display: block;
+  }
+
+  .inspector {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    z-index: 25;
+    display: none;
+    background: #fff;
+    box-shadow: -2px 0 12px rgba(0, 0, 0, 0.18);
+    overflow-y: auto;
+  }
+
+  .inspector:not(.inspector-collapsed) {
+    display: block;
+  }
+
+  .toolbar-panel-toggle {
+    display: inline-block;
+  }
+}
+
+/* Task M6.3: below 768px the toolbar wraps to two rows. */
+@media (max-width: 768px) {
+  .toolbar {
+    flex-wrap: wrap;
+    row-gap: 4px;
+  }
+}

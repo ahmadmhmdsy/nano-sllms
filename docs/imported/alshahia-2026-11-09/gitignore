@@ -1,0 +1,243 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+*.log.bak
+
+# Secrets (never commit real keys)
+.env
+
+# DA-line (langid, TASKS rows 81+): code/tests/docs committed; train data and
+# run artifacts stay local (regenerable from the Tatoeba export)
+langid/vendor/
+data/langid/
+runs/langid*/
+
+# Raw JSONL is regenerable via scripts/prepare_data.py (keep packed .bin)
+data/*/raw/
+# Byte-level corpus for the E-117 glm arm (regenerable from data/target/tokens
+# via scripts/target_bytes.py; ~326 MB, never commit)
+data/*/bytes/
+# nested corpus raw dir (h2_copy) - data/*/raw/ is one segment deep only
+data/sft/h2_copy/raw/
+# nested corpus raw dir (h2p2_mixed): QA slices + build_meta (regenerable via
+# scripts/h2p2_build_corpus.py; pairs.jsonl + validate_meta.json stay tracked)
+data/sft/h2p2_mixed/raw/
+
+# Checkpoint optimizer states exceed GitHub LFS free quota (~1 GB):
+# full resume state stays local; pushed checkpoints carry model + trainer state.
+optimizer.pt
+
+# Smoke drill checkpoints (disposable; smoke/final is tracked)
+runs/smoke/checkpoint-*/
+
+# Pilot checkpoints other than the handoff resume point
+runs/pilot/checkpoint-*
+!runs/pilot/checkpoint-1000/
+runs/pilot/checkpoint-1500/
+runs/pilot/checkpoint-2000/
+runs/pilot/checkpoint-2500/
+runs/pilot/checkpoint-3000/
+
+# Target run (M3): weights stay local by decision — the ~900 MB M3 model does
+# not fit free LFS (~790 MB of 1 GB used). Metrics, logs, and small final-dir
+# files stay tracked.
+runs/target/checkpoint-*/
+runs/target/final/model.safetensors
+runs/target/*.log
+
+# SFT run (C12 Tier 1): weights stay LOCAL — same LFS decision as M3 (~906 MB
+# fp32 model does not fit the free LFS quota). Summaries, reports, tokenizer
+# files and tfevents stay tracked. Covers the archived pilot dir too (sft_t1_pilot).
+runs/sft_t1*/checkpoint-*/
+runs/sft_t1*/final/model.safetensors
+runs/sft_t1*/*.log
+
+# C12 Tier 2 teacher (Qwen3.5-0.8B judge, ~1.8 GB): local-only like the ladder
+# weights (LFS quota) - never commit data/teacher/.
+data/teacher/
+
+# Machine-move checkpoint zips the user stages here between machines (2.7 GB
+# archives; weights stay local per the LFS decision, HANDOFF section 7)
+checkpoint_backup/
+
+# D-line (diacritization specialist, TASKS rows 50-55, submodule diacritizer/):
+# code + configs + docs ARE committed; data/runs artifacts stay local.
+# corpora regenerable: download_data.py + prepare_data.py (seed 20260911).
+data/diac/raw/
+data/diac/prepared/
+data/diac/smoke/
+runs/diac/
+# Milestone B A/B arms (8-bit Adam study): weights stay local - same LFS
+# decision as target/sft (384 MB fp32 per ckpt x4 would blow the ~1 GB quota).
+# Metrics, logs, trainer_state and tfevents stay tracked. optimizer.pt is
+# globally ignored above.
+runs/pilot-ab-base/checkpoint-*/
+runs/pilot-ab-base/final/model.safetensors
+runs/pilot-b8/checkpoint-*/
+runs/pilot-b8/final/model.safetensors
+runs/pilot-b8-r2x16/checkpoint-*/
+runs/pilot-b8-r2x16/final/model.safetensors
+runs/sft_v2*/checkpoint-*/
+runs/sft_v2*/final/model.safetensors
+runs/kd-s-*/checkpoint-*/
+runs/kd-s-*/final/model.safetensors
+
+# Track C T->P KD arms (TASKS row 31): weights stay local (same LFS decision
+# as kd-s: ~906 MB fp32 x3 would blow the quota); checkpoints + root-level
+# run logs stay local. Summaries, tfevents and eval_curves.json stay tracked.
+runs/kd-t2p-*/checkpoint-*/
+runs/kd-t2p-*/final/model.safetensors
+runs/kd-t2p-*.log
+
+# Web UI gate-run pilots (U10/U11): weights stay local like sft_t1/sft_v2 -
+# only summaries, chain json, tokenizer files and tfevents stay tracked.
+runs/sft_u1*/checkpoint-*/
+runs/sft_u1*/final/model.safetensors
+runs/h2_copy_lora*/checkpoint-*/
+runs/h2_copy_lora*/final/model.safetensors
+runs/h2p2_mixed_lora*/checkpoint-*/
+runs/h2p2_mixed_lora*/final/model.safetensors
+runs/sft_u1*/*.log
+
+# Web UI transient launch state (pid etc.) - never meaningful in git
+webui/job_state.json
+
+# Track H agent-memory store (regenerable experiment state; the eval report
+# and transcripts under runs/agent_memory_h/ stay tracked)
+data/agent_memory/
+
+# Track B YaRN ctx-4096 fine-tune (TASKS row 30): weights stay local (same
+# LFS decision as target/sft_v2 - 906 MB fp32). Checkpoints + run logs stay
+# local; final-dir metrics, gates/*.json probe reports and tfevents tracked.
+runs/yarn_4096/checkpoint-*/
+runs/yarn_4096/final/model.safetensors
+runs/yarn_4096/*.log
+runs/yarn_4096_train_*.log
+
+# Row 41 LoRA-SFT on the YaRN base (weights local; adapter checkpoints are
+# re-derivable from the merged final + base): same policy as yarn_4096.
+runs/yarn_lora_sft_v1/checkpoint-*/
+runs/yarn_lora_sft_v1/final/model.safetensors
+runs/yarn_lora_sft_v1/final_a60/model.safetensors
+runs/yarn_lora_sft_v1/*.log
+runs/yarn_lora_sft_v1_train_*.log
+
+# Soup P0 merged weights (eval-only scratch; reports under runs/soup_p0/reports/
+# stay tracked as evidence)
+runs/soup_p0/alpha*/model.safetensors
+
+# KT ladder (KT-1 A/B + KT-2 judge rounds/r2/r2b, TASKS rows 43/44/56): weights
+# stay LOCAL (same LFS decision as target/sft_v2 - 864 MB fp16 x many arms);
+# optimizer.pt is globally ignored above. Reports, gates, trainer_state,
+# tfevents and the irreproducible judge sample/verdict artifacts stay tracked.
+data/kt/
+runs/kt_ab_control/checkpoint-*/
+runs/kt_ab_control/final/model.safetensors
+runs/kt_ab_control/*.log
+runs/kt_ab_transplant/checkpoint-*/
+runs/kt_ab_transplant/final/model.safetensors
+runs/kt_ab_transplant/*.log
+runs/kt2_sft*/checkpoint-*/
+runs/kt2_sft*/final/model.safetensors
+runs/kt2_sft*/*.log
+
+data/mex/
+
+# === 2026-09-22 push-quota incident: big artifacts stay local (HANDOFF/MEMORY 2026-09-22) ===
+# D-line (diacritizer): data artifacts local; regenerable from data/diac/raw
+data/diac/
+# mu-line weights and caches
+runs/mex/**/*.safetensors
+runs/mex/**/*.pt
+runs/mex/**/*.npy
+# E19 model weights + eval cache (model cards/code/evidence .txt stay tracked)
+models/e19/mishkala/mishkala.pt
+models/e19/tashkeel-350m-v2/model.safetensors
+models/e19/our_word_cache.json
+# GDN smoke/selftest weights
+runs/gdn_smoke/final/model.safetensors
+runs/gdn_smoke_ab/final/model.safetensors
+data/gdn_selftest/
+# regenerable raw downloads
+data/md_measure/*/raw/
+# Laya-line: weights/checkpoints stay local (regenerable; ~400 MB fp32)
+runs/laya/**/*.pt
+data/laya/
+
+# U-line U-1 (runs/u1_full): weights stay local per the LFS decision (60 MB fp16 final + optimizer.pt);
+# train_summary, tokenizer files and tfevents stay tracked like the other run arms.
+runs/u1_full/checkpoint-*/
+runs/u1_full/final/model.safetensors
+runs/u1_full/*.log
+runs/u1_smoke/checkpoint-*/
+runs/u1_smoke/final/model.safetensors
+# scratch benches and LLM-authoring scripts are NOT durable (AGENTS.md scratch/ rule)
+scratch/
+
+# OCR line (arabic_ocr/): the Stage 0 recognizers are downloaded weights that stay
+# local per the same LFS decision (49 MB of Paddle inference pairs, regenerable via
+# arabic_ocr/scripts/dl_stage0_models.py). Code, results and reports stay tracked.
+arabic_ocr/models/
+
+# OCR run artifacts: weights, optimizer states and rendered pages/crops stay LOCAL
+# (AGENTS.md §5 local-weights policy). Textual evidence (json/jsonl/log/md/yaml)
+# stays tracked. Never `git add runs/stage*` wholesale - it holds ~9 GB.
+runs/stage*/**/*.pt
+runs/stage*/**/*.pdparams
+runs/stage*/**/*.pdopt
+runs/stage*/**/*.states
+runs/stage*/**/*.png
+runs/stage*/**/*.jpg
+runs/ocr_bakeoff/**/*.png
+runs/trocr_*/**/*.safetensors
+# the verbatim per-file label copies behind data/ocr_textpool/texts.jsonl (the
+# distilled texts.jsonl IS committed; this raw/ dir is a 47 MB duplicate)
+data/ocr_textpool/raw/
+
+# OCR line-image corpora: label manifests are tracked, images are NOT
+# (TASKS 136 option (a) - images come from KHATT/Muharaf/reallines sources;
+#  the transcripts below make every OCR eval re-scorable from a fresh clone)
+data/hflines/**/*.png
+data/hflines/**/*.jpg
+data/hflines/**/*.tif
+data/benchmark/**/*.png
+data/benchmark/**/*.jpg
+data/benchmark/**/*.tif
+data/reallines/**/*.png
+data/reallines/**/*.jpg
+data/reallines/**/*.tif
+
+# OCR line: training checkpoints stay local (weights are never committed)
+arabic_ocr/runs/stage*/*.pt
+
+# OCR Stage 4: cached fp16 logits are regenerable (~360 MB per model at h96, ~480 MB at h128) and must never be committed
+arabic_ocr/runs/stage*/logits/
+arabic_ocr/runs/stage05e/nbest/
+
+# probe checkpoints are weights (local-only policy) - the decoded evidence beside them is tracked
+arabic_ocr/runs/stage*/probe/*.pt
+.claude/handoffs/
+
+# SA-2 downloaded datasets (local only)
+data/hf/sa2/
+data/sa2/
+
+# Local-only artifacts (user decision 2026-11-09): data, run outputs, weights,
+# checkpoints, raw eval samples and logs are never pushed — only code/docs.
+# Files under these paths that are already tracked stay tracked.
+data/
+runs/
+models/
+ui/data/
+research/raw/
+arabic_ocr/runs/
+scratch/
+*.safetensors
+*.pt
+*.pth
+*.ckpt
+*.npz
+*.parquet
+*.arrow
+/*.log

@@ -1,0 +1,22 @@
+# Laya-line L1 smoke: MiniLM-L12-H384 + Laya decision head, soft-CE only.
+# Pre-registration: research/EXPERIMENTS.md E-62 (2026-09-22, user-approved).
+# Recipe = published typed-decisions notebook parity (4 epochs, eff batch 64).
+encoder: microsoft/MiniLM-L12-H384-uncased
+max_len: 512
+head_max_len: 192
+option_token_max: 48
+head_layers: 2
+dropout: 0.1
+data_train: data/laya/typed_decisions/train.pt
+data_test: data/laya/typed_decisions/test.pt
+out_dir: runs/laya/l1
+seed: 42
+epochs: 4
+micro_batch: 8
+grad_accum: 8
+lr_encoder: 2.5e-5
+lr_head: 1.0e-4
+weight_decay: 0.01
+clip: 1.0
+amp: fp16
+save_every_steps: 100

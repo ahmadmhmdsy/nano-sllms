@@ -1,0 +1,30 @@
+# Mounting experiment (TASKS row 49) - arm "gate": frozen-teacher
+# cross-attention bridges on every student layer; bridge strength runs
+# 0->1 over warmup, holds, then anneals to 0 by anneal_end (src/mount.py
+# gate_strength; pure step function, resume-pure). Teacher signal skipped
+# entirely whenever strength <= 0 (exact plain CE path).
+# Template: .superpowers/sdd/mounting/task-5-brief.md Step 5.1. DRILL copy for the Step 5.5 kill/resume drill; delete after the drill PASS record.
+name: mount-gate-drill
+
+tokenizer: {name: codellama/CodeLlama-7b-hf, vocab_size: 32768}
+
+model: {layers: 12, hidden: 768, heads: 12, kv_heads: 4, ffn: 2048, ctx: 512, dropout: 0.0, tie_embeddings: true}
+
+data: {tokens_dir: data/pilot/tokens}
+
+mount:
+  # SmolLM2-135M HF snapshot pin (frozen teacher; weights never trained).
+  teacher_path: C:/Users/AhmadMhmoud/.cache/huggingface/hub/models--HuggingFaceTB--SmolLM2-135M/snapshots/93efa2f097d58c2a74874c7e644dbc9b0cee75a2
+  teacher_stream: data/pilot/tokens_teacher_smol135
+  mode: gate
+  teacher_hidden: 576
+  teacher_layers: 30
+  # Schema-completeness key only: attach_mounts derives bridge heads as
+  # hidden//128 = 6 at hidden 768; deliberately NOT plumbed (Task 3 review M1).
+  heads_bridge: 6
+  # Task 3 review I1: EVERY mount config carries mount.gate.
+  gate: {warmup: 150, hold: 300, anneal_end: 900}
+  cliff_delta: 0.15
+  recovery_steps: 150
+
+train: {output_dir: runs/mount_gate_drill, final_dir: runs/mount_gate_drill/final, max_steps: 150, batch: 1, accum: 32, lr: 4.0e-4, warmup_steps: 150, logging_steps: 25, eval_steps: 50, save_steps: 50, save_total_limit: 3, fp16: true, grad_ckpt: true, optim: adamw_bnb_8bit, seed: 42}

@@ -1,0 +1,43 @@
+name: hflines_v3
+model:
+  type: vit_decoder
+  patch_size: 16
+  image_height: 64
+  image_width: 1024
+  vit_layers: 6
+  vit_hidden: 384
+  vit_heads: 6
+  vit_ffn: 1536
+  decoder_layers: 6
+  decoder_hidden: 384
+  decoder_heads: 6
+  vocab_size: 54
+  max_seq_len: 256
+  dropout: 0.1
+  pad_loss_weight: 0.1
+data:
+  train_dir: data/hflines/train
+  val_dir: data/hflines/val
+  batch_size: 24
+  num_workers: 8
+  image_height: 64
+  image_width: 1024
+  augment: true
+  vocab_path: data/focused_vocab.json
+  max_len: 256
+  min_text_len: 2
+  max_text_len: 256
+  keep_aspect: true
+train:
+  model_type: vit_decoder
+  epochs: 50
+  lr: 0.0005
+  weight_decay: 0.01
+  max_grad_norm: 1.0
+  save_dir: runs/hflines_v3
+  log_interval: 50
+  eval_interval: 2
+  eval_generate: false
+eval:
+  batch_size: 24
+  max_new_tokens: 256

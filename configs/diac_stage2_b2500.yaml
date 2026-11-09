@@ -1,0 +1,26 @@
+# E-15 REPRO leg (user authorized 2026-09-14): byte-replay arm B to step 2500.
+# Identical to configs/diac_stage2_b.yaml except phase + total_steps 2500
+# (rotation deleted the live ckpt-2500; fresh deterministic replay restores the
+# gold trajectory 34.1/47.0/57.9/49.6). Same v3 corpus/lr/seed/reset-last-2.
+# The step-2500 gate probe = the bench itself (probe at step == total_steps).
+phase: stage2b2500
+tokens_phase: v3
+pretrained_init: runs/diac/stage1lm/final/model.pt
+reset_last_n_layers: 2
+gate_eval_every: 2500
+model:
+  hidden: 272
+  layers: 28
+  n_heads: 8
+  n_kv: 2
+  ffn: 1088
+  ctx: 128
+lr: 2.0e-4
+weight_decay: 0.1
+batch_size: 32
+accum: 1
+total_steps: 2500
+save_every: 500
+log_every: 100
+eval_every: 500
+early_stop_patience: 8

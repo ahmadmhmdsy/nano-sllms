@@ -1,0 +1,38 @@
+# Stage 2 - PAW detector (plan V2, docs/plans/2026-09-29-arabic-ocr-nano-model.md)
+# Gate: PAW Hmean >= 90% on held-out synthetic pages.
+name: stage2_paw
+data:
+  train_dir: runs/stage2_synth/train
+  val_dir: runs/stage2_synth/val
+  image_height: 720
+  image_width: 960
+  min_side: 6          # PAWs thinner than this are dropped from the target (see paw_targets.py)
+  output_stride: 2   # target maps are area-downsampled to the network's output resolution
+  shrink_ratio: 0.4    # DBNet shrink ratio
+  target_mode: craft
+  craft_k: 0.2
+  craft_kx: 0.15   # anisotropic decode: PAWs are tall (20.4x22.1), not square
+  craft_ky: 0.25   # HANDOFF (k): +12 points free, no retraining
+  batch_size: 8
+  num_workers: 4
+model:
+  type: paw_detector
+  widths: [32, 64, 128, 224]
+  blocks: [1, 1, 2, 1]
+  fpn: 80
+train:
+  epochs: 30            # train H == val H at epoch 5 => underfitting, not overfitting
+  lr: 0.001
+  weight_decay: 0.0001
+  max_grad_norm: 5.0
+  accum: 2
+  pos_weight: 10.0
+  thresh_weight: 0.0   # craft eval never reads the thresh head (HANDOFF (j))
+  amp: true
+  save_dir: runs/stage2_paw_craft3  # r2 gate FAIL 54.89% (2026-10-04 (j)); kept for evidence
+  eval_interval: 1
+  log_interval: 20
+  gate: 90.0
+eval:
+  iou_thr: 0.5
+  min_side: 6

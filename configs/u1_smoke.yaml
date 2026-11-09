@@ -1,0 +1,51 @@
+# U1 smoke: proves chain->tokens->train on the live corpus (150 steps), plus
+name: u1_smoke
+# full U-1 launch (see EXPERIMENTS.md U-1 pre-register).
+
+tokenizer:
+  name: codellama/CodeLlama-7b-hf
+  vocab_size: 32768
+
+model:
+  layers: 4
+  hidden: 256
+  heads: 4
+  kv_heads: 2
+  ffn: 1024
+  ctx: 512
+  dropout: 0.0
+  tie_embeddings: true
+
+data:
+  rows: 8000                      # subset render (config ignored by prepare_u1)
+  val_fraction: 0.005
+  dedupe: false
+  shard_tokens: 2000000
+  raw_dir: data/u1/smoke/raw
+  tokens_dir: data/u1/smoke/tokens
+
+train:
+  output_dir: runs/u1_smoke
+  final_dir: runs/u1_smoke/final
+  max_steps: 150
+  batch: 8
+  eval_batch: 8
+  accum: 4                        # effective 32 (proven milestone-B default shape)
+  lr: 6.0e-4
+  scheduler: cosine
+  warmup_steps: 15
+  weight_decay: 0.1
+  max_grad_norm: 1.0
+  logging_steps: 10
+  eval_steps: 50
+  save_steps: 50
+  save_total_limit: 2
+  fp16: true
+  grad_ckpt: true
+  optim: adamw_bnb_8bit           # the recorded default (Milestone B)
+  dataloader_num_workers: 0
+  seed: 42
+
+eval:
+  max_new_tokens: 96
+  prompts: []                     # chain eval comes from the validator gate (U-1 pre-reg), not text prompts

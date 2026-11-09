@@ -1,0 +1,73 @@
+# SFT run on the minimax3 distillation corpus (Shapes A + C + D only).
+# Shape B uses a separate prep/tokenize config (configs/distill_custom_b.yaml).
+# Created 2026-09-07 alongside the minimax3/distillation_data corpus build.
+# See HANDOFF §6 + research/c12_distillation_plan.md §3 for the rationale.
+
+name: distill_custom
+
+# Strong-to-weak distillation target: T (226M CodeLlama-style, runs/target/final).
+base_model: runs/target/final
+
+tokenizer:
+  name: codellama/CodeLlama-7b-hf
+  vocab_size: 32768
+  # CodeLlama ships no pad token; sft.py sets pad = eos (plan §2 prereq).
+
+# T's trained ctx is 1024 (eval uses it to pack CSN val shards for forgetting guard).
+model:
+  ctx: 1024
+
+data:
+  # Local JSONL pairs (one {instruction, response} per line). aggregate.py
+  # combines shape_a/c/d seeds + batches into combined/all_train.jsonl.
+  dataset: minimax3/data/distillation_data/combined/all_train.jsonl
+  raw_dir: data/distill_custom/raw
+  dataset_dir: data/distill_custom/ds
+  # eval.py needs tokens_dir to load the CSN val shards for the forgetting-guard
+  # regression check (same convention as configs/sft_t1.yaml).
+  tokens_dir: data/target/tokens
+  rows: 5000              # ~full corpus at the 5k target
+  val_fraction: 0.05      # matches aggregate.py (5% held out)
+  min_chars: 100          # response length floor (aggregator already filters AST)
+  min_instruction_chars: 15
+  dedupe: true
+  ast_filter: true
+  # Fixed plain template (CodeLlama ships no chat template; plan §3.1).
+  # The trailing \n after "### Response:" is where prompt masking ends.
+  template: "### Instruction:\n{instruction}\n### Response:\n"
+
+sft:
+  ctx: 512
+  pilot_rows: 500
+
+train:
+  output_dir: runs/distill_custom
+  final_dir: runs/distill_custom/final
+  epochs: 2                # 5k x 2 / 16 accum ~= 625 steps
+  batch: 1
+  eval_batch: 4
+  accum: 16
+  # SFT LR << pretraining 4e-4 (plan §3.1); final value confirmed at execution.
+  lr: 3.0e-5
+  scheduler: cosine
+  warmup_steps: 50
+  weight_decay: 0.1
+  max_grad_norm: 1.0
+  logging_steps: 25
+  eval_steps: 100
+  save_steps: 100
+  save_total_limit: 3
+  fp16: true
+  grad_ckpt: true
+  optim: adamw_torch
+  dataloader_num_workers: 0
+  seed: 42
+
+eval:
+  max_new_tokens: 256      # instruction answers need longer completions than 64
+  instructions_file: data/distill_custom/raw/val_instructions.jsonl
+  n_instructions: 50
+  sample_temperature: 0.8
+  prompts:                 # qualitative spot checks
+    - "### Instruction:\nWrite a Python function that returns the nth Fibonacci number.\n### Response:\n"
+    - "### Instruction:\nWrite a Python class that implements a stack with push, pop and peek.\n### Response:\n"

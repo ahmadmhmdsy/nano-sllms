@@ -1,0 +1,62 @@
+# U-1b FUSION arm (pre-registered in research/EXPERIMENTS.md "U-1b PRE-REGISTER";
+# launched only if the U-1b semantic gate returns the template-echo verdict).
+# Config-identical to configs/u1_full.yaml EXCEPT the corpus and the step count.
+#
+# Corpus: main train split (40,000) + production_50k train split (45,000) = 85,000 rows,
+# rendered by ui.scripts.prepare_u1 with --require-prompt-disjoint, so the held-out
+# sets (production_50k validation/test only) share NO prompt with train. This is the
+# fix for the defect found in the U-1 gate: the main corpus splits are seed-disjoint
+# but NOT prompt-disjoint (all 114 distinct test prompts also occur in train).
+#
+# Distinct training prompts: 114 -> 42,692.
+
+name: u1_fused
+
+tokenizer:
+  name: codellama/CodeLlama-7b-hf
+  vocab_size: 32768
+
+model:
+  layers: 16
+  hidden: 320
+  heads: 8
+  kv_heads: 2
+  ffn: 1024
+  ctx: 512
+  dropout: 0.0
+  tie_embeddings: true
+
+data:
+  rows: 85000
+  val_fraction: 0.02
+  dedupe: false
+  shard_tokens: 8000000
+  raw_dir: data/u1/fused/raw
+  tokens_dir: data/u1/fused/tokens
+
+train:
+  output_dir: runs/u1_fused
+  final_dir: runs/u1_fused/final
+  max_steps: 13341                # 4 epochs over 54,643,559 packed train tokens (106,725 blocks / 32 per step = 3,335 steps/epoch)
+  batch: 16
+  eval_batch: 16
+  accum: 2
+  lr: 6.0e-4
+  scheduler: cosine
+  warmup_steps: 20
+  weight_decay: 0.1
+  max_grad_norm: 1.0
+  logging_steps: 25
+  eval_steps: 200
+  save_steps: 200
+  save_total_limit: 3
+  fp16: true
+  grad_ckpt: false                # MEASURED at U-1: off wins 108-116k tok/s
+  optim: adamw_bnb_8bit
+  dataloader_num_workers: 0       # MEASURED: data is not the bottleneck
+  vram_cap_gib: 7.0        # MEASURED 2026-09-26 on the 30M arch: 6.13 GiB alloc at b16/accum2; 5.8 OOMs
+  seed: 42
+
+eval:
+  max_new_tokens: 96
+  prompts: []

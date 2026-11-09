@@ -1,0 +1,27 @@
+# E-16 (user request 2026-09-14): arm A matched-probe control for arm B.
+# Plain warm-start (reset_last_n_layers 0; all stage-1 blocks stay warm).
+
+# total_steps 2500 (from the arm-B gate trajectory: overfit begins after ~2500)
+# with gate_eval_every 1250 -> two real-gate probes (1250 + 2500) following the
+# same four-gate pipeline as stage2b; rows -> runs/diac/stage2a2500/gate_eval.csv.
+phase: stage2a2500
+tokens_phase: v3
+pretrained_init: runs/diac/stage1lm/final/model.pt
+# no reset_last_n_layers key = plain warm-start (arm A)
+gate_eval_every: 1250
+model:
+  hidden: 272
+  layers: 28
+  n_heads: 8
+  n_kv: 2
+  ffn: 1088
+  ctx: 128
+lr: 2.0e-4
+weight_decay: 0.1
+batch_size: 32
+accum: 1
+total_steps: 2500
+save_every: 500
+log_every: 100
+eval_every: 500
+early_stop_patience: 8

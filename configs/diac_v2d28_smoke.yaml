@@ -1,0 +1,19 @@
+# Smoke: v2d28 arch, 2000 steps, eval cadence 250 for the early-curve check.
+phase: v2d28smoke
+tokens_phase: v2b
+model:
+  hidden: 272
+  layers: 28
+  n_heads: 8
+  n_kv: 2
+  ffn: 1088
+  ctx: 128
+lr: 2.0e-4
+weight_decay: 0.1
+batch_size: 32
+accum: 1
+total_steps: 2000
+save_every: 500
+log_every: 100
+eval_every: 250
+early_stop_patience: 12

@@ -1,0 +1,68 @@
+# Track B (TASKS row 30): YaRN context-extension fine-tune of the M3 target
+# apex (runs/target/final — sacred, never touched in place; init via
+# train.init_from into the NEW runs/yarn_4096 dir). Decision 2026-09-09
+# (row 29 gate FIRED): target ctx 4096 / YaRN factor 4; 2048/factor-2 is the
+# recorded fallback if the 8-bit-Adam vram_probe @4096 OOMs (row 30 runs the
+# probe BOTH ctx before this training).
+# Data: existing data/target/tokens shards, re-sliced at ctx 4096 by
+# PackedDataset (fixed-length windows over the flat stream — no re-pack).
+# Budget (plan §B / note 04 §1): <=1000 steps x 32k tok/step (batch 1 x
+# accum 8 @ 4096). LR 3e-5 = the repo's fine-tune LR precedent (sft FT),
+# ~1/13 of the 4e-4 pretrain LR (PI/YaRN fine-tunes use ~1/10).
+name: yarn_4096
+
+tokenizer:
+  name: codellama/CodeLlama-7b-hf
+  vocab_size: 32768
+
+rope:
+  # HF-native yarn (transformers 5.16.1): per-band interpolation ramp
+  # (beta_fast 32 / beta_slow 1 defaults) + the YaRN attention temperature
+  # (mscale attention_factor). Zero extra VRAM. Defaults OFF without this block.
+  yarn:
+    factor: 4
+    original_max: 1024
+
+model:
+  layers: 16
+  hidden: 1024
+  heads: 16
+  kv_heads: 4
+  ffn: 3072
+  ctx: 4096
+  dropout: 0.0
+  tie_embeddings: true
+
+data:
+  # same packed shards as the target run, sliced at 4096 (PackedDataset)
+  tokens_dir: data/target/tokens
+
+train:
+  output_dir: runs/yarn_4096
+  final_dir: runs/yarn_4096/final
+  init_from: runs/target/final   # Track B base discipline (row 30)
+  max_steps: 1000                # plan §B budget <=1k; best-ckpt via eval 100
+  batch: 1
+  eval_batch: 2
+  accum: 8                       # 1 x 4096 x 8 = 32k tok/step (as pretrain)
+  lr: 3.0e-5
+  scheduler: cosine
+  warmup_steps: 50
+  weight_decay: 0.1
+  max_grad_norm: 1.0
+  logging_steps: 25
+  eval_steps: 100
+  save_steps: 100
+  save_total_limit: 3
+  fp16: true
+  grad_ckpt: true
+  optim: adamw_bnb_8bit          # row 30 MUST: 8-bit Adam (frees ~1.8 GB)
+  dataloader_num_workers: 0
+  seed: 42
+
+eval:
+  max_new_tokens: 64
+  prompts:
+    - "def fibonacci(n):"
+    - "import numpy as np\ndef mean_absolute_error(y_true, y_pred):"
+    - "class Stack:"

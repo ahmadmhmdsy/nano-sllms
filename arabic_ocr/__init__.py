@@ -1,0 +1,1 @@
+"""Arabic OCR nano model project (20-50M params, single 8GB GPU)."""

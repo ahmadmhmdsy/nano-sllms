@@ -1,0 +1,27 @@
+schema_version: 1
+# Minimal deterministic decision registry (Task 2b1 seed slice).
+# No verified canonical decision record exists yet, so the list is empty;
+# historical prose decisions stay in MEMORY.md / TASKS.md until migrated
+# with alias IDs. Dates are strings.
+decisions:
+  - id: pipeline_v2/trainer-backend-seam-r1
+    title: pipeline_v2 R1 trains through the explicit handlers.py loop; the HF TrainerBackend seam stays declared, not mounted
+    scope: pipeline_v2
+    status: adopted
+    decided_at: "2026-09-26"
+    context: >-
+      Remediation plan item 11 offered implement-or-delete for
+      slm_train/training/hf_causal_lm.py. The R1 loop lives in
+      orchestration/handlers.py and is contract-tested end to end; moving it
+      into HFCausalLMTrainer without a backend to compare against would be a
+      rewrite dressed as a refactor, and deleting the module would orphan its
+      registry entry (hf_causal_lm) and its unit tests.
+    choice: keep
+    kept:
+      - pipeline_v2/slm_train/orchestration/handlers.py
+      - pipeline_v2/slm_train/training/hf_causal_lm.py
+    consequence: >-
+      An R2 backend is a change of implementation behind the declared
+      TrainerBackend seam, not a rewrite of the loop; deployment of the seam is
+      tracked as Release 2 and the fit/evaluate/checkpoint/resume/finalize
+      stubs stay explicit refusals until then.

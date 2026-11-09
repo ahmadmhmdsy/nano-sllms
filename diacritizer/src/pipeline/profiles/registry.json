@@ -1,0 +1,105 @@
+{
+  "$schema": "gate-profile-registry/1",
+  "model_buckets": {
+    "16Lx272": {
+      "derived_from": {
+        "layers": 16,
+        "hidden": 272
+      },
+      "approx_params_m": 17.2
+    },
+    "28Lx208": {
+      "derived_from": {
+        "layers": 28,
+        "hidden": 208
+      },
+      "approx_params_m": 22
+    },
+    "28Lx272": {
+      "derived_from": {
+        "layers": 28,
+        "hidden": 272
+      },
+      "approx_params_m": 30.1
+    }
+  },
+  "entries": [
+    {
+      "id": "gate_bench/gate_bench.512.default",
+      "process": "gate_bench",
+      "status": "validated",
+      "match": {
+        "device": "sm_75_6gib",
+        "any_model": true
+      },
+      "params": {
+        "batch": 512
+      },
+      "evidence": {
+        "date": "2026-09-23",
+        "sweep_source": "fadel_test 2500 sents, model 16Lx272 (17.2M)",
+        "wall_s_at_1": 249,
+        "wall_s_at_512": 10,
+        "peak_vram_gib_at_512": 1.5,
+        "throughput_sents_per_s_at_512": 250,
+        "parity": "fp16 logits bit-identical vs bs1 at real positions; DER metric identical across 64..1024"
+      },
+      "notes": "PREFERRED DEFAULT for gate_bench on the 6.1 GiB consumer GPU. Sweep 2026-09-23: bs64/256/512/1024 tie (~11 s fadel), 2048 collapses (37 s, 5.5 GiB), 8192+ OOM-thrash (186 s, 15 GiB false reading from allocator)."
+    },
+    {
+      "id": "gate_bench/gate_bench.16l.fallback64",
+      "process": "gate_bench",
+      "status": "fallback",
+      "match": {
+        "device": "sm_75_6gib"
+      },
+      "params": {
+        "batch": 64
+      },
+      "evidence": {
+        "note": "safe-but-slower fallback if profile store lookup fails or GPU acts differently"
+      },
+      "notes": "Use only when a valid 512 bucket lookup fails; still 24x faster than legacy bs1."
+    },
+    {
+      "id": "train_smoke/gate_bench.sweep_protocol",
+      "process": "train_smoke",
+      "status": "validated",
+      "match": {
+        "device": "sm_75_6gib"
+      },
+      "params": {
+        "sweep_batch_sizes": [
+          1,
+          64,
+          256,
+          512,
+          1024,
+          2048,
+          8192,
+          16384
+        ]
+      },
+      "evidence": {
+        "note": "smoke protocol for any new batch/throughput config: parity run first (legit bs1 fixture), then bucket sweep with wall_s + peak_vram + DER check vs bs1 fixture; optimum = lowest wall time where peak_vram stays under ~25% of free; never launch full gates during sweep"
+      }
+    },
+    {
+      "id": "train_smoke/train_smoke.60step",
+      "process": "train_smoke",
+      "status": "validated",
+      "match": {
+        "device": "sm_75_6gib",
+        "train.py": true
+      },
+      "params": {
+        "smoke_steps": 60,
+        "batch": 32,
+        "grad_scaler": "fp16-autocast-skip-on-overflow"
+      },
+      "evidence": {
+        "note": "preflight_smoke exists in pipeline.smoke; this profile stores the default knobs so later processes plug in with zero re-derivation"
+      }
+    }
+  ]
+}

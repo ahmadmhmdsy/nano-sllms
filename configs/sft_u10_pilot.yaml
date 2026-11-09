@@ -1,0 +1,14 @@
+name: sft_u10_pilot
+model:
+  ctx: 256
+  layers: 4
+data:
+  template: '### Instruction:
+
+    {instruction}
+
+    ### Response:
+
+    '
+sft:
+  ctx: 512

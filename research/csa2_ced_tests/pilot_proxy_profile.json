@@ -1,0 +1,34 @@
+{
+  "A_baseline_ctx512": {
+    "peak_gb": 2.563,
+    "s_per_step": 0.164
+  },
+  "A_baseline_ctx1024": {
+    "peak_gb": 3.37,
+    "s_per_step": 0.177
+  },
+  "C_proj_ctx512": {
+    "peak_gb": 2.565,
+    "s_per_step": 0.112
+  },
+  "C_proj_ctx1024": {
+    "peak_gb": 3.371,
+    "s_per_step": 0.175
+  },
+  "C_proj_swa_ctx512": {
+    "peak_gb": 2.56,
+    "s_per_step": 0.12
+  },
+  "C_proj_swa_ctx1024": {
+    "peak_gb": 3.38,
+    "s_per_step": 0.187
+  },
+  "B_shared_ctx512": {
+    "peak_gb": 2.515,
+    "s_per_step": 0.104
+  },
+  "B_shared_ctx1024": {
+    "peak_gb": 3.319,
+    "s_per_step": 0.173
+  }
+}

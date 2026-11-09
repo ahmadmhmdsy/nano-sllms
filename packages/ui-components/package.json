@@ -1,0 +1,23 @@
+{
+  "name": "@nano-slms/ui-components",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Shared React UI components (Spinner, ConfirmDialog, Toast, ErrorBoundary, Tabs, SearchInput) for viz/ and flow/. Every component takes a className prop and themes through CSS variables.",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.8"
+  }
+}

@@ -1,0 +1,25 @@
+# E-17 FINAL MODEL leg 1: whole-corpus char-LM pretrain (v4).
+# Same architecture/contract as stage1lm (v2d28 arch causal, TIED head, ctx 512)
+# but 1,226,329 train windows = 370M chars (abdomen/sadeed/qcri/fadel in FULL, wn2024=0).
+# Budget: 27k steps ~= 13.3 h (measured 1.77 s/step), patience 12, probes not used
+# here (LM loss), VRAM bs8/accum4 + vram_cap 5.8 (whole-corpus replay of E-14 tuning).
+phase: stage1lm_v4
+tokens_dir: stage1
+causal: true
+model:
+  hidden: 272
+  layers: 28
+  n_heads: 8
+  n_kv: 2
+  ffn: 1088
+  ctx: 512
+lr: 2.0e-4
+weight_decay: 0.1
+batch_size: 8
+accum: 4
+eval_bs: 32
+vram_cap_gib: 5.8
+total_steps: 27000
+save_every: 500
+eval_every: 250
+early_stop_patience: 12

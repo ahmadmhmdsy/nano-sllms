@@ -1,0 +1,37 @@
+name: all_combined
+model:
+  type: vit_decoder
+  patch_size: 16
+  image_height: 48
+  image_width: 256
+  vit_layers: 6
+  vit_hidden: 384
+  vit_heads: 6
+  vit_ffn: 1536
+  decoder_layers: 6
+  decoder_hidden: 384
+  decoder_heads: 6
+  vocab_size: 256
+  max_seq_len: 128
+  dropout: 0.1
+
+data:
+  train_dir: data/all_combined
+  val_dir: data/combined/val
+  batch_size: 16
+  num_workers: 4
+  image_height: 48
+  image_width: 256
+  augment: true
+
+eval:
+  batch_size: 32
+
+train:
+  epochs: 50
+  lr: 0.0001
+  weight_decay: 0.01
+  max_grad_norm: 1.0
+  save_dir: runs/all_combined
+  log_interval: 20
+  eval_interval: 1

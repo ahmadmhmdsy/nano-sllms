@@ -1,0 +1,61 @@
+# E-57: REPLAY settle - dial back drift: 50/50 g1 + v3q mixed blocks, single factor vs dia2d.
+name: dia2f_replay
+
+tokenizer:
+  name: data/mex/tokenizer
+  vocab_size: 97
+
+model:
+  layers: 2
+  hidden: 1280
+  heads: 32
+  kv_heads: 16
+  ffn: 5120
+  ctx: 96
+  dropout: 0.0
+  tie_embeddings: false
+
+data:
+  dataset_candidates:
+    - name: local-mu2-g2
+  rows: 0
+  val_fraction: 0.02
+  shard_tokens: 2000000
+  raw_dir: data/mex/mu2/g1
+  tokens_dir: data/mex/mu2/v3qx
+
+lora:
+  base_run: runs/mex/dia2d_scale/final
+  r: 8
+  alpha: 16
+  dropout: 0.05
+  targets: [q_proj, v_proj, gate_proj, up_proj, down_proj]
+  corrupt:
+    mask_marks: true
+    mask_char: '|'
+    hold_every: 3
+
+train:
+  output_dir: runs/mex/dia2f_replay
+  final_dir: runs/mex/dia2f_replay/final
+  seed: 42
+  batch: 128
+  accum: 2
+  eval_batch: 256
+  max_steps: 4000
+  eval_steps: 1000
+  save_steps: 1000
+  save_total_limit: 3
+  logging_steps: 50
+  lr: 0.00005
+  warmup_steps: 50
+  scheduler: cosine
+  weight_decay: 0.1
+  max_grad_norm: 1.0
+  fp16: true
+  grad_ckpt: false
+
+standalone_eval:
+  bleu-n: 4
+  max-samples: 10
+  ckpt: last

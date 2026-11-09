@@ -1,0 +1,22 @@
+# E-22 arm C — micro 12-128-512 + QCRI gate-deduped weak data (v3q tokens)
+# Identical schedule/hparams to arm A (micro_a) for a controlled data ablation.
+# NO cache at eval (user dropped the cache line for this model).
+phase: micro_c
+tokens_phase: v3q
+batch_size: 32
+accum: 1
+lr: 0.0004
+weight_decay: 0.1
+total_steps: 2500
+save_every: 500
+eval_every: 500
+gate_eval_every: 500
+early_stop_patience: 8
+log_every: 100
+model:
+  ctx: 128
+  hidden: 128
+  ffn: 512
+  layers: 12
+  n_heads: 4
+  n_kv: 2

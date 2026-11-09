@@ -1,0 +1,51 @@
+# SA-4 (research/2026-10-22_sa_plan_v2.md §1): LoRA agent-format SFT on data/sa4 (scripts/sa4_data.py ->
+# scripts/sa3_data.py): fix + repair-loop turns with real sandbox outcomes, strict tool-call JSON (xLAM),
+# playground write-skill replay on the pretrain split, 10 % he/mbpp replay. 61,723 rows ~ 965 steps
+# (~1.8 h at SA-3's ~6.8 s/step). Init: runs/sa3_scale075 (ckpt-750 + SA-3 LoRA x 0.75, user-approved 2026-10-25).
+# Gate: format >= 98 %, fix >= 25 %.
+name: sft_sa4
+
+base_model: runs/sa3_scale075
+
+tokenizer:
+  name: models/hf/SmolLM2-135M   # SmolLM2's own tokenizer (eos <|endoftext|>=0)
+  vocab_size: 49152
+
+model:
+  ctx: 8192
+
+data:
+  dataset_dir: data/sa4/ds
+
+sft:
+  ctx: 1024
+  pilot_rows: 2048
+
+peft:
+  r: 16
+  lora_alpha: 32
+  lora_dropout: 0.0
+  target_modules: [q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj]
+  bias: none
+
+train:
+  output_dir: runs/sft_sa4
+  final_dir: runs/sft_sa4/final
+  epochs: 1
+  batch: 8
+  eval_batch: 8
+  accum: 8
+  lr: 1.0e-4
+  scheduler: cosine
+  warmup_steps: 30
+  weight_decay: 0.0
+  max_grad_norm: 1.0
+  logging_steps: 10
+  eval_steps: 200
+  save_steps: 200
+  save_total_limit: 3
+  fp16: true
+  grad_ckpt: true
+  optim: adamw_torch
+  dataloader_num_workers: 2
+  seed: 42

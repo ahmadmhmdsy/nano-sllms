@@ -1,0 +1,39 @@
+# crnn comparison config
+name: compare_crnn
+
+model:
+  type: crnn
+  patch_size: 16
+  image_height: 48
+  image_width: 256
+  vit_layers: 4
+  vit_hidden: 256
+  vit_heads: 4
+  vit_ffn: 1024
+  decoder_layers: 4
+  decoder_hidden: 256
+  decoder_heads: 4
+  vocab_size: 256
+  max_seq_len: 64
+  dropout: 0.1
+
+data:
+  train_dir: data/small/train
+  val_dir: data/small/val
+  batch_size: 16
+  num_workers: 2
+  image_height: 48
+  image_width: 256
+
+train:
+  epochs: 5
+  lr: 0.001
+  weight_decay: 0.01
+  max_grad_norm: 1.0
+  save_dir: runs/compare_crnn
+  log_interval: 50
+  eval_interval: 1
+
+eval:
+  batch_size: 32
+  max_new_tokens: 64

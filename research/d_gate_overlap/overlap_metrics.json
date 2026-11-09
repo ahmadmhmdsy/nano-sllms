@@ -1,0 +1,351 @@
+{
+ "seed": 20250101,
+ "cap_per_source": 2000,
+ "normalization": "NFC + U+064B-0652,0670,0653-065F,06D6-06ED stripped",
+ "shingle_n": 40,
+ "gate_sanity": {
+  "fadel_test": {
+   "path": "data/diac/raw/fadel/test.txt",
+   "exists": true,
+   "bytes": 1747544,
+   "n_lines": 2500,
+   "n_empty_lines": 0,
+   "n_pairs_after_strip": 2500
+  },
+  "sadeed25": {
+   "path": "data/diac/raw/sadeed_25/sadeed25.parquet",
+   "exists": true,
+   "bytes": 678514,
+   "n_lines": 1200,
+   "n_empty_lines": 0,
+   "columns": [
+    "filename",
+    "output",
+    "input"
+   ],
+   "n_pairs_after_strip": 1612
+  },
+  "wikinews2024": {
+   "path": "data/diac/raw/wikinews/wikinews2024_multi_ref.diac",
+   "exists": true,
+   "bytes": 200310,
+   "n_lines": 431,
+   "n_empty_lines": 75,
+   "n_pairs_after_strip": 356
+  },
+  "wikinews2014": {
+   "path": "data/diac/raw/wikinews/wikinews2014_multi_ref.diac",
+   "exists": true,
+   "bytes": 310342,
+   "n_lines": 400,
+   "n_empty_lines": 0,
+   "n_pairs_after_strip": 393
+  }
+ },
+ "train_sources": {
+  "v2b::fadel_train": {
+   "n_windows_seen": 50000,
+   "n_sampled": 2000
+  },
+  "v2b::wikinews2024": {
+   "n_windows_seen": 356,
+   "n_sampled": 356
+  },
+  "v2b::abdou_train": {
+   "n_windows_seen": 1443972,
+   "n_sampled": 2000
+  },
+  "v2b::qcri_wiki": {
+   "n_windows_seen": 32818,
+   "n_sampled": 2000
+  },
+  "v2b::fadel_val": {
+   "n_windows_seen": 2500,
+   "n_sampled": 2000
+  },
+  "v2b::abdou_valid": {
+   "n_windows_seen": 29633,
+   "n_sampled": 2000
+  },
+  "sadeedt::sadeedt_train": {
+   "n_windows_seen": 1042678,
+   "n_sampled": 2000
+  }
+ },
+ "gate_stats": {
+  "fadel_test": {
+   "n_units": 2500,
+   "n_shingles": 476350,
+   "n_token_4grams": 114560
+  },
+  "sadeed25": {
+   "n_units": 1612,
+   "n_shingles": 226222,
+   "n_token_4grams": 47281
+  },
+  "wikinews2024": {
+   "n_units": 356,
+   "n_shingles": 48510,
+   "n_token_4grams": 9382
+  },
+  "wikinews2014": {
+   "n_units": 393,
+   "n_shingles": 84425,
+   "n_token_4grams": 16966
+  }
+ },
+ "pairs": [
+  {
+   "gate": "fadel_test",
+   "train_source": "sadeedt::sadeedt_train",
+   "shingle40_jaccard": 0.00063,
+   "token4gram_containment": 0.00685,
+   "token4gram_jaccard": 0.00379,
+   "char_bigram_cosine": 0.97687,
+   "top20_bigram_cosine": 0.98623
+  },
+  {
+   "gate": "fadel_test",
+   "train_source": "v2b::abdou_train",
+   "shingle40_jaccard": 0.00059,
+   "token4gram_containment": 0.00966,
+   "token4gram_jaccard": 0.00514,
+   "char_bigram_cosine": 0.97816,
+   "top20_bigram_cosine": 0.98575
+  },
+  {
+   "gate": "fadel_test",
+   "train_source": "v2b::abdou_valid",
+   "shingle40_jaccard": 0.00032,
+   "token4gram_containment": 0.00903,
+   "token4gram_jaccard": 0.00478,
+   "char_bigram_cosine": 0.97813,
+   "top20_bigram_cosine": 0.98606
+  },
+  {
+   "gate": "fadel_test",
+   "train_source": "v2b::fadel_train",
+   "shingle40_jaccard": 0.00015,
+   "token4gram_containment": 0.0105,
+   "token4gram_jaccard": 0.00649,
+   "char_bigram_cosine": 0.99939,
+   "top20_bigram_cosine": 0.99981
+  },
+  {
+   "gate": "fadel_test",
+   "train_source": "v2b::fadel_val",
+   "shingle40_jaccard": 0.00046,
+   "token4gram_containment": 0.01112,
+   "token4gram_jaccard": 0.00689,
+   "char_bigram_cosine": 0.9995,
+   "top20_bigram_cosine": 0.99984
+  },
+  {
+   "gate": "fadel_test",
+   "train_source": "v2b::qcri_wiki",
+   "shingle40_jaccard": 0.0,
+   "token4gram_containment": 0.00015,
+   "token4gram_jaccard": 0.0001,
+   "char_bigram_cosine": 0.83217,
+   "top20_bigram_cosine": 0.86538
+  },
+  {
+   "gate": "fadel_test",
+   "train_source": "v2b::wikinews2024",
+   "shingle40_jaccard": 0.0,
+   "token4gram_containment": 1e-05,
+   "token4gram_jaccard": 1e-05,
+   "char_bigram_cosine": 0.85111,
+   "top20_bigram_cosine": 0.87082
+  },
+  {
+   "gate": "sadeed25",
+   "train_source": "sadeedt::sadeedt_train",
+   "shingle40_jaccard": 8e-05,
+   "token4gram_containment": 0.00484,
+   "token4gram_jaccard": 0.00163,
+   "char_bigram_cosine": 0.9843,
+   "top20_bigram_cosine": 0.98959
+  },
+  {
+   "gate": "sadeed25",
+   "train_source": "v2b::abdou_train",
+   "shingle40_jaccard": 0.00031,
+   "token4gram_containment": 0.0056,
+   "token4gram_jaccard": 0.00178,
+   "char_bigram_cosine": 0.98209,
+   "top20_bigram_cosine": 0.98811
+  },
+  {
+   "gate": "sadeed25",
+   "train_source": "v2b::abdou_valid",
+   "shingle40_jaccard": 0.00014,
+   "token4gram_containment": 0.00501,
+   "token4gram_jaccard": 0.00158,
+   "char_bigram_cosine": 0.98049,
+   "top20_bigram_cosine": 0.98696
+  },
+  {
+   "gate": "sadeed25",
+   "train_source": "v2b::fadel_train",
+   "shingle40_jaccard": 3e-05,
+   "token4gram_containment": 0.00364,
+   "token4gram_jaccard": 0.00145,
+   "char_bigram_cosine": 0.94959,
+   "top20_bigram_cosine": 0.96229
+  },
+  {
+   "gate": "sadeed25",
+   "train_source": "v2b::fadel_val",
+   "shingle40_jaccard": 8e-05,
+   "token4gram_containment": 0.00364,
+   "token4gram_jaccard": 0.00145,
+   "char_bigram_cosine": 0.95101,
+   "top20_bigram_cosine": 0.96464
+  },
+  {
+   "gate": "sadeed25",
+   "train_source": "v2b::qcri_wiki",
+   "shingle40_jaccard": 0.0,
+   "token4gram_containment": 0.00032,
+   "token4gram_jaccard": 0.00014,
+   "char_bigram_cosine": 0.92925,
+   "top20_bigram_cosine": 0.95686
+  },
+  {
+   "gate": "sadeed25",
+   "train_source": "v2b::wikinews2024",
+   "shingle40_jaccard": 0.0,
+   "token4gram_containment": 4e-05,
+   "token4gram_jaccard": 4e-05,
+   "char_bigram_cosine": 0.94778,
+   "top20_bigram_cosine": 0.96907
+  },
+  {
+   "gate": "wikinews2024",
+   "train_source": "sadeedt::sadeedt_train",
+   "shingle40_jaccard": 0.0,
+   "token4gram_containment": 0.0,
+   "token4gram_jaccard": 0.0,
+   "char_bigram_cosine": 0.89607,
+   "top20_bigram_cosine": 0.92644
+  },
+  {
+   "gate": "wikinews2024",
+   "train_source": "v2b::abdou_train",
+   "shingle40_jaccard": 0.0,
+   "token4gram_containment": 0.00011,
+   "token4gram_jaccard": 1e-05,
+   "char_bigram_cosine": 0.89966,
+   "top20_bigram_cosine": 0.9267
+  },
+  {
+   "gate": "wikinews2024",
+   "train_source": "v2b::abdou_valid",
+   "shingle40_jaccard": 0.0,
+   "token4gram_containment": 0.00011,
+   "token4gram_jaccard": 1e-05,
+   "char_bigram_cosine": 0.89655,
+   "top20_bigram_cosine": 0.92335
+  },
+  {
+   "gate": "wikinews2024",
+   "train_source": "v2b::fadel_train",
+   "shingle40_jaccard": 0.0,
+   "token4gram_containment": 0.0,
+   "token4gram_jaccard": 0.0,
+   "char_bigram_cosine": 0.848,
+   "top20_bigram_cosine": 0.86961
+  },
+  {
+   "gate": "wikinews2024",
+   "train_source": "v2b::fadel_val",
+   "shingle40_jaccard": 0.0,
+   "token4gram_containment": 0.00011,
+   "token4gram_jaccard": 1e-05,
+   "char_bigram_cosine": 0.85125,
+   "top20_bigram_cosine": 0.87368
+  },
+  {
+   "gate": "wikinews2024",
+   "train_source": "v2b::qcri_wiki",
+   "shingle40_jaccard": 0.0,
+   "token4gram_containment": 0.00053,
+   "token4gram_jaccard": 7e-05,
+   "char_bigram_cosine": 0.94819,
+   "top20_bigram_cosine": 0.97633
+  },
+  {
+   "gate": "wikinews2024",
+   "train_source": "v2b::wikinews2024",
+   "shingle40_jaccard": 0.96823,
+   "token4gram_containment": 0.97154,
+   "token4gram_jaccard": 0.97071,
+   "char_bigram_cosine": 0.99998,
+   "top20_bigram_cosine": 1.0
+  },
+  {
+   "gate": "wikinews2014",
+   "train_source": "sadeedt::sadeedt_train",
+   "shingle40_jaccard": 0.0,
+   "token4gram_containment": 0.0,
+   "token4gram_jaccard": 0.0,
+   "char_bigram_cosine": 0.92178,
+   "top20_bigram_cosine": 0.94428
+  },
+  {
+   "gate": "wikinews2014",
+   "train_source": "v2b::abdou_train",
+   "shingle40_jaccard": 0.0,
+   "token4gram_containment": 0.0,
+   "token4gram_jaccard": 0.0,
+   "char_bigram_cosine": 0.92372,
+   "top20_bigram_cosine": 0.94213
+  },
+  {
+   "gate": "wikinews2014",
+   "train_source": "v2b::abdou_valid",
+   "shingle40_jaccard": 0.0,
+   "token4gram_containment": 0.0,
+   "token4gram_jaccard": 0.0,
+   "char_bigram_cosine": 0.92046,
+   "top20_bigram_cosine": 0.93908
+  },
+  {
+   "gate": "wikinews2014",
+   "train_source": "v2b::fadel_train",
+   "shingle40_jaccard": 0.0,
+   "token4gram_containment": 0.0,
+   "token4gram_jaccard": 0.0,
+   "char_bigram_cosine": 0.87692,
+   "top20_bigram_cosine": 0.89549
+  },
+  {
+   "gate": "wikinews2014",
+   "train_source": "v2b::fadel_val",
+   "shingle40_jaccard": 0.0,
+   "token4gram_containment": 6e-05,
+   "token4gram_jaccard": 1e-05,
+   "char_bigram_cosine": 0.87984,
+   "top20_bigram_cosine": 0.89967
+  },
+  {
+   "gate": "wikinews2014",
+   "train_source": "v2b::qcri_wiki",
+   "shingle40_jaccard": 0.0,
+   "token4gram_containment": 0.00077,
+   "token4gram_jaccard": 0.00017,
+   "char_bigram_cosine": 0.95927,
+   "top20_bigram_cosine": 0.98113
+  },
+  {
+   "gate": "wikinews2014",
+   "train_source": "v2b::wikinews2024",
+   "shingle40_jaccard": 0.0,
+   "token4gram_containment": 0.00024,
+   "token4gram_jaccard": 0.00015,
+   "char_bigram_cosine": 0.98651,
+   "top20_bigram_cosine": 0.99657
+  }
+ ]
+}

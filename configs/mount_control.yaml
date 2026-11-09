@@ -1,0 +1,20 @@
+# Mounting experiment (TASKS row 49) - CONTROL arm: NO mount block at all.
+# Plain scripts/train.py run (kt_ab_control rig precedent) at identical
+# data / steps / seed / optimizer as the four mount_* arms, so any eval-loss
+# delta at matched steps is attributable to the mount wiring alone. The only
+# difference vs configs/mount_gate.yaml is the absent mount block + output
+# dirs. This config is NOT consumed by scripts/mount.py.
+name: mount-control
+
+tokenizer: {name: codellama/CodeLlama-7b-hf, vocab_size: 32768}
+
+model: {layers: 12, hidden: 768, heads: 12, kv_heads: 4, ffn: 2048, ctx: 512, dropout: 0.0, tie_embeddings: true}
+
+data: {tokens_dir: data/pilot/tokens}
+
+train: {output_dir: runs/mount_control, final_dir: runs/mount_control/final, max_steps: 1000, batch: 1, accum: 32, lr: 4.0e-4, warmup_steps: 150, logging_steps: 25, eval_steps: 100, save_steps: 100, save_total_limit: 3, fp16: true, grad_ckpt: true, optim: adamw_bnb_8bit, seed: 42}
+
+# Independence-eval block (Step 6.2): eval.py needs cfg['eval'].
+eval:
+  max_new_tokens: 64
+

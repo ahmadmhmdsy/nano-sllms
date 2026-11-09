@@ -1,0 +1,16 @@
+# D-pilot ~30M PRIMARY model (DESIGN section 2). GPU-gated; the deliverable rung.
+phase: pilot
+model:
+  hidden: 512
+  layers: 8
+  n_heads: 8
+  n_kv: 2
+  ffn: 2048
+  ctx: 1024
+lr: 1.5e-4
+weight_decay: 0.1
+batch_size: 16
+accum: 2
+total_steps: 30000
+save_every: 500
+log_every: 100

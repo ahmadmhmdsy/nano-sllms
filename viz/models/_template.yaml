@@ -1,0 +1,32 @@
+# Copy-me starter (dense family). Save as models/<id>.yaml; the app picks it up.
+id: my-model
+name: My Model
+fullName: LlamaForCausalLM — example
+accent: "#7fc8a9"
+archKind: denseGqaMoe
+blurb: One-line purpose statement.
+tok: Tokenizer-family (vocab, BPE)
+data: Training data summary
+domain: What it works on
+shape:
+  layers: 12
+  d: 768
+  heads: 12
+  kv: 4
+  ffn: 2048
+  vocab: 32000
+  ctx: "4,096 native"
+  theta: "10,000"
+  eps: "1e-5"
+  tied: true
+  precision: bf16
+bands: { early: [1, 4], mid: [5, 8], late: [9, 12] }
+facts:
+  tokens: [The, "Ġcapital", "Ġof", "ĠFrance", "Ġis"]
+  top1: "ĠParis"
+honesty:
+  sources:
+    - paste the config.json URL you verified the dims against
+  trainedOn: dataset summary
+  speaks: what it is good at
+  simulatedNote: all activations SIMULATED; depth bands are rule-of-thumb

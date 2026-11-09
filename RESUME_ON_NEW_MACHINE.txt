@@ -1,0 +1,44 @@
+RESUME PACK row41 2026-09-10 - restore steps on a new machine
+================================================================
+Remote state this pack matches: origin/main e08ec9a
+("Row 41: LoRA-SFT on the YaRN base + soup repair"). The clone itself
+carries ALL code, configs, metrics, gates and DATA (minimax3 corpus +
+prepared ds + data/target/tokens are git-tracked) - this pack adds only
+the local-only weights (policy: weights never in git/LFS).
+
+1) Clone + checkout origin/main (e08ec9a or newer).
+2) Rebuild the venv: uv-managed CPython 3.12.9 - the proven recipe is in
+   ENVIRONMENT.md / HANDOFF section 4. Python 3.12.9, torch 2.14.0+cu126,
+   transformers 5.16.1, datasets 5.0.1, accelerate 1.14.0, peft 0.20.0,
+   bitsandbytes 0.50.2. Never pip, always .venv\Scripts\python.exe.
+3) Extract this zip AT THE REPO ROOT (arcnames start with runs/).
+   Verify sha256 against the accompanying RESUME_PACK_row41_2026-09-10.md.
+4) Contents:
+   runs/yarn_4096/final          - YaRN ctx-4096 BASE (Track B apex;
+                                    val @4096 1.7035, guard +1.15%)
+   runs/yarn_lora_sft_v1/final   - raw LoRA-merged instruct-max variant
+                                    (ast 0.94/0.92; base @4096 +4.64%)
+   runs/yarn_lora_sft_v1/final_a60 - CHAT-DEFAULT CANDIDATE (soup 0.6x
+                                    LoRA + 0.4x yarn; ALL 4 strict gates
+                                    PASS: guard +1.03%, ast 0.90/0.96,
+                                    @4096 +1.29%)
+   runs/yarn_lora_sft_v1/checkpoint-{750,1000,1172} - adapter-only
+                                    auto-resume points (114.7 MB each)
+5) GOTCHAS (MEMORY.md 10/31/32/33):
+   - trainer_state.json stores MACHINE-LOCAL absolute paths; patch
+     best_model_checkpoint after extraction if you rely on
+     load_best_model_at_end. The three final dirs are plain
+     from_pretrained dirs - they load as-is.
+   - The LoRA run is COMPLETE; the checkpoints exist for crash-resume of
+     a CONTINUED run, not for restart. Zero-flag relaunch contract:
+     rerun the exact train command with no flags.
+   - Turing sm_75: fp16 only; no flash-attn. Single GPU: never co-run
+     two GPU jobs. eval.py at ctx 4096 needs --batch 2 or smaller on a
+     6 GB card (sysmem fallback masks OOM there, MEMORY 32).
+   - Suspend during a GPU run can kill CUDA contexts (MEMORY 33); set
+     standby-timeout-ac 0 for unattended runs, restore after.
+6)NOT in this pack (older zips in checkpoint_backup/ still cover them):
+   e1 / sft_v2_e1 and sft_t1 lineage weights (checkpoint-sft_v2_e1-final.zip
+   is the sole backup copy of that deliverable). yarn_4096 pretrain
+   optimizer state is deliberately excluded - the run is complete and
+   further work resumes via final/ weights (train.init_from).

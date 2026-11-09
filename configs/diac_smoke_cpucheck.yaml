@@ -1,0 +1,17 @@
+# TEMP validation rung for diacritizer/scripts/train.py (CPU-only drill, remove-able)
+# 3 steps, checkpoint at each: verifies loop + save + rotation + resume contract
+phase: smoke
+model:
+  hidden: 192
+  layers: 2
+  n_heads: 6
+  n_kv: 2
+  ffn: 768
+  ctx: 128
+lr: 2.0e-4
+weight_decay: 0.1
+batch_size: 8
+accum: 1
+total_steps: 3
+save_every: 3
+log_every: 1

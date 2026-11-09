@@ -1,0 +1,21 @@
+# E-21 arm A — micro model (user decision 2026-09-17 a): 12L/128h/512ffn/4H/2KV (~2.98M params)
+# from-scratch on the SAME packed stage2b tokens (tokens_phase v3)
+phase: micro_a
+tokens_phase: v3
+batch_size: 32
+accum: 1
+lr: 0.0004            # micro models tolerate a slightly higher LR; watch gate CSV
+weight_decay: 0.1
+total_steps: 2500
+save_every: 500
+eval_every: 500
+gate_eval_every: 500
+early_stop_patience: 8
+log_every: 100
+model:
+  ctx: 128
+  hidden: 128
+  ffn: 512
+  layers: 12
+  n_heads: 4
+  n_kv: 2

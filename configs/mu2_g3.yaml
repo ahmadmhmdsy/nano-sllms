@@ -1,0 +1,61 @@
+# ME-line mu2 rung G2: LoRA mark-drop fill-in on the FROZEN G1 trunk (E-31).
+name: mu2_g3
+
+tokenizer:
+  name: data/mex/tokenizer
+  vocab_size: 97
+
+model:
+  layers: 2
+  hidden: 320
+  heads: 8
+  kv_heads: 4
+  ffn: 1280
+  ctx: 96
+  dropout: 0.0
+  tie_embeddings: false
+
+data:
+  dataset_candidates:
+    - name: local-mu2-g2
+  rows: 0
+  val_fraction: 0.02
+  shard_tokens: 2000000
+  raw_dir: data/mex/mu2/g1
+  tokens_dir: data/mex/mu2/g1/tokens
+
+lora:
+  base_run: runs/mex/mu2_g3_init
+  r: 8
+  alpha: 16
+  dropout: 0.05
+  targets: [q_proj, v_proj, gate_proj, up_proj, down_proj]
+  corrupt:
+    mask_marks: true
+    mask_char: '|'
+    hold_every: 3
+
+train:
+  output_dir: runs/mex/mu2_g3
+  final_dir: runs/mex/mu2_g3/final
+  seed: 42
+  batch: 32
+  accum: 1
+  eval_batch: 32
+  max_steps: 1000
+  eval_steps: 250
+  save_steps: 500
+  save_total_limit: 3
+  logging_steps: 50
+  lr: 0.00005
+  warmup_steps: 50
+  scheduler: cosine
+  weight_decay: 0.1
+  max_grad_norm: 1.0
+  fp16: true
+  grad_ckpt: false
+
+standalone_eval:
+  bleu-n: 4
+  max-samples: 10
+  ckpt: last

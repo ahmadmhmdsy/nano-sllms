@@ -1,0 +1,60 @@
+{
+  "data": {
+    "dataset_candidates": [
+      {
+        "name": "TheGamingMahi/TinyCode"
+      }
+    ],
+    "dedupe": true,
+    "min_chars": 80,
+    "raw_dir": "data/gate-demo/raw",
+    "rows": 3000,
+    "shard_tokens": 8000000,
+    "tokens_dir": "data/gate-demo/tokens",
+    "val_fraction": 0.02
+  },
+  "eval": {
+    "max_new_tokens": 64,
+    "prompts": [
+      "def fibonacci(n):",
+      "class Stack:"
+    ]
+  },
+  "model": {
+    "ctx": 256,
+    "dropout": 0.0,
+    "ffn": 1024,
+    "heads": 4,
+    "hidden": 256,
+    "kv_heads": 2,
+    "layers": 4,
+    "tie_embeddings": true
+  },
+  "name": "gate-demo",
+  "tokenizer": {
+    "name": "codellama/CodeLlama-7b-hf",
+    "vocab_size": 32000
+  },
+  "train": {
+    "accum": 32,
+    "batch": 1,
+    "dataloader_num_workers": 0,
+    "eval_batch": 4,
+    "eval_steps": 500,
+    "final_dir": "runs/gate-demo/final",
+    "fp16": true,
+    "grad_ckpt": true,
+    "logging_steps": 50,
+    "lr": 0.0004,
+    "max_grad_norm": 1.0,
+    "max_steps": 200,
+    "optim": "adamw_torch",
+    "output_dir": "runs/gate-demo",
+    "save_steps": 500,
+    "save_total_limit": 3,
+    "scheduler": "cosine",
+    "seed": 42,
+    "warmup_steps": 10,
+    "weight_decay": 0.1
+  }
+}

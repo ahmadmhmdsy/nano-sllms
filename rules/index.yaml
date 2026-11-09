@@ -1,0 +1,50 @@
+schema_version: 1
+# Machine-readable index of conditional rules. Paths are relative to rules/
+# and must exist (linted by tests/agent_context/test_check_agent_context.py).
+# Schemas: docs/agent/SCHEMA.md.
+rules:
+  - id: policy/gpu
+    path: gpu.md
+    summary: Single protected GPU training job, no unsafe co-runs, shared-memory ceiling.
+  - id: policy/experiments
+    path: experiments.md
+    summary: Pre-registration, anchor evaluator, and honest verdicts for experiments.
+  - id: policy/data
+    path: data.md
+    summary: Data preservation, bounded chunking, atomic/mmap-safe writes.
+  - id: policy/evidence
+    path: evidence.md
+    summary: Exact relative evidence paths, stable IDs, no remembered numbers.
+  - id: policy/tooling
+    path: tooling.md
+    summary: Turn batching, output hygiene, background-job handling, delegation economy.
+  - id: policy/context
+    path: context.md
+    summary: Mandatory session bootstrap (read no matter what), targeted reads, UNKNOWN on conflicts, no auto-editing of live rules.
+  - id: components/core
+    path: components/core.md
+    summary: SLM core pipeline scope, validation, hazards, evidence.
+  - id: components/diacritizer
+    path: components/diacritizer.md
+    summary: Arabic diacritization D-line scope, validation, hazards, evidence.
+  - id: components/laya
+    path: components/laya.md
+    summary: Laya scoring line scope, preflight and param-count gates.
+  - id: components/ui
+    path: components/ui.md
+    summary: U-line chain-corpus and pico-training surface.
+  - id: components/mex
+    path: components/mex.md
+    summary: Micro-expert (mu) sandbox line.
+  - id: components/langid
+    path: components/langid.md
+    summary: CPU-only language-ID line.
+  - id: components/flow
+    path: components/flow.md
+    summary: Visual flow editor scope (React frontend + FastAPI backend).
+  - id: components/viz
+    path: components/viz.md
+    summary: React model-architecture explorer (pnpm only).
+  - id: components/webui
+    path: components/webui.md
+    summary: Gradio web UI shell scope.

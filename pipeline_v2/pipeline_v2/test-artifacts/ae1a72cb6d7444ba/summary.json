@@ -1,0 +1,18 @@
+{
+  "command": [
+    "E:\\python_projects\\nano_SLMs\\.venv\\Lib\\site-packages\\pytest\\__main__.py",
+    "tests/unit/test_worker_count.py",
+    "-v"
+  ],
+  "completed_at": "2026-09-29T09:49:46.532598+00:00",
+  "exitstatus": 0,
+  "label": "PASS",
+  "payload_sha256": "d6cc7ab6c2d31aad4ec9f05775f9233ee0e12fe82b15ab81566342c76d74b440",
+  "schema_version": 1,
+  "session_id": "ae1a72cb6d7444ba",
+  "source_root": ".",
+  "test_counts": {
+    "collected": 4,
+    "failed": 0
+  }
+}

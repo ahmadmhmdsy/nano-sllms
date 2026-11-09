@@ -1,0 +1,99 @@
+# Track H2 Phase 2 (TASKS row 37): mixed corpus LoRA-SFT onto sft_v2_e1.
+# User decisions 2026-09-09: Phase 2 GO (dataset path, NO local teacher
+# inference; NOT Qwen3.5-0.8B per the standing veto) + deterministic
+# extractor arm for the recall rerun. Corpus = Phase 1 copy pairs (585,
+# kept verbatim - they carry the recall-gate behavior) + 947 general-QA
+# pairs (371 dolly open_qa + 223 no_robots OpenQA/Brainstorm/Generation +
+# 353 OpenHermes-2.5 GPT-4 distillate) built by
+# scripts/h2p2_build_corpus.py and validated by
+# scripts/h2p2_validate_corpus.py (validate_meta.json has the exact counts).
+# The QA slice attacks the Phase 1 honest delta: QA-style prompts collapsed
+# into copy-tautologies - prose answers teach non-code QA behavior.
+# GATE: never while another training run is live on the GPU.
+name: h2p2_mixed_lora
+
+base_model: runs/sft_v2_e1/final
+
+tokenizer:
+  name: codellama/CodeLlama-7b-hf
+  vocab_size: 32768
+
+model:
+  # dims come from the base checkpoint (sft_v2_e1) - sft.py loads them from
+  # the checkpoint's config.json; sanity_check builds fresh from this block,
+  # so the T dims are mirrored here (16L/1024/16Q/4KV/ffn3072 = 226.5M).
+  ctx: 1024
+  layers: 16
+  hidden: 1024
+  heads: 16
+  kv_heads: 4
+  ffn: 3072
+  dropout: 0.0
+  tie_embeddings: true
+
+peft:
+  # row-10 hook - same recipe as Phase 1 (measured 0.72 GB peak, 2.096%
+  # trainable at r=16 on this arch); adapter LR 1e-4.
+  r: 16
+  lora_alpha: 32
+  lora_dropout: 0.05
+  target_modules: [q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj]
+  bias: none
+
+data:
+  dataset: data/sft/h2p2_mixed/pairs.jsonl
+  raw_dir: data/sft/h2p2_mixed
+  dataset_dir: data/sft/h2p2_mixed/ds
+  # CSN val shards for the forgetting-guard regression check (same gate as e1)
+  tokens_dir: data/target/tokens
+  # mixed corpus = 1532 validated pairs: rows sets the split TARGET and
+  # sft_data computes val = round(rows * val_fraction) from it -> rows 1459
+  # gives val 73 / train 1459 (1459 + 73 = 1532, nothing left behind).
+  rows: 1459
+  val_fraction: 0.05
+  dedupe: true
+  # mixed prose corpus: do NOT ast-filter (would drop every QA answer).
+  # min_chars floors the RESPONSE length; 4 mirrors Phase 1 (QA responses
+  # are all longer by the validator's 20-char floor - kept for parity).
+  ast_filter: false
+  min_chars: 4
+  min_instruction_chars: 10
+  template: "### Instruction:\n{instruction}\n### Response:\n"
+
+sft:
+  ctx: 512
+  pilot_rows: 300
+
+train:
+  output_dir: runs/h2p2_mixed_lora
+  final_dir: runs/h2p2_mixed_lora/final
+  # 2 epochs on ~1530 pairs = ~183 steps (~18-20 min at the Phase 1 pace);
+  # same deviation argument as Phase 1 (narrow-behavior corpus, gated by the
+  # forgetting guard + the decisive recall rerun).
+  epochs: 2
+  batch: 1
+  eval_batch: 4
+  accum: 16
+  lr: 1.0e-4
+  scheduler: cosine
+  warmup_steps: 10
+  weight_decay: 0.1
+  max_grad_norm: 1.0
+  logging_steps: 10
+  eval_steps: 25
+  save_steps: 25
+  save_total_limit: 2
+  fp16: true
+  grad_ckpt: true
+  optim: adamw_torch
+  dataloader_num_workers: 0
+  seed: 42
+
+eval:
+  max_new_tokens: 256
+  instructions_file: data/sft/minimax3/val_instructions.jsonl
+  n_instructions: 50
+  sample_temperature: 0.8
+  prompts:
+    - "### Instruction:\nWrite a Python function that returns the nth Fibonacci number.\n### Response:\n"
+    - "### Instruction:\nWrite a Python function that checks whether a string is a palindrome.\n### Response:\n"

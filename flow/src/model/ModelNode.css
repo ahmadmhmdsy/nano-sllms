@@ -1,0 +1,122 @@
+/* Model tensor-layer node — mirrors PipelineNode.css styling. */
+.model-node {
+  border: 1px solid #888;
+  border-radius: 6px;
+  padding: 6px 10px;
+  background: #fff;
+  min-width: 140px;
+}
+
+.model-node.selected {
+  border-color: #369;
+  box-shadow: 0 0 0 2px rgba(51, 102, 153, 0.25);
+}
+
+/* Task M3.1 wrapper-level state. Both rules sit below .model-node.selected
+ * so the state indication wins over selection styling; the error rule comes
+ * last so red wins when a node is both errored and shape-less (the usual
+ * case — an errored node has no inferred shape). */
+.model-node.model-node-uncomputed {
+  border: 1px dashed #b30;
+}
+
+.model-node.model-node-error {
+  border: 1px solid #c62828;
+  box-shadow: 0 0 0 2px rgba(198, 40, 40, 0.18);
+}
+
+.model-node-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.model-node-title {
+  flex: 1;
+}
+
+/* Param badge: exact count under 1M, compact above. */
+.model-node-params {
+  font-size: 10px;
+  background: #eef;
+  border: 1px solid #ccd;
+  border-radius: 3px;
+  padding: 0 4px;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.model-node-params-none {
+  background: #eee;
+  border-color: #ccc;
+  color: #888;
+}
+
+/* Red error badge; the tooltip (title) carries the walk error message.
+ * The class name carries a -badge suffix so it never collides with the
+ * wrapper-level .model-node-error state class above. */
+.model-node-error-badge {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #c62828;
+  color: #fff;
+  font-size: 10px;
+  line-height: 14px;
+  text-align: center;
+  cursor: help;
+}
+
+/* "?" badge mirroring the error badge: no shape inferred for this node. */
+.model-node-uncomputed-badge {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #b30;
+  color: #fff;
+  font-size: 10px;
+  line-height: 14px;
+  text-align: center;
+  cursor: help;
+}
+
+.model-node-shape {
+  font-size: 10px;
+  color: #666;
+  margin-top: 2px;
+  font-family: Consolas, monospace;
+}
+
+.model-node-ports {
+  margin-top: 6px;
+}
+
+.model-port {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  position: relative;
+}
+
+.model-port-in {
+  justify-content: flex-start;
+}
+
+.model-port-out {
+  justify-content: flex-end;
+}
+
+.model-port .react-flow__handle {
+  min-width: 8px;
+  min-height: 8px;
+  width: 8px;
+  height: 8px;
+  position: static;
+  transform: none;
+}
+
+.model-port-label {
+  color: #555;
+}

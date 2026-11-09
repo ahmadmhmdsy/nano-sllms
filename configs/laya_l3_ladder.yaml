@@ -1,0 +1,25 @@
+# Laya-line L3 (E-65) ladder: stage A mixture -> stage B typed with replay + aug.
+encoder: runs/laya/l3/pretrain_final/encoder
+out_dir: runs/laya/l3
+mixture_train: data/laya/mixture/train.pt
+mixture_heldout: data/laya/mixture/heldout.pt
+typed_train: data/laya/typed_decisions/train.pt
+typed_test: data/laya/typed_decisions/test.pt
+max_len: 512
+head_max_len: 192
+option_token_max: 48
+epochs_stageA_max: 5
+plateau_min_gain: 0.01
+epochs_stageB: 4
+replay_frac: 0.15
+order_aug_prob: 0.5
+rename_aug_prob: 0.25
+micro_batch: 8
+grad_accum: 8
+lr_encoder: 2.5e-5
+lr_head: 1.0e-4
+weight_decay: 0.01
+clip: 1.0
+seed: 42
+save_every_steps: 200
+bench_log: runs/laya/l3/bench_log.jsonl
